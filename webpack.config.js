@@ -68,7 +68,7 @@ export default {
         options: {
           browserslistEnv: 'javascripts',
           cacheDirectory: true,
-          extends: path.join(dirname, 'babel.config.cjs'),
+          extends: path.join(dirname, 'deprecated-babel.config.cjs'),
           presets: [['@babel/preset-env']]
         },
 
@@ -86,7 +86,14 @@ export default {
               : 'stylesheets/[name].css'
         },
         use: [
-          'postcss-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                config: path.resolve(dirname, 'deprecated-postcss.config.js')
+              }
+            }
+          },
           {
             loader: 'sass-loader',
             options: {

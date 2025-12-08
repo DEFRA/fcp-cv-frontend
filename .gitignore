@@ -10,3 +10,8 @@ coverage
 .envrc
 tsconfig.tsbuildinfo
 .env
+
+# next.js
+/.next/
+/out/
+/build
