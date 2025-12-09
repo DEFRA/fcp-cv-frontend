@@ -7,7 +7,8 @@
     "node": ">=22.16.0"
   },
   "scripts": {
-    "dev": "next dev"
+    "dev": "next dev",
+    "test": "vitest run --coverage"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
@@ -18,9 +19,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.17",
+    "@vitest/coverage-v8": "4.0.15",
     "eslint": "9.39.1",
     "eslint-config-next": "16.0.8",
     "prettier": "3.7.4",
-    "tailwindcss": "4.1.17"
+    "tailwindcss": "4.1.17",
+    "vitest": "4.0.15"
   }
 }

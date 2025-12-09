@@ -1,4 +1,4 @@
-import { defineConfig, configDefaults } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -9,14 +9,7 @@ export default defineConfig({
       provider: 'v8',
       reportsDirectory: './coverage',
       reporter: ['text', 'lcov'],
-      include: ['src/**'],
-      exclude: [
-        ...configDefaults.exclude,
-        '.public',
-        'coverage',
-        'postcss.config.js',
-        'stylelint.config.js'
-      ]
+      include: '{app,components}/**/*.{js,jsx}'
     }
   }
 })
