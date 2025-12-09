@@ -7,9 +7,10 @@
     "node": ">=22.16.0"
   },
   "scripts": {
+    "build": "next build",
     "dev": "next dev",
-    "test": "vitest run --coverage",
-    "lint": "eslint . && prettier --check ."
+    "lint": "eslint . && prettier --check .",
+    "test": "vitest run --coverage"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
