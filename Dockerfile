@@ -1,4 +1,4 @@
-ARG PARENT_VERSION=2.8.5-node22.16.0
+ARG PARENT_VERSION=2.10.1-node24.11.1
 ARG PORT=3000
 ARG PORT_DEBUG=9229
 
@@ -7,45 +7,43 @@ ARG PARENT_VERSION
 LABEL uk.gov.defra.ffc.parent-image=defradigital/node-development:${PARENT_VERSION}
 
 ENV TZ="Europe/London"
+ENV NEXT_TELEMETRY_DISABLED=1
 
 ARG PORT
 ARG PORT_DEBUG
 ENV PORT=${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
 
-COPY --chown=node:node --chmod=755 package*.json ./
-RUN npm install
-COPY --chown=node:node --chmod=755 . .
-RUN npm run build:frontend
+USER node
 
-CMD [ "npm", "run", "docker:dev" ]
+COPY --chown=node:node package*.json ./
+RUN npm ci
 
-FROM development AS production_build
+COPY --chown=node:node next.config.js postcss.config.js ./
+COPY --chown=node:node app ./app
 
-ENV NODE_ENV=production
+RUN NODE_ENV=production npm run build
 
-RUN npm run build:frontend
+CMD [ "npm", "run", "dev" ]
 
 FROM defradigital/node:${PARENT_VERSION} AS production
 ARG PARENT_VERSION
 LABEL uk.gov.defra.ffc.parent-image=defradigital/node:${PARENT_VERSION}
 
 ENV TZ="Europe/London"
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Add curl to template.
 # CDP PLATFORM HEALTHCHECK REQUIREMENT
 USER root
 RUN apk add --no-cache curl
+
 USER node
-
-COPY --from=production_build /home/node/package*.json ./
-COPY --from=production_build /home/node/src ./src/
-COPY --from=production_build /home/node/.public/ ./.public/
-
-RUN npm ci --omit=dev
+COPY --from=development /home/node/.next/standalone ./
+COPY --from=development /home/node/.next/static ./.next/static
 
 ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD [ "node", "src" ]
+CMD ["node", "server.js"]
