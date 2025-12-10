@@ -46,4 +46,5 @@ ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
+ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]
