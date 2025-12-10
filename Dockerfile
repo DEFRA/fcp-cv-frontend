@@ -1,4 +1,4 @@
-ARG PARENT_VERSION=2.8.5-node22.16.0
+ARG PARENT_VERSION=2.10.1-node24.11.1
 ARG PORT=3000
 ARG PORT_DEBUG=9229
 
@@ -14,18 +14,17 @@ ARG PORT_DEBUG
 ENV PORT=${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
 
-COPY --chown=node:node --chmod=755 package*.json ./
-RUN npm install
-COPY --chown=node:node --chmod=755 . .
+USER node
+
+COPY --chown=node:node package*.json ./
+RUN npm ci
+
+COPY --chown=node:node next.config.js postcss.config.js ./
+COPY --chown=node:node app ./app
+
+RUN NODE_ENV=production npm run build
 
 CMD [ "npm", "run", "dev" ]
-
-FROM development AS production_build
-
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-RUN npm run build
 
 FROM defradigital/node:${PARENT_VERSION} AS production
 ARG PARENT_VERSION
@@ -38,10 +37,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # CDP PLATFORM HEALTHCHECK REQUIREMENT
 USER root
 RUN apk add --no-cache curl
-USER node
 
-COPY --from=production_build /home/node/.next/standalone ./
-COPY --from=production_build /home/node/.next/static ./.next/static
+USER node
+COPY --from=development /home/node/.next/standalone ./
+COPY --from=development /home/node/.next/static ./.next/static
 
 ARG PORT
 ENV PORT=${PORT}

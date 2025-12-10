@@ -4,7 +4,7 @@
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {
-    "node": ">=22.16.0"
+    "node": ">=24.11.1"
   },
   "scripts": {
     "build": "next build",

@@ -1,0 +1,15 @@
+services:
+  fcp-cv-frontend:
+    build:
+      context: .
+    ports:
+      - '3000:3000'
+    networks:
+      - cdp-tenant
+
+################################################################################
+
+networks:
+  cdp-tenant:
+    driver: bridge
+    name: cdp-tenant
