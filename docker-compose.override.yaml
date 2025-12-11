@@ -7,7 +7,7 @@ services:
       target: development
     command: npm run dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./app:/home/node/app
       - ./scripts:/home/node/scripts
