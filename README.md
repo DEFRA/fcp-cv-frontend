@@ -212,9 +212,6 @@ arguments to the test script.
 
 Examples:
 
-_Run all tests_
-`scripts/test`
-
 _Run accessibility tests_
 `scripts/accessibility`
 
