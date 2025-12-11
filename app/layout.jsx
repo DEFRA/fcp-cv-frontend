@@ -9,7 +9,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="container mx-auto">
-        {children}
+        <main id="main-content" role="main" className="min-h-screen py-6">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

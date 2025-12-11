@@ -1,0 +1,26 @@
+services:
+  fcp-cv-frontend:
+    platform: linux/amd64
+    command: npm run dev
+    build:
+      target: development
+    image: fcp-cv-frontend-development
+    environment:
+      NODE_ENV: test
+    volumes:
+      - ./test-output:/home/node/test-output
+
+  accessibility:
+    platform: linux/amd64
+    image: defradigital/ffc-axe
+    depends_on:
+      - fcp-cv-frontend
+    command:
+      - /bin/sh
+      - -c
+      - |
+        sleep 10
+        /scripts/wait $${TEST_ENVIRONMENT_ROOT_HOST_PORT:-fcp-cv-frontend:3000} -- axe --dir=/home/node/test-output -s axe.json --report=/home/node/test-output --format=junit --chrome-options="no-sandbox,disable-setuid-sandbox,disable-dev-shm-usage" --chromedriver-path=/usr/bin/chromedriver --exit $${TEST_ENVIRONMENT_ROOT_URL:-http://fcp-cv-frontend:3000}
+    volumes:
+      - ./test-output/axe:/home/node/test-output
+      - ./scripts:/scripts

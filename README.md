@@ -6,26 +6,31 @@
 
 Core delivery platform Node.js Frontend Template.
 
-- [Requirements](#requirements)
-  - [Node.js](#nodejs)
-- [Server-side Caching](#server-side-caching)
-- [Redis](#redis)
-- [Local Development](#local-development)
-  - [Setup](#setup)
-  - [Development](#development)
-  - [Production](#production)
-  - [Npm scripts](#npm-scripts)
-  - [Update dependencies](#update-dependencies)
-  - [Formatting](#formatting)
-    - [Windows prettier issue](#windows-prettier-issue)
-- [Docker](#docker)
-  - [Development image](#development-image)
-  - [Production image](#production-image)
-  - [Docker Compose](#docker-compose)
-  - [Dependabot](#dependabot)
-  - [SonarCloud](#sonarcloud)
-- [Licence](#licence)
-  - [About the licence](#about-the-licence)
+- [fcp-cv-frontend](#fcp-cv-frontend)
+  - [Requirements](#requirements)
+    - [Node.js](#nodejs)
+  - [Server-side Caching](#server-side-caching)
+  - [Redis](#redis)
+  - [Proxy](#proxy)
+  - [Local Development](#local-development)
+    - [Setup](#setup)
+    - [Development](#development)
+    - [Production](#production)
+    - [Npm scripts](#npm-scripts)
+    - [Update dependencies](#update-dependencies)
+    - [Formatting](#formatting)
+      - [Windows prettier issue](#windows-prettier-issue)
+  - [Docker](#docker)
+    - [Development image](#development-image)
+    - [Production image](#production-image)
+    - [Docker Compose](#docker-compose)
+    - [Dependabot](#dependabot)
+    - [SonarCloud](#sonarcloud)
+  - [Test structure](#test-structure)
+    - [How to run tests](#how-to-run-tests)
+    - [Running accessibility tests](#running-accessibility-tests)
+  - [Licence](#licence)
+    - [About the licence](#about-the-licence)
 
 ## Requirements
 
@@ -194,6 +199,31 @@ the [.github/example.dependabot.yml](.github/example.dependabot.yml) to `.github
 ### SonarCloud
 
 Instructions for setting up SonarCloud can be found in [sonar-project.properties](./sonar-project.properties).
+
+## Test structure
+
+### How to run tests
+
+A convenience script is provided to run automated tests in a containerised
+environment. This will rebuild images before running tests via docker-compose,
+using a combination of `docker-compose.yaml` and `docker-compose.test.yaml`.
+The command given to `docker-compose run` may be customised by passing
+arguments to the test script.
+
+Examples:
+
+_Run all tests_
+`scripts/test`
+
+_Run accessibility tests_
+`scripts/accessibility`
+
+### Running accessibility tests
+
+A docker-compose exists for running an
+[AXE](https://www.npmjs.com/package/@axe-core/cli).
+Primarily this will be run during CI. It can also be run locally via the
+[AXE](./scripts/accessibility) script.
 
 ## Licence
 
