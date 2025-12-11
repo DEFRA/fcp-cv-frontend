@@ -11,5 +11,9 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
       include: '{app,components}/**/*.{js,jsx}'
     }
+  },
+  esbuild: {
+    loader: 'jsx',
+    jsx: 'automatic'
   }
 })
