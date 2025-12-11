@@ -8,7 +8,8 @@ coverage
 .cache
 .envrc
 tsconfig.tsbuildinfo
-.env
+.env*
+test-output
 
 # next.js
 /.next/

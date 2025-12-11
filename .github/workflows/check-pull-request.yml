@@ -36,6 +36,9 @@ jobs:
           docker build --no-cache --tag cdp-node-frontend-template .
           exit $?
 
+      - name: Test accessibility
+        run: |
+          npm run test:accessibility:docker
 #      - name: SonarCloud Scan
 #        if: github.actor != 'dependabot[bot]'
 #        uses: SonarSource/sonarqube-scan-action@v5.3.1 #  (or check latest version on https://github.com/marketplace/actions/official-sonarqube-scan)
