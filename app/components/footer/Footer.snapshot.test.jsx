@@ -1,5 +1,5 @@
 import { renderToString } from 'react-dom/server'
-import Footer from '../Footer'
+import Footer from './Footer'
 
 describe('Footer snapshot', () => {
   it('matches the rendered structure', () => {
@@ -8,4 +8,3 @@ describe('Footer snapshot', () => {
     expect(html).toMatchSnapshot()
   })
 })
-
