@@ -1,4 +1,4 @@
-import packageJson from '../../package.json' assert { type: 'json' }
+import packageJson from '../../../package.json' assert { type: 'json' }
 
 export default function Footer() {
   return (
@@ -7,4 +7,3 @@ export default function Footer() {
     </footer>
   )
 }
-
