@@ -30,11 +30,31 @@ jobs:
           npm run lint
           npm test
 
+      - name: Upload Unit Test Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-coverage-report
+          path: coverage/
+          retention-days: 7
+
       - name: Test Docker Image Build
         run: |
           set +e
           docker build --no-cache --tag cdp-node-frontend-template .
           exit $?
+
+      - name: Test accessibility and create accessibility test report
+        run: |
+          npm run test:accessibility:docker
+
+      - name: Upload accessibility test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-test-report
+          path: test-output/axe/
+          retention-days: 7
 
 #      - name: SonarCloud Scan
 #        if: github.actor != 'dependabot[bot]'
