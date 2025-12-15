@@ -10,12 +10,16 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint . && prettier --check .",
+    "start": "node server.js",
     "test": "vitest run --coverage"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "next": "16.0.8",
+    "@elastic/ecs-pino-format": "1.5.0",
+    "next": "16.0.10",
+    "pino": "10.1.0",
+    "pino-http": "11.0.0",
     "react": "19.2.1",
     "react-dom": "19.2.1"
   },

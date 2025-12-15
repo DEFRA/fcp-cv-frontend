@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  cacheComponents: true,
-  output: 'standalone'
+  cacheComponents: true
 }
 
 export default nextConfig
