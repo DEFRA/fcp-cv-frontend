@@ -21,6 +21,7 @@ RUN npm ci
 
 COPY --chown=node:node next.config.js postcss.config.js ./
 COPY --chown=node:node app ./app
+COPY --chown=node:node server.js ./server.js
 
 RUN NODE_ENV=production npm run build
 
@@ -39,11 +40,15 @@ USER root
 RUN apk add --no-cache curl
 
 USER node
-COPY --from=development /home/node/.next/standalone ./
-COPY --from=development /home/node/.next/static ./.next/static
+COPY --from=development /home/node/package*.json ./
+COPY --from=development /home/node/.next ./.next
+COPY --from=development /home/node/server.js ./
+COPY --from=development /home/node/next.config.js ./
+
+RUN npm ci --omit=dev
 
 ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD ["env", "HOSTNAME=0.0.0.0", "node", "server.js"]
+CMD ["node", "server.js"]
