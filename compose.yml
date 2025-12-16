@@ -6,6 +6,11 @@ services:
       - '3000:3000'
     networks:
       - cdp-tenant
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 3s
+      timeout: 2s
+      retries: 5
 
 ################################################################################
 
