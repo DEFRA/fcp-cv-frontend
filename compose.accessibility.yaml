@@ -1,10 +1,4 @@
 services:
-  fcp-cv-frontend:
-    platform: linux/amd64
-    image: fcp-cv-frontend-development
-    volumes:
-      - ./test-output:/home/node/test-output
-
   accessibility:
     platform: linux/amd64
     image: defradigital/ffc-axe
