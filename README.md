@@ -213,14 +213,12 @@ arguments to the test script.
 Examples:
 
 _Run accessibility tests_
-`scripts/accessibility`
+`npm run test:accessibility:docker`
 
 ### Running accessibility tests
 
 A docker compose exists for running an
 [AXE](https://www.npmjs.com/package/@axe-core/cli).
-Primarily this will be run during CI. It can also be run locally via the
-[AXE](./scripts/accessibility) script.
 
 ## Licence
 
