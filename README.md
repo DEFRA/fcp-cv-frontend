@@ -4,7 +4,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 
-Core delivery platform Node.js Frontend Template.
+FCP CV Node.js Frontend.
 
 - [fcp-cv-frontend](#fcp-cv-frontend)
   - [Requirements](#requirements)
@@ -205,9 +205,9 @@ Instructions for setting up SonarCloud can be found in [sonar-project.properties
 ### How to run tests
 
 A convenience script is provided to run automated tests in a containerised
-environment. This will rebuild images before running tests via docker-compose,
-using a combination of `docker-compose.yaml` and `docker-compose.test.yaml`.
-The command given to `docker-compose run` may be customised by passing
+environment. This will rebuild images before running tests via docker compose,
+using `docker-compose.yaml`.
+The command given to `docker compose run` may be customised by passing
 arguments to the test script.
 
 Examples:
@@ -217,7 +217,7 @@ _Run accessibility tests_
 
 ### Running accessibility tests
 
-A docker-compose exists for running an
+A docker compose exists for running an
 [AXE](https://www.npmjs.com/package/@axe-core/cli).
 Primarily this will be run during CI. It can also be run locally via the
 [AXE](./scripts/accessibility) script.

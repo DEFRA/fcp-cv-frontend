@@ -9,6 +9,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "start": "next start",
     "lint": "eslint . && prettier --check .",
     "start": "node server.js",
     "test": "vitest run --coverage",

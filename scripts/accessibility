@@ -5,6 +5,6 @@ projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; p
 
 cd "${projectRoot}"
 # Guarantee clean environment
-docker compose -f docker-compose.yaml -f docker-compose.accessibility.yaml -p fcp-cv-frontend-accessibility-test down -v
+docker compose -f compose.yml -f compose.accessibility.yaml -p fcp-cv-frontend-accessibility-test down -v --remove-orphans
 # Run AXE test
-docker compose -f docker-compose.yaml -f docker-compose.override.yaml -f docker-compose.accessibility.yaml run --rm accessibility
+docker compose -f compose.yml -f compose.accessibility.yaml -p fcp-cv-frontend-accessibility-test run --quiet-pull --pull always --build --rm accessibility

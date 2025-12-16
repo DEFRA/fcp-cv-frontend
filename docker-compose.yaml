@@ -1,7 +1,0 @@
-services:
-  fcp-cv-frontend:
-    build:
-      context: .
-      target: production
-    image: fcp-cv-frontend
-    container_name: fcp-cv-frontend

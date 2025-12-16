@@ -1,12 +1,7 @@
 services:
   fcp-cv-frontend:
     platform: linux/amd64
-    command: npm run dev
-    build:
-      target: development
     image: fcp-cv-frontend-development
-    environment:
-      NODE_ENV: test
     volumes:
       - ./test-output:/home/node/test-output
 
@@ -24,3 +19,5 @@ services:
     volumes:
       - ./test-output/axe:/home/node/test-output
       - ./scripts:/scripts
+    networks:
+      - cdp-tenant
