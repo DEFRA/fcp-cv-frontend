@@ -1,0 +1,13 @@
+services:
+  accessibility:
+    platform: linux/amd64
+    image: defradigital/ffc-axe
+    depends_on:
+      fcp-cv-frontend:
+        condition: service_healthy
+    command: |
+      axe --dir=/home/node/test-output -s axe.json --report=/home/node/test-output --format=junit --chrome-options="no-sandbox,disable-setuid-sandbox,disable-dev-shm-usage" --chromedriver-path=/usr/bin/chromedriver --exit ${TEST_ENVIRONMENT_ROOT_URL:-http://fcp-cv-frontend:3000}
+    volumes:
+      - ./test-output/axe:/home/node/test-output
+    networks:
+      - cdp-tenant

@@ -4,28 +4,33 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 
-Core delivery platform Node.js Frontend Template.
+FCP CV Node.js Frontend.
 
-- [Requirements](#requirements)
-  - [Node.js](#nodejs)
-- [Server-side Caching](#server-side-caching)
-- [Redis](#redis)
-- [Local Development](#local-development)
-  - [Setup](#setup)
-  - [Development](#development)
-  - [Production](#production)
-  - [Npm scripts](#npm-scripts)
-  - [Update dependencies](#update-dependencies)
-  - [Formatting](#formatting)
-    - [Windows prettier issue](#windows-prettier-issue)
-- [Docker](#docker)
-  - [Development image](#development-image)
-  - [Production image](#production-image)
-  - [Docker Compose](#docker-compose)
-  - [Dependabot](#dependabot)
-  - [SonarCloud](#sonarcloud)
-- [Licence](#licence)
-  - [About the licence](#about-the-licence)
+- [fcp-cv-frontend](#fcp-cv-frontend)
+  - [Requirements](#requirements)
+    - [Node.js](#nodejs)
+  - [Server-side Caching](#server-side-caching)
+  - [Redis](#redis)
+  - [Proxy](#proxy)
+  - [Local Development](#local-development)
+    - [Setup](#setup)
+    - [Development](#development)
+    - [Production](#production)
+    - [Npm scripts](#npm-scripts)
+    - [Update dependencies](#update-dependencies)
+    - [Formatting](#formatting)
+      - [Windows prettier issue](#windows-prettier-issue)
+  - [Docker](#docker)
+    - [Development image](#development-image)
+    - [Production image](#production-image)
+    - [Docker Compose](#docker-compose)
+    - [Dependabot](#dependabot)
+    - [SonarCloud](#sonarcloud)
+  - [Test structure](#test-structure)
+    - [How to run tests](#how-to-run-tests)
+    - [Running accessibility tests](#running-accessibility-tests)
+  - [Licence](#licence)
+    - [About the licence](#about-the-licence)
 
 ## Requirements
 
@@ -194,6 +199,26 @@ the [.github/example.dependabot.yml](.github/example.dependabot.yml) to `.github
 ### SonarCloud
 
 Instructions for setting up SonarCloud can be found in [sonar-project.properties](./sonar-project.properties).
+
+## Test structure
+
+### How to run tests
+
+A convenience script is provided to run automated tests in a containerised
+environment. This will rebuild images before running tests via docker compose,
+using `docker-compose.yaml`.
+The command given to `docker compose run` may be customised by passing
+arguments to the test script.
+
+Examples:
+
+_Run accessibility tests_
+`npm run test:accessibility:docker`
+
+### Running accessibility tests
+
+A docker compose exists for running an
+[AXE](https://www.npmjs.com/package/@axe-core/cli).
 
 ## Licence
 

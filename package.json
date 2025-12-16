@@ -11,7 +11,10 @@
     "dev": "next dev",
     "lint": "eslint . && prettier --check .",
     "start": "node server.js",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "test:accessibility": "axe ${TEST_ENVIRONMENT_ROOT_URL:-http://localhost:3001}",
+    "test:accessibility:docker": "docker compose -f compose.yml -f compose.accessibility.yaml -p fcp-cv-frontend-accessibility-test run --quiet-pull --pull always --build --rm accessibility",
+    "posttest:accessibility:docker": "docker compose -p fcp-cv-frontend-accessibility-test down -v --remove-orphans"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
@@ -24,6 +27,7 @@
     "react-dom": "19.2.1"
   },
   "devDependencies": {
+    "@axe-core/cli": "4.10.0",
     "@tailwindcss/postcss": "4.1.17",
     "@vitest/coverage-v8": "4.0.15",
     "eslint": "9.39.1",
