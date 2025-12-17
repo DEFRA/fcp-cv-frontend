@@ -1,11 +1,22 @@
+import {
+  ListDetailView,
+  ListDetailViewSection
+} from '../components/list-detail-view'
+
 export const metadata = {
   title: 'Linked Contacts'
 }
 
-export default function LinkedContactsPage({ params, searchParams }) {
+export default function LinkedContactsPage() {
   return (
-    <div className="flex justify-center mt-10">
-      <h1 className="text-3xl font-bold">Linked Contacts</h1>
-    </div>
+    <ListDetailView srTitle="Linked Contacts">
+      <ListDetailViewSection srTitle="Contacts list">
+        <div>List</div>
+      </ListDetailViewSection>
+
+      <ListDetailViewSection srTitle="Selected contact">
+        <div>Detail</div>
+      </ListDetailViewSection>
+    </ListDetailView>
   )
 }

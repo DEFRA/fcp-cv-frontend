@@ -29,6 +29,7 @@
   "devDependencies": {
     "@axe-core/cli": "4.10.0",
     "@tailwindcss/postcss": "4.1.17",
+    "@types/react": "19.2.7",
     "@vitest/coverage-v8": "4.0.15",
     "eslint": "9.39.1",
     "eslint-config-next": "16.0.8",
