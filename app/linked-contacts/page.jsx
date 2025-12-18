@@ -1,7 +1,4 @@
-import {
-  ListDetailView,
-  ListDetailViewSection
-} from '../components/list-detail-view'
+import { CVPage, CVPageDetail, CVPageList } from '@/components/cv-page'
 
 export const metadata = {
   title: 'Linked Contacts'
@@ -9,14 +6,14 @@ export const metadata = {
 
 export default function LinkedContactsPage() {
   return (
-    <ListDetailView srTitle="Linked Contacts">
-      <ListDetailViewSection srTitle="Contacts list">
+    <CVPage srTitle="Linked Contacts">
+      <CVPageList srTitle="Contacts list">
         <div>List</div>
-      </ListDetailViewSection>
+      </CVPageList>
 
-      <ListDetailViewSection srTitle="Selected contact">
+      <CVPageDetail srTitle="Selected contact">
         <div>Detail</div>
-      </ListDetailViewSection>
-    </ListDetailView>
+      </CVPageDetail>
+    </CVPage>
   )
 }
