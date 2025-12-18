@@ -5,6 +5,7 @@ export function CVPage({ srTitle, className, children }) {
     <div className="h-full group">
       {srTitle && <h1 className="sr-only">{srTitle}</h1>}
       <div
+        data-testid="list-detail-view"
         data-slot="list-detail-view"
         className={cn(
           'h-full grid grid-rows-[auto_1fr] grid-cols-[calc(100%/3)_auto]',

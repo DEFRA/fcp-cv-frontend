@@ -1,10 +1,12 @@
+import path from 'path'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
+    environment: 'jsdom',
     clearMocks: true,
+    css: true,
     coverage: {
       provider: 'v8',
       reportsDirectory: './coverage',
@@ -15,5 +17,10 @@ export default defineConfig({
   esbuild: {
     loader: 'jsx',
     jsx: 'automatic'
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'app')
+    }
   }
 })
