@@ -1,4 +1,9 @@
-import { CVPage, CVPageDetail, CVPageList } from '@/components/cv-page'
+import {
+  CVPage,
+  CVPageFullWidth,
+  CVPageLeftColumn,
+  CVPageRightColumn
+} from '@/components/cv-page'
 
 export const metadata = {
   title: 'Linked Contacts'
@@ -7,13 +12,15 @@ export const metadata = {
 export default function LinkedContactsPage() {
   return (
     <CVPage srTitle="Linked Contacts">
-      <CVPageList srTitle="Contacts list">
+      <CVPageFullWidth srTitle="Contacts list">
+        <div>Full</div>
+      </CVPageFullWidth>
+      <CVPageLeftColumn srTitle="Contacts list">
         <div>List</div>
-      </CVPageList>
-
-      <CVPageDetail srTitle="Selected contact">
+      </CVPageLeftColumn>
+      <CVPageRightColumn srTitle="Contacts list">
         <div>Detail</div>
-      </CVPageDetail>
+      </CVPageRightColumn>
     </CVPage>
   )
 }
