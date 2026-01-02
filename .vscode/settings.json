@@ -38,5 +38,6 @@
     "package-lock.json",
     ".next"
   ],
-  "cSpell.language": "en,en-GB"
+  "cSpell.language": "en,en-GB",
+  "javascript.preferences.importModuleSpecifier": "non-relative"
 }
