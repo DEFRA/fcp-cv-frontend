@@ -1,3 +1,4 @@
+import path from 'path'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -9,11 +10,17 @@ export default defineConfig({
       provider: 'v8',
       reportsDirectory: './coverage',
       reporter: ['text', 'lcov'],
-      include: '{app,components}/**/*.{js,jsx}'
+      include: 'app/**/*.{js,jsx}'
     }
   },
   esbuild: {
     loader: 'jsx',
     jsx: 'automatic'
+  },
+  resolve: {
+    alias: {
+      '@/components': path.resolve(__dirname, 'app', '_components'),
+      '@/lib': path.resolve(__dirname, 'app', '_lib')
+    }
   }
 })

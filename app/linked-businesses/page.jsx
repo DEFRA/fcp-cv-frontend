@@ -5,14 +5,14 @@ import {
 } from '@/components/sections/sections'
 
 export const metadata = {
-  title: 'Linked Contacts'
+  title: 'Linked Businesses'
 }
 
-export default function LinkedContactsPage() {
+export default function LinkedBusinessesPage() {
   return (
-    <Sections srTitle="Linked Contacts">
-      <LeftSection srTitle="Contacts list">
-        <div>Contacts List</div>
+    <Sections srTitle="Linked Businesses">
+      <LeftSection srTitle="Businesses list">
+        <div>Businesses List</div>
       </LeftSection>
       <RightSection srTitle="Selected contact">
         <div>Selected Contact</div>
