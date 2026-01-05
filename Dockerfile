@@ -19,7 +19,7 @@ USER node
 COPY --chown=node:node package*.json ./
 RUN npm ci
 
-COPY --chown=node:node next.config.js postcss.config.js ./
+COPY --chown=node:node next.config.js postcss.config.js jsconfig.json ./
 COPY --chown=node:node app ./app
 COPY --chown=node:node server.js ./server.js
 
