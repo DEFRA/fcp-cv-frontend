@@ -5,17 +5,17 @@ import {
 } from '@/components/sections/sections'
 
 export const metadata = {
-  title: 'Linked Contacts'
+  title: 'County Parish Holdings (CPH)'
 }
 
-export default function LinkedContactsPage() {
+export default function CountyParishHoldingsPages() {
   return (
     <Sections srTitle={metadata.title}>
-      <LeftSection srTitle="Contacts list">
-        <div>Contacts List</div>
+      <LeftSection srTitle="CPH list">
+        <div>CPH List</div>
       </LeftSection>
-      <RightSection srTitle="Selected contact">
-        <div>Selected Contact</div>
+      <RightSection srTitle="Selected CPH">
+        <div>Selected CPH</div>
       </RightSection>
     </Sections>
   )
