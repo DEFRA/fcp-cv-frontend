@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function LinkedBusinessesPage() {
   return (
-    <Sections srTitle="Linked Businesses">
+    <Sections srTitle={metadata.title}>
       <LeftSection srTitle="Businesses list">
         <div>Businesses List</div>
       </LeftSection>

@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function BusinessMessagesPage() {
   return (
-    <Sections srTitle="Business Messages">
+    <Sections srTitle={metadata.title}>
       <LeftSection srTitle="Message list">
         <div>Message List</div>
       </LeftSection>

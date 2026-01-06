@@ -5,12 +5,12 @@ import {
 } from '@/components/sections/sections'
 
 export const metadata = {
-  title: 'County Parish Holdings'
+  title: 'County Parish Holdings (CPH)'
 }
 
 export default function CountyParishHoldingsPages() {
   return (
-    <Sections srTitle="County Parish Holdings (CPH)">
+    <Sections srTitle={metadata.title}>
       <LeftSection srTitle="CPH list">
         <div>CPH List</div>
       </LeftSection>

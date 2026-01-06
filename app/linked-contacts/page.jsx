@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function LinkedContactsPage() {
   return (
-    <Sections srTitle="Linked Contacts">
+    <Sections srTitle={metadata.title}>
       <LeftSection srTitle="Contacts list">
         <div>Contacts List</div>
       </LeftSection>

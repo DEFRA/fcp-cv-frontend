@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function AuthenticatePage() {
   return (
-    <Sections srTitle="Authenticate">
+    <Sections srTitle={metadata.title}>
       <FullWidthSection srTitle="Memorable questions">
         <div>Authenticate</div>
       </FullWidthSection>

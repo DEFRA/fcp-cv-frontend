@@ -11,7 +11,7 @@ export const metadata = {
 
 export default function LandDetailsPage() {
   return (
-    <Sections srTitle="Land Details">
+    <Sections srTitle={metadata.title}>
       <FullWidthSection srTitle="Land summary">
         <div>Land Summary</div>
       </FullWidthSection>

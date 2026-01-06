@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function AgreementsPage() {
   return (
-    <Sections srTitle="Agreements">
+    <Sections srTitle={metadata.title}>
       <FullWidthSection srTitle="Agreements list">
         <div>Agreements</div>
       </FullWidthSection>

@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function ApplicationsPage() {
   return (
-    <Sections srTitle="Applications">
+    <Sections srTitle={metadata.title}>
       <LeftSection srTitle="Applications list">
         <div>Applications List</div>
       </LeftSection>
