@@ -1,3 +1,4 @@
+import { Profile } from '@/components/auth/profile.jsx'
 import Link from 'next/link'
 
 const businessLinks = [
@@ -42,7 +43,10 @@ export default function ConsolidatedViewPage() {
   return (
     <div className="m-10">
       <div>
-        <h1 className="text-3xl font-bold mb-5">Consolidated View</h1>
+        <div className="mb-5">
+          <h1 className="text-3xl font-bold mb-1">Consolidated View</h1>
+          <Profile />
+        </div>
         <h2 className="text-xl font-semibold mb-3">Apps</h2>
 
         <div className="flex gap-10">
