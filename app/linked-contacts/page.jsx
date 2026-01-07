@@ -27,7 +27,7 @@ export default function LinkedContactsPage() {
   }
 
   return (
-    <Sections srTitle={metadata.title}>
+    <Sections srTitle="Linked Contacts">
       <LeftSection srTitle="Contacts list">
         <Table data={data} columns={columns} onRowClick={handleRowClick} />
       </LeftSection>
