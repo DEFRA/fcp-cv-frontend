@@ -1,13 +1,15 @@
 'use client'
 
+import { Button } from '@/components/auth/button.jsx'
 import { Skeleton } from '@/components/ui/skeleton.jsx'
-import { useMsal } from '@azure/msal-react'
+import { useIsAuthenticated, useMsal } from '@azure/msal-react'
 
 export function Profile() {
-  const { instance, accounts, inProgress } = useMsal()
+  const isAuthenticated = useIsAuthenticated()
+  const { instance, accounts } = useMsal()
 
   return (
-    <div className="flex gap-1 text-xs items-center">
+    <div className="flex gap-1 text-xs items-center h-10">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -21,52 +23,14 @@ export function Profile() {
         />
       </svg>
 
-      {inProgress === 'startup' ? (
-        <Skeleton className="h-3 w-50" />
-      ) : (
+      {isAuthenticated ? (
         <>
-          {accounts.length > 0 ? (
-            <>
-              {accounts[0].username.toLowerCase()}
-              <button
-                className="bg-red-500 p-1 rounded-sm text-white"
-                onClick={() => instance.logoutPopup()}
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <button
-              className="bg-green-500 p-1 rounded-sm text-white"
-              onClick={() => instance.loginPopup()}
-            >
-              Login
-            </button>
-          )}
+          {accounts[0].username.toLowerCase()}
+          <Button onClick={() => instance.logoutPopup()}>Sign out</Button>
         </>
+      ) : (
+        <Skeleton className="h-3 w-50" />
       )}
     </div>
   )
-
-  // if (inProgress === 'startup') {
-  //   return null
-  // }
-
-  // if (accounts.length > 0) {
-  //   return (
-  //     <>
-  //       <span>There are currently {accounts.length} users signed in!</span>
-  //       <button onClick={() => instance.logoutPopup()}>Logout</button>
-  //     </>
-  //   )
-  // } else if (inProgress === 'login') {
-  //   return <span>Login is currently in progress!</span>
-  // } else {
-  //   return (
-  //     <>
-  //       <span>There are currently no users signed in!</span>
-  //       <button onClick={() => instance.loginPopup()}>Login</button>
-  //     </>
-  //   )
-  // }
 }
