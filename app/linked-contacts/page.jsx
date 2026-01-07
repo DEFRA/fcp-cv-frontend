@@ -7,10 +7,6 @@ import {
 } from '@/components/sections/sections'
 import Table from '@/components/table/Table'
 
-const metadata = {
-  title: 'Linked Contacts'
-}
-
 export default function LinkedContactsPage() {
   const data = [
     { firstName: 'Merl', lastName: 'Kemmer', crn: '1103020285' },
