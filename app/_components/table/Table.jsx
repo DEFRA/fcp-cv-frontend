@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { Suspense, useState } from 'react'
+import { Suspense, useId, useState } from 'react'
 
 function SortArrow({ direction }) {
   const isAsc = direction === 'asc'
@@ -29,14 +29,18 @@ function SortArrow({ direction }) {
 }
 
 function SearchBar({ value = '', onChange = () => {} }) {
+  const uniqueId = `search-${useId()}`
+
   return (
     <div className="mb-2 flex items-center gap-10">
-      <div className="text-sm font-bold">Search</div>
+      <label className="text-sm font-bold" htmlFor={uniqueId}>
+        Search
+      </label>
       <input
+        id={uniqueId}
         value={value}
         onChange={onChange}
         placeholder="Enter search term"
-        aria-label="Search"
         className="ml-auto w-full max-w-3xl border-2 border-green-700 p-2 text-sm placeholder-gray-500 focus:outline-none focus:ring-green-700"
       />
     </div>
