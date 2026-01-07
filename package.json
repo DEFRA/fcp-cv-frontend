@@ -20,6 +20,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@elastic/ecs-pino-format": "1.5.0",
+    "@tanstack/react-table": "8.21.3",
     "next": "16.0.10",
     "pino": "10.1.0",
     "pino-http": "11.0.0",

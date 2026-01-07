@@ -3,7 +3,12 @@ import { cn } from '@/lib/utils'
 export function Sections({ srTitle, className, children }) {
   return (
     <div className="h-full group">
-      {srTitle && <h1 className="sr-only">{srTitle}</h1>}
+      {srTitle && (
+        <>
+          <title>{srTitle}</title>
+          <h1 className="sr-only">{srTitle}</h1>
+        </>
+      )}
       <div
         className={cn(
           'h-full grid grid-rows-[auto_1fr] grid-cols-[calc(100%/3)_auto]',
