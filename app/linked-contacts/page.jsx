@@ -1,6 +1,7 @@
 'use client'
 
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
+import AppLink from '@/components/link/AppLink'
 import {
   LeftSection,
   RightSection,
@@ -40,6 +41,13 @@ export default function LinkedContactsPage() {
       </LeftSection>
       <RightSection srTitle="Selected contact">
         <KeyValueList title="Kailey Olson" items={items} />
+        {/* <div>Selected Contact</div> */}
+        <div className="flex justify-end">
+          <AppLink
+            text="View Authenticate Questions"
+            location="/authenticate"
+          />
+        </div>
       </RightSection>
     </Sections>
   )

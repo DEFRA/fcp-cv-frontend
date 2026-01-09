@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AppLink snapshot > matches the rendered structure 1`] = `"<a class="text-blue-700 underline underline-offset-2 hover:text-blue-900 visited:text-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2" href="/authenticate">View Authenticate Questions</a>"`;
