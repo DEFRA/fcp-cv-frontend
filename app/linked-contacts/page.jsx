@@ -1,5 +1,6 @@
 'use client'
 
+import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import {
   LeftSection,
   RightSection,
@@ -26,13 +27,19 @@ export default function LinkedContactsPage() {
     window.alert(JSON.stringify(row))
   }
 
+  const items = {
+    CRN: '8562286973',
+    'Full Name:': 'Ms. Kailey Bridget Olson',
+    'Role:': 'Business Partner'
+  }
+
   return (
     <Sections srTitle="Linked Contacts">
       <LeftSection srTitle="Contacts list">
         <Table data={data} columns={columns} onRowClick={handleRowClick} />
       </LeftSection>
       <RightSection srTitle="Selected contact">
-        <div>Selected Contact</div>
+        <KeyValueList title="Kailey Olson" items={items} />
       </RightSection>
     </Sections>
   )
