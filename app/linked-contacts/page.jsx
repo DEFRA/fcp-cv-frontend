@@ -28,7 +28,7 @@ export default function LinkedContactsPage() {
   }
 
   const items = {
-    'CRN:': '8562286973',
+    CRN: '8562286973',
     'Full Name:': 'Ms. Kailey Bridget Olson',
     'Role:': 'Business Partner'
   }
