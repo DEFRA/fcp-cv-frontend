@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import { useSearchParams } from 'next/navigation.js'
 import { Suspense, useId, useState } from 'react'
 
 function SortArrow({ direction }) {
@@ -163,6 +164,14 @@ function TableInner({
     enableSorting
   })
 
+  const searchParams = useSearchParams()
+
+  function updateCrn(crn) {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('crn', crn)
+    window.history.pushState(null, '', `?${params.toString()}`)
+  }
+
   return (
     <div className="overflow-x-auto">
       {enableSearching && (
@@ -189,11 +198,15 @@ function TableInner({
                 </td>
               </tr>
             ) : (
-              table
-                .getRowModel()
-                .rows.map((row) => (
-                  <Row key={row.id} row={row} onRowClick={onRowClick} />
-                ))
+              table.getRowModel().rows.map((row) => (
+                <Row
+                  key={row.id}
+                  row={row}
+                  onRowClick={() => {
+                    updateCrn(row.original.crn)
+                  }}
+                />
+              ))
             )}
           </tbody>
         </table>

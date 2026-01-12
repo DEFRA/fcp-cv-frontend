@@ -1,4 +1,9 @@
+import { headers } from 'next/headers'
 import Link from 'next/link'
+
+import { SignInButton } from '@/components/auth/sign-in-button.jsx'
+import { auth } from '@/lib/auth'
+import { redirect } from 'next/navigation.js'
 
 const businessLinks = [
   {
@@ -38,12 +43,22 @@ const customerLinks = [
   }
 ]
 
-export default function ConsolidatedViewPage() {
+export default async function ConsolidatedViewPage() {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+
+  if (!session) {
+    redirect('/sign-in')
+  }
+
   return (
     <div className="m-10">
       <div>
         <h1 className="text-3xl font-bold mb-5">Consolidated View</h1>
         <h2 className="text-xl font-semibold mb-3">Apps</h2>
+
+        <SignInButton email={session?.user?.email} />
 
         <div className="flex gap-10">
           <div>

@@ -1,5 +1,3 @@
-'use client'
-
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import AppLink from '@/components/link/AppLink'
 import {
@@ -7,27 +5,13 @@ import {
   RightSection,
   Sections
 } from '@/components/sections/sections'
-import Table from '@/components/table/Table'
+import {
+  LinkedContactsList,
+  LinkedContactsListSkeleton
+} from 'linked-contacts/linked-contacts-list.jsx'
+import { Suspense } from 'react'
 
-export default function LinkedContactsPage() {
-  const data = [
-    { firstName: 'Merl', lastName: 'Kemmer', crn: '1103020285' },
-    { firstName: 'Kailey', lastName: 'Olson', crn: '8562286973' },
-    { firstName: 'Yolanda', lastName: 'Sawayn-Cummerata', crn: '1638563942' },
-    { firstName: 'Zetta', lastName: 'Hayes-Witting', crn: '3170633316' },
-    { firstName: 'Nona', lastName: 'Ward', crn: '1343571956' }
-  ]
-
-  const columns = [
-    { header: 'CRN', accessorKey: 'crn' },
-    { header: 'First Name', accessorKey: 'firstName' },
-    { header: 'Last Name', accessorKey: 'lastName' }
-  ]
-
-  const handleRowClick = (row) => {
-    window.alert(JSON.stringify(row))
-  }
-
+export default async function LinkedContactsPage() {
   const items = {
     CRN: '8562286973',
     'Full Name:': 'Ms. Kailey Bridget Olson',
@@ -37,7 +21,9 @@ export default function LinkedContactsPage() {
   return (
     <Sections srTitle="Linked Contacts">
       <LeftSection srTitle="Contacts list">
-        <Table data={data} columns={columns} onRowClick={handleRowClick} />
+        <Suspense fallback={<LinkedContactsListSkeleton />}>
+          <LinkedContactsList />
+        </Suspense>
       </LeftSection>
       <RightSection srTitle="Selected contact">
         <KeyValueList title="Kailey Olson" items={items} />
