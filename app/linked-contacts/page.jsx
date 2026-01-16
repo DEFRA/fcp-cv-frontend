@@ -2,6 +2,7 @@
 
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import AppLink from '@/components/link/AppLink'
+import { notification } from '@/components/notification/Notifications'
 import {
   LeftSection,
   RightSection,
@@ -25,7 +26,20 @@ export default function LinkedContactsPage() {
   ]
 
   const handleRowClick = (row) => {
-    window.alert(JSON.stringify(row))
+    const random = Math.random()
+    if (random < 0.3) {
+      notification.error(
+        `Error: Selected contact: ${row.firstName} ${row.lastName} (${row.crn})`
+      )
+    } else if (random < 0.6) {
+      notification.warning(
+        `Warning: Selected contact: ${row.firstName} ${row.lastName} (${row.crn})`
+      )
+    } else {
+      notification.info(
+        `Info: Selected contact: ${row.firstName} ${row.lastName} (${row.crn})`
+      )
+    }
   }
 
   const items = {
