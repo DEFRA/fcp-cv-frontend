@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "lint": "eslint . && prettier --check .",
     "start": "node server.js",
     "test": "vitest run --coverage",
@@ -21,6 +21,7 @@
   "dependencies": {
     "@elastic/ecs-pino-format": "1.5.0",
     "@tanstack/react-table": "8.21.3",
+    "better-auth": "1.4.11",
     "next": "16.0.10",
     "pino": "10.1.0",
     "pino-http": "11.0.0",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@axe-core/cli": "4.10.0",
     "@tailwindcss/postcss": "4.1.17",
+    "@types/react": "19.2.8",
     "@vitest/coverage-v8": "4.0.15",
     "clsx": "2.1.1",
     "eslint": "9.39.1",
