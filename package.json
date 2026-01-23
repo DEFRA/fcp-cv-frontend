@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "lint": "eslint . && prettier --check .",
     "start": "node server.js",
     "test": "vitest run --coverage",
@@ -19,8 +19,10 @@
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
   "dependencies": {
+    "@azure/msal-node": "5.0.2",
     "@elastic/ecs-pino-format": "1.5.0",
     "@tanstack/react-table": "8.21.3",
+    "iron-session": "8.0.4",
     "next": "16.0.10",
     "pino": "10.1.0",
     "pino-http": "11.0.0",
