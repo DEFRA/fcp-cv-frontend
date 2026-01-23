@@ -1,4 +1,6 @@
+import { auth, signIn, signOut } from '@/lib/auth'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
 const businessLinks = [
   {
@@ -38,12 +40,44 @@ const customerLinks = [
   }
 ]
 
+export async function SignIn() {
+  const session = await auth()
+
+  if (!session) {
+    return (
+      <form
+        action={async () => {
+          'use server'
+          await signIn('microsoft-entra-id')
+        }}
+      >
+        <button type="submit">Sign in</button>
+      </form>
+    )
+  }
+
+  return (
+    <form
+      action={async () => {
+        'use server'
+        await signOut('microsoft-entra-id')
+      }}
+    >
+      <button type="submit">Sign out {session?.user?.email}</button>
+    </form>
+  )
+}
+
 export default function ConsolidatedViewPage() {
   return (
     <div className="m-10">
       <div>
         <h1 className="text-3xl font-bold mb-5">Consolidated View</h1>
         <h2 className="text-xl font-semibold mb-3">Apps</h2>
+
+        <Suspense>
+          <SignIn />
+        </Suspense>
 
         <div className="flex gap-10">
           <div>
