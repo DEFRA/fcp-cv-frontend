@@ -10,6 +10,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint . && prettier --check .",
+    "lint:fix": "eslint . --fix && prettier --log-level warn --write .",
     "start": "node server.js",
     "test": "vitest run --coverage",
     "test:accessibility": "axe ${TEST_ENVIRONMENT_ROOT_URL:-http://localhost:3001}",
