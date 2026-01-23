@@ -1,4 +1,5 @@
 import path from 'path'
+import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -11,7 +12,8 @@ export default defineConfig({
       reportsDirectory: './coverage',
       reporter: ['text', 'lcov'],
       include: 'app/**/*.{js,jsx}'
-    }
+    },
+    env: loadEnv('test', process.cwd(), '')
   },
   esbuild: {
     loader: 'jsx',
@@ -20,6 +22,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/components': path.resolve(__dirname, 'app', '_components'),
+      '@/hooks': path.resolve(__dirname, 'app', '_hooks'),
       '@/lib': path.resolve(__dirname, 'app', '_lib')
     }
   }
