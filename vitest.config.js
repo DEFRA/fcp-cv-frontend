@@ -23,7 +23,8 @@ export default defineConfig({
     alias: {
       '@/components': path.resolve(__dirname, 'app', '_components'),
       '@/hooks': path.resolve(__dirname, 'app', '_hooks'),
-      '@/lib': path.resolve(__dirname, 'app', '_lib')
+      '@/lib': path.resolve(__dirname, 'app', '_lib'),
+      '@/config': path.resolve(__dirname, 'config.js')
     }
   }
 })

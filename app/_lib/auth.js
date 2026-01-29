@@ -1,10 +1,23 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose'
 
-const JWKS_URL = process.env.AUTH_JWKS_URL
-const ISSUER = process.env.AUTH_AUTHORITY
-const AUDIENCE = process.env.AUTH_CLIENT_ID
+import { config } from '@/config'
 
-const JWKS = createRemoteJWKSet(new URL(JWKS_URL))
+export const clientAuthConfig = {
+  authority: config.get('userAuth.authority'),
+  clientId: config.get('userAuth.clientId'),
+  redirectUri: config.get('userAuth.redirectUri')
+}
+
+const JWKS_URL = config.get('userAuth.jwksUrl')
+const ISSUER = config.get('userAuth.authority')
+const AUDIENCE = config.get('userAuth.clientId')
+
+const JWKS = createRemoteJWKSet(
+  new URL(
+    JWKS_URL ||
+      'https://login.microsoftonline.com/{tenantId}/discovery/v2.0/keys'
+  )
+)
 
 export async function getEmailFromToken(headers) {
   const authHeader = headers.get('authorization')

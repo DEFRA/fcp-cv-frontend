@@ -7,8 +7,7 @@ import { NextResponse } from 'next/server'
  * DAL requires passing an app token and the email of the user
  */
 export async function GET() {
-  const email = await getEmailFromToken(await headers())
-  console.log(email)
+  await getEmailFromToken(await headers())
 
   // Fetch data from the DAL:
   // const data = fetch('http://fcp-dal-api', {

@@ -13,16 +13,25 @@ import next from 'next'
 import pino from 'pino'
 import { pinoHttp } from 'pino-http'
 
+import { config } from './config.js'
+
 const logger = pino({
   ...ecsFormat()
 })
 
-export const httpLogger = pinoHttp({
+const httpLogger = pinoHttp({
   logger,
   autoLogging: {
     ignore: (req) => req.url === '/health' || req.url.startsWith('/_next')
   }
 })
+
+try {
+  config.validate({ allowed: 'strict' })
+} catch (error) {
+  logger.error(`Startup failed. Invalid configuration: ${error.message}`)
+  process.exit(1)
+}
 
 const port = parseInt(process.env.PORT || '3000', 10)
 
