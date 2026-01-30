@@ -11,6 +11,8 @@ services:
       interval: 3s
       timeout: 2s
       retries: 5
+    environment:
+      USER_AUTH_DISABLED: 'true'
 
 ################################################################################
 
