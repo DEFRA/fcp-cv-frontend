@@ -1,5 +1,7 @@
-import { useIsAuthenticated, useMsal } from '@azure/msal-react'
+import { useMsal } from '@azure/msal-react'
 import useSWR from 'swr'
+
+import { useAuth } from '@/components/auth/auth-provider'
 
 /**
  * Example of how to use MSAL token when making requests,
@@ -12,25 +14,36 @@ import useSWR from 'swr'
  * if the url is `null` it waits for the url to change before running the request
  */
 export function useData(url) {
-  const isAuthenticated = useIsAuthenticated()
   const { instance, accounts, inProgress } = useMsal()
+  const { isDisabled } = useAuth()
 
-  const response = useSWR(isAuthenticated ? url : null, async () => {
-    const { idToken } = await instance.acquireTokenSilent({
-      account: accounts[0]
-    })
+  const key = url && (isDisabled || accounts.length > 0) ? url : null
 
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${idToken}`
-      }
-    })
+  const fetcher = async (resource) => {
+    let headers = {}
 
-    return response.json()
-  })
+    if (!isDisabled) {
+      const { idToken } = await instance.acquireTokenSilent({
+        scopes: [],
+        account: accounts[0]
+      })
+
+      headers = { Authorization: `Bearer ${idToken}` }
+    }
+
+    const res = await fetch(resource, { headers })
+
+    if (!res.ok) {
+      throw new Error(`Request failed: ${res.status} ${res.statusText}`)
+    }
+
+    return res.json()
+  }
+
+  const swr = useSWR(key, fetcher)
 
   return {
-    ...response,
-    isLoading: inProgress === 'startup' || response.isLoading
+    ...swr,
+    isLoading: inProgress !== 'none' || swr.isLoading
   }
 }

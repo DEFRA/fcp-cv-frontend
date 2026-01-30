@@ -19,7 +19,14 @@ USER node
 COPY --chown=node:node package*.json ./
 RUN npm ci
 
-COPY --chown=node:node next.config.js postcss.config.js jsconfig.json config.js server.js ./
+COPY --chown=node:node \
+    config.js \ 
+    instrumentation.js \
+    jsconfig.json \ 
+    next.config.js \
+    postcss.config.js \
+    server.js \
+    ./
 COPY --chown=node:node app ./app
 
 RUN NODE_ENV=production npm run build
@@ -39,11 +46,15 @@ USER root
 RUN apk add --no-cache curl
 
 USER node
-COPY --from=development /home/node/package*.json ./
 COPY --from=development /home/node/.next ./.next
-COPY --from=development /home/node/server.js ./
-COPY --from=development /home/node/next.config.js ./
-COPY --from=development /home/node/config.js ./
+
+COPY --from=development \
+    /home/node/config.js \
+    /home/node/instrumentation.js \
+    /home/node/next.config.js \
+    /home/node/package*.json \
+    /home/node/server.js \
+    ./
 
 RUN npm ci --omit=dev
 

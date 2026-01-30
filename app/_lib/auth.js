@@ -3,23 +3,26 @@ import { createRemoteJWKSet, jwtVerify } from 'jose'
 import { config } from '@/config'
 
 export const clientAuthConfig = {
+  disabled: config.get('userAuth.disabled'),
   authority: config.get('userAuth.authority'),
   clientId: config.get('userAuth.clientId'),
   redirectUri: config.get('userAuth.redirectUri')
 }
 
-const JWKS_URL = config.get('userAuth.jwksUrl')
-const ISSUER = config.get('userAuth.authority')
 const AUDIENCE = config.get('userAuth.clientId')
+const ISSUER = config.get('userAuth.authority')
+const JWKS_URL = config.get('userAuth.jwksUrl')
 
-const JWKS = createRemoteJWKSet(
-  new URL(
-    JWKS_URL ||
-      'https://login.microsoftonline.com/{tenantId}/discovery/v2.0/keys'
-  )
-)
-
+let cachedJWKS = null
+function getJWKS() {
+  if (!cachedJWKS) {
+    cachedJWKS = createRemoteJWKSet(new URL(JWKS_URL))
+  }
+  return cachedJWKS
+}
 export async function getEmailFromToken(headers) {
+  if (clientAuthConfig.disabled) return ''
+
   const authHeader = headers.get('authorization')
 
   if (!authHeader) throw new Error('no auth header')
@@ -29,7 +32,7 @@ export async function getEmailFromToken(headers) {
 
   const token = match[1]
 
-  const { payload } = await jwtVerify(token, JWKS, {
+  const { payload } = await jwtVerify(token, getJWKS(), {
     issuer: ISSUER,
     audience: AUDIENCE
   })

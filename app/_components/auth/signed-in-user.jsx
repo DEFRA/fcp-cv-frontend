@@ -2,9 +2,16 @@
 
 import { useIsAuthenticated, useMsal } from '@azure/msal-react'
 
+import { useAuth } from './auth-provider'
+
 export function SignedInUser() {
   const isAuthenticated = useIsAuthenticated()
   const { instance, accounts } = useMsal()
+  const { isDisabled } = useAuth()
+
+  if (isDisabled) {
+    return <>User authentication disabled</>
+  }
 
   return (
     <>
