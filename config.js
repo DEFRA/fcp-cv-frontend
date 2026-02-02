@@ -4,7 +4,7 @@ export const config = convict({
   userAuth: {
     disabled: {
       doc: 'Option to disable user authentication for local dev/testing',
-      format: String,
+      format: Boolean,
       default: null,
       nullable: true,
       env: 'USER_AUTH_DISABLED'

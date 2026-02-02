@@ -8,18 +8,19 @@ import { createContext, useContext, useState } from 'react'
 const context = createContext({ isDisabled: false })
 
 export function AuthProvider({ children, config }) {
-  const [instance] = useState(
-    () =>
-      new PublicClientApplication({
-        auth: {
-          clientId: config.clientId,
-          authority: config.authority,
-          redirectUri: config.redirectUri
-        },
-        cache: {
-          cacheLocation: 'localStorage'
-        }
-      })
+  const [instance] = useState(() =>
+    config.disabled
+      ? null
+      : new PublicClientApplication({
+          auth: {
+            clientId: config.clientId,
+            authority: config.authority,
+            redirectUri: config.redirectUri
+          },
+          cache: {
+            cacheLocation: 'localStorage'
+          }
+        })
   )
 
   return (
