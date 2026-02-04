@@ -21,7 +21,7 @@ function getJWKS() {
   return cachedJWKS
 }
 export async function getEmailFromToken(headers) {
-  if (clientAuthConfig.disabled) return ''
+  if (clientAuthConfig.disabled) return config.get('dal.email')
 
   const authHeader = headers.get('authorization')
 

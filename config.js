@@ -37,5 +37,20 @@ export const config = convict({
       env: 'USER_AUTH_CLIENT_ID',
       nullable: process.env.USER_AUTH_DISABLED === 'true'
     }
+  },
+  dal: {
+    url: {
+      doc: 'URL for Data Access Layer (DAL)',
+      format: String,
+      default: null,
+      env: 'DAL_URL'
+    },
+    email: {
+      doc: 'Email address to send to DAL for local dev/testing when auth is disabled',
+      format: String,
+      default: null,
+      env: 'DAL_EMAIL',
+      nullable: process.env.USER_AUTH_DISABLED !== 'true'
+    }
   }
 })

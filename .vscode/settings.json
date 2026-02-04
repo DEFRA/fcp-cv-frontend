@@ -39,5 +39,6 @@
     ".next"
   ],
   "cSpell.language": "en,en-GB",
-  "javascript.preferences.importModuleSpecifier": "non-relative"
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifierEnding": "minimal"
 }
