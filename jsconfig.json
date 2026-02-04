@@ -3,7 +3,9 @@
     "baseUrl": "app/",
     "paths": {
       "@/components/*": ["_components/*"],
-      "@/lib/*": ["_lib/*"]
+      "@/hooks/*": ["_hooks/*"],
+      "@/lib/*": ["_lib/*"],
+      "@/config": ["../config.js"]
     }
   }
 }

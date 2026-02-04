@@ -17,7 +17,7 @@ const logger = pino({
   ...ecsFormat()
 })
 
-export const httpLogger = pinoHttp({
+const httpLogger = pinoHttp({
   logger,
   autoLogging: {
     ignore: (req) => req.url === '/health' || req.url.startsWith('/_next')

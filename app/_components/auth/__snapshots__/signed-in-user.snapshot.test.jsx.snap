@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SignedInUser snapshot > renders lowercase username button when authenticated 1`] = `"<button>john.smith@email.com</button>"`;
+
+exports[`SignedInUser snapshot > renders nothing when authenticated but no accounts exist 1`] = `"<button></button>"`;
+
+exports[`SignedInUser snapshot > renders nothing when user is not authenticated 1`] = `""`;
