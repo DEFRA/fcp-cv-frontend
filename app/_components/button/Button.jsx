@@ -31,23 +31,32 @@ function ExternalLinkIcon({ className }) {
   )
 }
 
-export function Button({ children, href }) {
-  const styles = cn(
-    'inline-flex items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-10 py-6 text-lg font-semibold text-gray-950 shadow-sm transition-colors',
-    'hover:bg-gray-50 active:bg-gray-100',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2',
-    'disabled:cursor-not-allowed disabled:opacity-60'
-  )
+const className = cn(
+  'inline-flex items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-10 py-6 text-lg font-semibold text-gray-950 shadow-sm transition-colors cursor-pointer',
+  'hover:bg-gray-50 active:bg-gray-100',
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2',
+  'disabled:cursor-not-allowed disabled:opacity-60'
+)
 
+export function ExternalLinkButton({ href, children, ...props }) {
   return (
     <Link
       href={href}
-      className={styles}
       target="_blank"
       rel="noreferrer noopener"
+      className={className}
+      {...props}
     >
-      <span>{children}</span>
+      {children}
       <ExternalLinkIcon className="shrink-0" />
     </Link>
+  )
+}
+
+export function Button({ onClick, children, ...props }) {
+  return (
+    <button onClick={onClick} className={className} {...props}>
+      {children}
+    </button>
   )
 }

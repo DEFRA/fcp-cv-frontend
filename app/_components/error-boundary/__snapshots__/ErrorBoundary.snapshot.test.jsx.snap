@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ErrorBoundary snapshot > renders children when there is no error 1`] = `"<div data-testid="child">OK</div>"`;
+
+exports[`ErrorBoundary snapshot > renders fallback UI when there is an error 1`] = `
+"<title>Something went wrong</title><div class="h-full group"><h1 class="sr-only">Something went wrong</h1><div class="h-full grid grid-rows-[auto_1fr] grid-cols-[calc(100%/3)_auto]"><section class="p-5 row-start-1 col-span-2 border-primary group-has-[[data-slot=&quot;left&quot;],[data-slot=&quot;right&quot;]]:border-b" data-slot="full"><h2>Something went wrong</h2><div class="mt-2 text-sm text-slate-700">The page hit an unexpected error. You can try refreshing to recover from this error.<details class="mt-2 text-sm text-slate-700"><summary class="cursor-pointer font-medium">Error details</summary><blockquote class="mt-1 border-l-4 border-slate-300 bg-slate-50 px-4 py-2"><pre class="whitespace-pre-wrap m-0 text-xs">{
+  &quot;error&quot;: {},
+  &quot;userAgent&quot;: &quot;test-user-agent&quot;,
+  &quot;platform&quot;: &quot;test-platform&quot;,
+  &quot;language&quot;: &quot;test-language&quot;,
+  &quot;timestamp&quot;: &quot;2020-01-01T00:00:00.000Z&quot;
+}</pre></blockquote></details></div><div class="mt-4"><button class="inline-flex items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-10 py-6 text-lg font-semibold text-gray-950 shadow-sm transition-colors cursor-pointer hover:bg-gray-50 active:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">Refresh</button></div></section></div></div>"
+`;
