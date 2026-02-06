@@ -1,6 +1,7 @@
 'use client'
 
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
+import AppLink from '@/components/link/AppLink'
 import { useSearchParams } from '@/hooks/search-params'
 import { useDal } from '@/hooks/use-dal'
 import { useState } from 'react'
@@ -16,9 +17,11 @@ export function LinkedContactsAuthenticateQuestions() {
 
   if (!visible) {
     return (
-      <button onClick={() => setVisible(true)}>
-        View Authenticate Questions
-      </button>
+      <div className="text-right">
+        <AppLink onClick={() => setVisible(true)}>
+          View Authenticate Questions
+        </AppLink>
+      </div>
     )
   }
 
