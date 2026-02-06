@@ -13,12 +13,14 @@ async function dalFetcher(url, headers = {}) {
   return response.json()
 }
 
-export function useDal(urlParts) {
+export function useDal(urlParts, otherThings = []) {
   const { instance, accounts, inProgress } = useMsal()
   const { isDisabled } = useAuth()
 
   const key =
-    urlParts.every(Boolean) && (isDisabled || accounts.length > 0)
+    urlParts.every(Boolean) &&
+    otherThings.every(Boolean) &&
+    (isDisabled || accounts.length > 0)
       ? urlParts.join('/')
       : null
 

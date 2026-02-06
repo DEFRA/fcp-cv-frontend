@@ -4,6 +4,7 @@ import { Button } from '@/components/button/Button'
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import { useSearchParams } from '@/hooks/search-params'
 import { useDal } from '@/hooks/use-dal'
+import { LinkedContactsAuthenticateQuestions } from 'linked-contacts/linked-contacts-authenticate-questions'
 
 export function LinkedContactsDetails() {
   const { searchParams } = useSearchParams()
@@ -12,12 +13,6 @@ export function LinkedContactsDetails() {
     'linked-contacts',
     'details',
     searchParams.get('sbi'),
-    searchParams.get('crn')
-  ])
-
-  const { data: authenticateData } = useDal([
-    'linked-contacts',
-    'authenticate-questions',
     searchParams.get('crn')
   ])
 
@@ -34,12 +29,7 @@ export function LinkedContactsDetails() {
             items={data?.customerDetails || {}}
           />
         </div>
-        <div className="w-3/4">
-          <KeyValueList
-            title={'Authenticate questions'}
-            items={authenticateData?.items || {}}
-          />
-        </div>
+        <LinkedContactsAuthenticateQuestions key={searchParams.get('crn')} />
         <div className="w-3/4">
           <KeyValueList title={'Permissions'} items={data?.permissions || {}} />
         </div>
