@@ -206,19 +206,18 @@ Instructions for setting up SonarCloud can be found in [sonar-project.properties
 
 A convenience script is provided to run automated tests in a containerised
 environment. This will rebuild images before running tests via docker compose,
-using `docker-compose.yaml`.
+using `compose.yaml`.
 The command given to `docker compose run` may be customised by passing
 arguments to the test script.
-
-Examples:
-
-_Run accessibility tests_
-`npm run test:accessibility:docker`
 
 ### Running accessibility tests
 
 A docker compose exists for running an
-[AXE](https://www.npmjs.com/package/@axe-core/cli).
+[AXE](https://www.npmjs.com/package/@axe-core/cli).Run:
+
+```bash
+npm run test:accessibility:docker
+```
 
 ## Licence
 
