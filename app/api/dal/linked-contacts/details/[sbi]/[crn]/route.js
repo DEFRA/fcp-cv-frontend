@@ -46,12 +46,18 @@ export async function GET(_, ctx) {
 
   const name = response.data.customer.info.name
 
+  const permissions = {}
+  response.data.business.customer.permissionGroups.forEach((item) => {
+    permissions[item.id] = item.level
+  })
+
   return NextResponse.json({
     displayName: [name.first, name.last].join(' '),
-    items: {
+    customerDetails: {
       CRN: response.data.customer.crn,
       'Full Name': [name.title, name.first, name.middle, name.last].join(' '),
-      'Role:': response.data.business.customer.role
-    }
+      Role: response.data.business.customer.role
+    },
+    permissions
   })
 }
