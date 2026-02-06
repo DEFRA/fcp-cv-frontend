@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/button/Button'
+import { ExternalLinkButton } from '@/components/button/Button'
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import AppLink from '@/components/link/AppLink'
 import { notification } from '@/components/notification/Notifications'
@@ -52,12 +52,13 @@ export default function LinkedContactsPage() {
       <RightSection srTitle="Selected contact">
         <div className="flex items-start justify-between gap-6">
           <h2 className="text-3xl font-bold">Kailey Olson</h2>
-          <Button href="/customer">View customer</Button>
+          <ExternalLinkButton href="/customer">
+            View customer
+          </ExternalLinkButton>
         </div>
         <div className="w-1/2">
           <KeyValueList items={items} />
         </div>
-        {/* <div>Selected Contact</div> */}
         <div className="flex justify-end">
           <AppLink
             text="View Authenticate Questions"
