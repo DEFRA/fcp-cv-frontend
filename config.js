@@ -37,5 +37,14 @@ export const config = convict({
       env: 'USER_AUTH_CLIENT_ID',
       nullable: process.env.USER_AUTH_DISABLED === 'true'
     }
+  },
+  iframeMessenger: {
+    crmOrigin: {
+      doc: 'The origin of the CRM instance',
+      format: String,
+      default: null,
+      env: 'IFRAME_MESSENGER_CRM_ORIGIN',
+      nullable: true
+    }
   }
 })
