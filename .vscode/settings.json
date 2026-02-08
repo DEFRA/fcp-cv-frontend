@@ -2,11 +2,11 @@
   "files.autoSave": "onFocusChange",
   "editor.codeActions.triggerOnFocusChange": true,
   "editor.codeActionsOnSave": {
-    "source.addMissingImports.ts": "explicit",
-    "source.organizeImports": "explicit",
-    "source.removeUnusedImports": "explicit",
-    "source.fixAll.eslint": "always",
-    "source.sortImports": "explicit"
+    // "source.addMissingImports.ts": "explicit",
+    // "source.organizeImports": "explicit",
+    // "source.removeUnusedImports": "explicit",
+    "source.fixAll.eslint": "always"
+    // "source.sortImports": "explicit"
   },
   "prettier.enable": true,
   "prettier.configPath": ".prettierrc.js",
@@ -18,14 +18,19 @@
   "cSpell.words": [
     "autoprefixer",
     "booleanise",
+    "callto",
     "defra",
     "defradigital",
+    "msal",
     "nationalarchives",
     "nodemon",
+    "nvmrc",
     "pino",
     "sbis",
     "sitiagri",
     "sonarcloud",
+    "sonarqube",
+    "Toastify",
     "TRUSTSTORE",
     "uprn"
   ],
