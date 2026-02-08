@@ -1,0 +1,21 @@
+import { render } from 'vitest-browser-react'
+
+import { notification } from '@/components/notification/Notifications'
+import RootLayout from './layout.jsx'
+
+describe('RootLayout component tests', () => {
+  it('renders the RootLayout component with children', async () => {
+    const { getByText } = await render(
+      <RootLayout>
+        <div>Test child content</div>
+      </RootLayout>
+    )
+
+    await expect.element(getByText('Test child content')).toBeInTheDocument()
+
+    notification('Test notification in RootLayout')
+    await expect
+      .element(getByText('Test notification in RootLayout'))
+      .toBeInTheDocument()
+  })
+})
