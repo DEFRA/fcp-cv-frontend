@@ -28,7 +28,7 @@ function SortArrow({ direction }) {
   )
 }
 
-function SearchBar({ value = '', onChange = () => {} }) {
+function SearchBar({ value, onChange }) {
   const uniqueId = `search-${useId()}`
 
   return (

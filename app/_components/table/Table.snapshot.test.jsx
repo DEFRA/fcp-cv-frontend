@@ -14,18 +14,9 @@ describe('Table snapshot', () => {
     ]
 
     const defaultColumns = [
-      {
-        header: 'First name',
-        accessorKey: 'firstName'
-      },
-      {
-        header: 'Last name',
-        accessorKey: 'lastName'
-      },
-      {
-        header: 'Age',
-        accessorKey: 'age'
-      }
+      { header: 'First name', accessorKey: 'firstName' },
+      { header: 'Last name', accessorKey: 'lastName' },
+      { header: 'Age', accessorKey: 'age' }
     ]
 
     const html = normalizeHtml(
