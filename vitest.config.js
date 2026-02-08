@@ -1,23 +1,11 @@
-import path from 'path'
+import path from 'node:path'
 import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'node',
-    clearMocks: true,
-    coverage: {
-      provider: 'v8',
-      reportsDirectory: './coverage',
-      reporter: ['text', 'lcov'],
-      include: 'app/**/*.{js,jsx}'
-    },
-    env: loadEnv('test', process.cwd(), '')
-  },
   esbuild: {
-    loader: 'jsx',
-    jsx: 'automatic'
+    jsx: 'automatic',
+    loader: 'jsx'
   },
   resolve: {
     alias: {
@@ -26,5 +14,21 @@ export default defineConfig({
       '@/lib': path.resolve(__dirname, 'app', '_lib'),
       '@/config': path.resolve(__dirname, 'config.js')
     }
+  },
+  test: {
+    clearMocks: true,
+    coverage: {
+      exclude: ['app/**/*.test.{js,jsx}', 'app/**/*.snapshot.test.jsx'],
+      include: 'app/**/*.{js,jsx}',
+      provider: 'v8',
+      reporter: [['json', { file: 'server-coverage.json' }]]
+    },
+    env: loadEnv('test', process.cwd(), ''),
+    environment: 'node',
+    include: ['app/**/*.test.js', 'app/**/*.snapshot.test.jsx'],
+    globals: true,
+    reporters: ['default'],
+    outputFile: { blob: 'coverage/merge/server-coverage.blob' },
+    timeout: 1000
   }
 })
