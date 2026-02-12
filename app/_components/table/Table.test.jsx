@@ -2,7 +2,6 @@ import { userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
 
 import Table from '@/components/table/Table'
-import { describe, expect } from 'vitest'
 
 describe('Table component tests', () => {
   const defaultData = [

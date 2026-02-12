@@ -48,3 +48,5 @@ export const config = convict({
     }
   }
 })
+
+// TODO: config.validate({ allowed: 'strict' })

@@ -3,7 +3,6 @@
 import { ExternalLinkButton } from '@/components/button/Button'
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import AppLink from '@/components/link/AppLink'
-import { notification } from '@/components/notification/Notifications'
 import {
   LeftSection,
   RightSection,
