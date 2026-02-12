@@ -4,6 +4,16 @@ import { notification } from '@/components/notification/Notifications'
 import RootLayout from './layout.jsx'
 
 describe('RootLayout component tests', () => {
+  beforeAll(() => {
+    vitest.mock('@/config', () => {
+      return {
+        config: {
+          get: () => 'http://localhost:3000'
+        }
+      }
+    })
+  })
+
   it('renders the RootLayout component with children', async () => {
     const { getByText } = await render(
       <RootLayout>
