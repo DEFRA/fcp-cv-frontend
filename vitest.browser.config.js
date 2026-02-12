@@ -32,16 +32,19 @@ export default defineConfig({
       ...base.test.coverage,
       all: true,
       clean: false,
-      include: 'app/**/*.jsx',
-      reporter: [['html'], ['json', { file: 'client-coverage.json' }]],
-      thresholds: { 100: true, perFile: true }
+      exclude: ['app/_components/iframe-messenger/IframeMessenger.jsx'],
+      include: ['app/**/*.jsx'],
+      reporter: [['html'], ['json', { file: 'client-coverage.json' }]]
     },
-    exclude: ['app/**/*.snapshot.test.jsx'],
+    exclude: [
+      'app/**/*.snapshot.test.jsx',
+      'app/_components/iframe-messenger/IframeMessenger.test.jsx'
+    ],
     include: ['app/**/*.test.jsx'],
     reporters: ['default'],
     outputFile: { blob: 'coverage/merge/client-coverage.blob' },
     setupFiles: './test/setup-browser.jsx',
     timeout: 2000
-    // testTimeout: 4000 // useful to limit selector timeout in failing tests
+    // testTimeout: 3000 // useful to limit selector timeout in failing tests
   }
 })

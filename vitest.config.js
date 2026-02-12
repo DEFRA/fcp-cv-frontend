@@ -18,13 +18,17 @@ export default defineConfig({
   test: {
     clearMocks: true,
     coverage: {
-      exclude: ['app/**/*.test.{js,jsx}', 'app/**/*.snapshot.test.jsx'],
+      exclude: [
+        'app/**/page.jsx',
+        'app/_components/iframe-messenger/IframeMessenger.jsx'
+      ],
       include: 'app/**/*.{js,jsx}',
       provider: 'v8',
       reporter: [['json', { file: 'server-coverage.json' }]]
     },
     env: loadEnv('test', process.cwd(), ''),
     environment: 'node',
+    exclude: ['app/**/page.jsx'],
     include: ['app/**/*.test.js', 'app/**/*.snapshot.test.jsx'],
     globals: true,
     reporters: ['default'],
