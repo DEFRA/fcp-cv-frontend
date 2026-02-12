@@ -22,7 +22,7 @@ export class ErrorBoundary extends React.Component {
     if (!this.state.hasError) return this.props.children
 
     return (
-      <Sections srTitle="Something went wrong">
+      <Sections>
         <FullWidthSection>
           <h2>Something went wrong</h2>
           <div className="mt-2 text-sm text-slate-700">
