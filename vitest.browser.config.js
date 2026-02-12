@@ -11,6 +11,7 @@ export default defineConfig({
   expect: {
     timeout: 2000
   },
+  optimizeDeps: { include: ['react/jsx-dev-runtime'] },
   resolve: {
     ...base.resolve,
     alias: {
