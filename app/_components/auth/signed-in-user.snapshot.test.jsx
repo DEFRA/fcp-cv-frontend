@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { useIsAuthenticated, useMsal } from '@azure/msal-react'
 import { renderToString } from 'react-dom/server'
 

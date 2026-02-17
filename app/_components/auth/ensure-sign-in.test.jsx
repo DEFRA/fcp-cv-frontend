@@ -1,8 +1,9 @@
+import { vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { EnsureSignIn } from '@/components/auth/ensure-sign-in'
 
-const login = vitest.fn()
+const login = vi.fn()
 const msalSession = { login, error: 'not-logged-in' }
 
 describe('EnsureSignIn component tests', () => {

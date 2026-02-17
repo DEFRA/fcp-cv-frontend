@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import * as msalReact from '@azure/msal-react'
 import { renderToString } from 'react-dom/server'
 

@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import * as msalReact from '@azure/msal-react'
 import { render } from 'vitest-browser-react'
 
@@ -39,7 +40,6 @@ describe('AuthProvider component tests', () => {
     const { getByText } = await render(
       <AuthProvider
         config={{
-          clientId: 'test-client-id',
           authority: 'https://login.microsoftonline.com/test-tenant',
           redirectUri: 'http://localhost:3000'
         }}
@@ -66,7 +66,6 @@ describe('AuthProvider component tests', () => {
     const { getByRole, getByText } = await render(
       <AuthProvider
         config={{
-          clientId: 'test-client-id',
           authority: 'https://login.microsoftonline.com/test-tenant',
           redirectUri: 'http://localhost:3000'
         }}
@@ -103,7 +102,6 @@ describe('AuthProvider component tests', () => {
     const { getByText } = await render(
       <AuthProvider
         config={{
-          clientId: 'test-client-id',
           authority: 'https://login.microsoftonline.com/test-tenant',
           redirectUri: 'http://localhost:3000'
         }}
@@ -114,40 +112,4 @@ describe('AuthProvider component tests', () => {
 
     await expect.element(getByText('Some content')).toBeInTheDocument()
   })
-
-  // it('renders the AuthProvider with children when authentication is disabled', async () => {
-  //   const { getByText } = await render(
-  //     <AuthProvider
-  //       config={{
-  //         disabled: true,
-  //         clientId: 'test-client-id',
-  //         authority: 'https://login.microsoftonline.com/test-tenant-id',
-  //         redirectUri: 'http://localhost'
-  //       }}
-  //     >
-  //       <div>Test child content</div>
-  //     </AuthProvider>
-  //   )
-
-  //   await expect.element(getByText('Test child content')).toBeInTheDocument()
-  // })
-
-  // it('renders the AuthProvider with MsalProvider and EnsureSignIn when authentication is enabled', async () => {
-  //   const { getByText } = await render(
-  //     <AuthProvider
-  //       config={{
-  //         disabled: false,
-  //         clientId: 'test-client-id',
-  //         authority: 'https://login.microsoftonline.com/test-tenant-id',
-  //         redirectUri: 'http://localhost'
-  //       }}
-  //     >
-  //       <div>Test child content</div>
-  //     </AuthProvider>
-  //   )
-
-  //   await expect
-  //     .element(getByText('Mocked ensure sign-in content'))
-  //     .toBeInTheDocument()
-  // })
 })

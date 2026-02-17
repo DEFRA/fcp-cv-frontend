@@ -1,15 +1,16 @@
+import { vi } from 'vitest'
 import { NextRequest } from 'next/server.js'
+
 import { GET } from './route.js'
-import { beforeAll } from 'vitest'
 
 describe('LinkedContactsList API route tests', () => {
   beforeAll(() => {
-    vitest.mock('next/headers.js', () => ({
+    vi.mock('next/headers.js', () => ({
       headers: () => ({
         get: () => 'mocked-token'
       })
     }))
-    vitest.mock('@/lib/auth.js', () => ({
+    vi.mock('@/lib/auth.js', () => ({
       getEmailFromToken: () => 'test@example.com'
     }))
   })

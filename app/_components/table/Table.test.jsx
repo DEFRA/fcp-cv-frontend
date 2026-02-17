@@ -4,15 +4,26 @@ import { render } from 'vitest-browser-react'
 import Table from '@/components/table/Table'
 
 describe('Table component tests', () => {
+  const searchPlaceholder = 'Enter search term'
   const defaultData = [
     { firstName: 'Ada', lastName: 'Lovelace', age: 36 },
     { firstName: 'Grace', lastName: 'Hopper', age: 85 },
     { firstName: 'Alan', lastName: 'Turing', age: 41 }
   ]
+  const adaRowName = Object.values(defaultData[0]).join(' ')
+  const graceRowName = Object.values(defaultData[1]).join(' ')
+  const alanRowName = Object.values(defaultData[2]).join(' ')
+  const adaRowText = adaRowName.replaceAll(' ', '')
+  const graceRowText = graceRowName.replaceAll(' ', '')
+  const alanRowText = alanRowName.replaceAll(' ', '')
+  const firstNameHeading = 'First name'
+  const lastNameHeading = 'Last name'
+  const ageHeading = 'Age'
+  const tableHeadings = [firstNameHeading, lastNameHeading, ageHeading].join('')
   const defaultColumns = [
-    { header: 'First name', accessorKey: 'firstName' },
-    { header: 'Last name', accessorKey: 'lastName' },
-    { header: 'Age', accessorKey: 'age', enableSorting: false }
+    { header: firstNameHeading, accessorKey: 'firstName' },
+    { header: lastNameHeading, accessorKey: 'lastName' },
+    { header: ageHeading, accessorKey: 'age', enableSorting: false }
   ]
 
   it('renders the table component with a message advising no data', async () => {
@@ -28,7 +39,7 @@ describe('Table component tests', () => {
       )
 
       await expect
-        .element(getByPlaceholder('Enter search term'))
+        .element(getByPlaceholder(searchPlaceholder))
         .toBeInTheDocument()
     })
 
@@ -42,7 +53,7 @@ describe('Table component tests', () => {
       )
 
       await expect
-        .element(getByPlaceholder('Enter search term'))
+        .element(getByPlaceholder(searchPlaceholder))
         .not.toBeInTheDocument()
     })
 
@@ -55,18 +66,18 @@ describe('Table component tests', () => {
       expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
 
       // table data filters as search term changes...
-      await userEvent.type(getByPlaceholder('Enter search term'), 'a')
+      await userEvent.type(getByPlaceholder(searchPlaceholder), 'a')
       expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
-      await userEvent.type(getByPlaceholder('Enter search term'), 'ce')
+      await userEvent.type(getByPlaceholder(searchPlaceholder), 'ce')
       expect(rowLocators).toHaveLength(3) // 2 data row + 1 header row
       await expect
-        .element(getByRole('row', { name: 'Ada Lovelace 36' }))
+        .element(getByRole('row', { name: adaRowName }))
         .toBeInTheDocument()
       await expect
-        .element(getByRole('row', { name: 'Grace Hopper 85' }))
+        .element(getByRole('row', { name: graceRowName }))
         .toBeInTheDocument()
       await expect
-        .element(getByRole('row', { name: 'Alan Turing 41' }))
+        .element(getByRole('row', { name: alanRowName }))
         .not.toBeInTheDocument()
     })
 
@@ -75,11 +86,11 @@ describe('Table component tests', () => {
         <Table data={[defaultData[0]]} columns={defaultColumns} />
       )
 
-      const locator = getByRole('row', { name: 'Ada Lovelace 36' })
+      const locator = getByRole('row', { name: adaRowName })
       await expect.element(locator).toBeInTheDocument()
 
       // search for nonexistent data...
-      await userEvent.type(getByPlaceholder('Enter search term'), 'xyz')
+      await userEvent.type(getByPlaceholder(searchPlaceholder), 'xyz')
       await expect.element(locator).not.toBeInTheDocument() // data is filtered out
       await expect.element(getByText('No results found')).toBeInTheDocument() // no data message shown
     })
@@ -97,18 +108,10 @@ describe('Table component tests', () => {
 
       const rowLocators = getByRole('row')
       expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
-      await expect(rowLocators.first()).toHaveTextContent(
-        'First name' + 'Last name' + 'Age'
-      )
-      await expect
-        .element(rowLocators.nth(1))
-        .toHaveTextContent('Ada' + 'Lovelace' + '36')
-      await expect
-        .element(rowLocators.nth(2))
-        .toHaveTextContent('Grace' + 'Hopper' + '85')
-      await expect
-        .element(rowLocators.last())
-        .toHaveTextContent('Alan' + 'Turing' + '41')
+      await expect(rowLocators.first()).toHaveTextContent(tableHeadings)
+      await expect.element(rowLocators.nth(1)).toHaveTextContent(adaRowText)
+      await expect.element(rowLocators.nth(2)).toHaveTextContent(graceRowText)
+      await expect.element(rowLocators.last()).toHaveTextContent(alanRowText)
     })
 
     it('initially orders rows according to the defaultSortColumn prop', async () => {
@@ -123,19 +126,11 @@ describe('Table component tests', () => {
 
       const rowLocators = getByRole('row')
       expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
-      await expect(rowLocators.first()).toHaveTextContent(
-        'First name' + 'Last name' + 'Age'
-      )
+      await expect(rowLocators.first()).toHaveTextContent(tableHeadings)
       // row content is ordered by age ascending (default sort direction)
-      await expect
-        .element(rowLocators.nth(1))
-        .toHaveTextContent('Grace' + 'Hopper' + '85')
-      await expect
-        .element(rowLocators.nth(2))
-        .toHaveTextContent('Ada' + 'Lovelace' + '36')
-      await expect
-        .element(rowLocators.last())
-        .toHaveTextContent('Alan' + 'Turing' + '41')
+      await expect.element(rowLocators.nth(1)).toHaveTextContent(graceRowText)
+      await expect.element(rowLocators.nth(2)).toHaveTextContent(adaRowText)
+      await expect.element(rowLocators.last()).toHaveTextContent(alanRowText)
     })
 
     it('column sorting can be individually disabled', async () => {
@@ -143,10 +138,10 @@ describe('Table component tests', () => {
         <Table data={defaultData} columns={defaultColumns} enableSorting />
       )
 
-      const firstNameHdr = getByRole('cell', { name: 'First name' })
+      const firstNameHdr = getByRole('cell', { name: firstNameHeading })
       await expect.element(firstNameHdr).toBeInTheDocument()
-      const lastNameHdr = getByRole('cell', { name: 'Last name' })
-      const ageHdr = getByRole('cell', { name: 'Age' })
+      const lastNameHdr = getByRole('cell', { name: lastNameHeading })
+      const ageHdr = getByRole('cell', { name: ageHeading })
       // sorting enabled for columns by default
       await expect.element(firstNameHdr.getByRole('button')).toBeInTheDocument()
       await expect.element(lastNameHdr.getByRole('button')).toBeInTheDocument()
@@ -161,18 +156,10 @@ describe('Table component tests', () => {
 
       const rowLocators = getByRole('row')
       expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
-      await expect(rowLocators.first()).toHaveTextContent(
-        'First name' + 'Last name' + 'Age'
-      )
-      await expect
-        .element(rowLocators.nth(1))
-        .toHaveTextContent('Ada' + 'Lovelace' + '36')
-      await expect
-        .element(rowLocators.nth(2))
-        .toHaveTextContent('Alan' + 'Turing' + '41')
-      await expect
-        .element(rowLocators.last())
-        .toHaveTextContent('Grace' + 'Hopper' + '85')
+      await expect(rowLocators.first()).toHaveTextContent(tableHeadings)
+      await expect.element(rowLocators.nth(1)).toHaveTextContent(adaRowText)
+      await expect.element(rowLocators.nth(2)).toHaveTextContent(alanRowText)
+      await expect.element(rowLocators.last()).toHaveTextContent(graceRowText)
     })
 
     it('allows sorting of table content by clicking column headers', async () => {
@@ -182,59 +169,33 @@ describe('Table component tests', () => {
 
       const rowLocators = getByRole('row')
       expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
-      await expect(rowLocators.first()).toHaveTextContent(
-        'First name' + 'Last name' + 'Age'
-      )
+      await expect(rowLocators.first()).toHaveTextContent(tableHeadings)
 
       // default order is by first name ascending (A-Z)
-      await expect
-        .element(rowLocators.nth(1))
-        .toHaveTextContent('Ada' + 'Lovelace' + '36')
-      await expect
-        .element(rowLocators.nth(2))
-        .toHaveTextContent('Alan' + 'Turing' + '41')
-      await expect
-        .element(rowLocators.last())
-        .toHaveTextContent('Grace' + 'Hopper' + '85')
+      await expect.element(rowLocators.nth(1)).toHaveTextContent(adaRowText)
+      await expect.element(rowLocators.nth(2)).toHaveTextContent(alanRowText)
+      await expect.element(rowLocators.last()).toHaveTextContent(graceRowText)
 
       const order = getByRole('button', { name: 'First name' })
       await expect.element(order).toBeInTheDocument()
 
       // click to change order, sort by first name descending (Z-A)
       await order.click({ force: true })
-      await expect
-        .element(rowLocators.nth(1))
-        .toHaveTextContent('Grace' + 'Hopper' + '85')
-      await expect
-        .element(rowLocators.nth(2))
-        .toHaveTextContent('Alan' + 'Turing' + '41')
-      await expect
-        .element(rowLocators.last())
-        .toHaveTextContent('Ada' + 'Lovelace' + '36')
+      await expect.element(rowLocators.nth(1)).toHaveTextContent(graceRowText)
+      await expect.element(rowLocators.nth(2)).toHaveTextContent(alanRowText)
+      await expect.element(rowLocators.last()).toHaveTextContent(adaRowText)
 
       // click to return row ordering to original data array order (remove sorting)
       await order.click({ force: true })
-      await expect
-        .element(rowLocators.nth(1))
-        .toHaveTextContent('Ada' + 'Lovelace' + '36')
-      await expect
-        .element(rowLocators.nth(2))
-        .toHaveTextContent('Grace' + 'Hopper' + '85')
-      await expect
-        .element(rowLocators.last())
-        .toHaveTextContent('Alan' + 'Turing' + '41')
+      await expect.element(rowLocators.nth(1)).toHaveTextContent(adaRowText)
+      await expect.element(rowLocators.nth(2)).toHaveTextContent(graceRowText)
+      await expect.element(rowLocators.last()).toHaveTextContent(alanRowText)
 
       // click to order again, sort by first name ascending (A-Z)
       await order.click({ force: true })
-      await expect
-        .element(rowLocators.nth(1))
-        .toHaveTextContent('Ada' + 'Lovelace' + '36')
-      await expect
-        .element(rowLocators.nth(2))
-        .toHaveTextContent('Alan' + 'Turing' + '41')
-      await expect
-        .element(rowLocators.last())
-        .toHaveTextContent('Grace' + 'Hopper' + '85')
+      await expect.element(rowLocators.nth(1)).toHaveTextContent(adaRowText)
+      await expect.element(rowLocators.nth(2)).toHaveTextContent(alanRowText)
+      await expect.element(rowLocators.last()).toHaveTextContent(graceRowText)
     })
   })
 
@@ -261,16 +222,14 @@ describe('Table component tests', () => {
     )
 
     await expect
-      .element(getByRole('row', { name: 'Ada Lovelace 36' }))
+      .element(getByRole('row', { name: adaRowName }))
       .toBeInTheDocument()
     const rowLocators = getByRole('row')
     expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
-    await expect(rowLocators.first()).toHaveTextContent(
-      'First nameLast nameAge'
-    )
-    await expect.element(rowLocators.nth(1)).toHaveTextContent('AdaLovelace36')
-    await expect.element(rowLocators.nth(2)).toHaveTextContent('AlanTuring41')
-    await expect.element(rowLocators.last()).toHaveTextContent('GraceHopper85')
+    await expect(rowLocators.first()).toHaveTextContent(tableHeadings)
+    await expect.element(rowLocators.nth(1)).toHaveTextContent(adaRowText)
+    await expect.element(rowLocators.nth(2)).toHaveTextContent(alanRowText)
+    await expect.element(rowLocators.last()).toHaveTextContent(graceRowText)
 
     await expect.element(getByText('Table selection: none')).toBeInTheDocument()
 
@@ -300,13 +259,13 @@ describe('Table component tests', () => {
       .element(getByText('Table selection: Grace Hopper, 85'))
       .toBeInTheDocument()
 
-    await userEvent.type(getByPlaceholder('Enter search term'), 'al')
+    await userEvent.type(getByPlaceholder(searchPlaceholder), 'al')
     expect(rowLocators).toHaveLength(2) // 1 data row + 1 header row
     await expect
       .element(getByRole('row', { name: 'Ada' }))
       .not.toBeInTheDocument()
     await expect
-      .element(getByRole('row', { name: 'Alan Turing 41' }))
+      .element(getByRole('row', { name: alanRowName }))
       .toBeInTheDocument()
     await expect
       .element(getByRole('row', { name: 'Grace' }))

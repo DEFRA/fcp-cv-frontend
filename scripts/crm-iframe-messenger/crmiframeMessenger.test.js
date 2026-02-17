@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import {
   DEFAULT_INIT_MESSAGE,
   IFRAME_CONTROL_NAME,

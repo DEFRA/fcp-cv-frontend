@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { notification } from '@/components/notification/Notifications'
@@ -5,7 +6,7 @@ import RootLayout from './layout.jsx'
 
 describe('RootLayout component tests', () => {
   beforeAll(() => {
-    vitest.mock('@/config', () => {
+    vi.mock('@/config', () => {
       return {
         config: {
           get: () => 'http://localhost:3000'
