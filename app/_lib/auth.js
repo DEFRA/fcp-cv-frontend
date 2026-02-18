@@ -18,7 +18,7 @@ function getJWKS() {
   if (!cachedJWKS) {
     cachedJWKS = createRemoteJWKSet(new URL(JWKS_URL))
   }
-  return cachedJWKS // TODO: what happens when the cached public key expires!?!
+  return cachedJWKS
 }
 
 export async function getEmailFromToken(headers) {

@@ -2,7 +2,7 @@ import { render } from 'vitest-browser-react'
 
 import Page from './page.jsx'
 
-describe('AgreementsPage tests', () => {
+describe('BusinessMessagesPage tests', () => {
   it('renders the page component with content', async () => {
     const { getByRole } = await render(<Page />)
 
