@@ -8,7 +8,7 @@ export const metadata = {
   title: 'County Parish Holdings (CPH)'
 }
 
-export default function CountyParishHoldingsPages() {
+export default function CountyParishHoldingsPage() {
   return (
     <Sections srTitle={metadata.title}>
       <LeftSection srTitle="CPH list">

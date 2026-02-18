@@ -2,10 +2,9 @@ import { render } from 'vitest-browser-react'
 
 import Page from './page.jsx'
 
-describe('LinkedContactPage tests', () => {
-
-  it('renders the main LinkedContacts page component with content', async () => {
-    const { getByRole, getByText, getByLabelText } = await render(<Page />)
+describe('LinkedContactsPage tests', () => {
+  it('renders the page component with content', async () => {
+    const { getByRole } = await render(<Page />)
 
     await expect
       .element(getByRole('heading', { name: 'Linked contacts' }))
