@@ -7,7 +7,7 @@ export default defineConfig({
       exclude: ['app/_components/iframe-messenger/IframeMessenger.test.jsx'],
       include: 'app/**/*.{js,jsx}',
       provider: 'v8',
-      reporter: ['html', 'json', 'text'],
+      reporter: ['html', 'json', 'lcov', 'text'],
       thresholds: {
         branches: 90,
         functions: 90,
