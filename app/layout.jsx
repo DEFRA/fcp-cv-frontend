@@ -7,7 +7,6 @@ import { Main } from '@/components/main/main'
 import Notifications from '@/components/notification/Notifications'
 import { config } from '@/config'
 import { clientAuthConfig } from '@/lib/auth'
-
 import './globals.css'
 
 export const metadata = {

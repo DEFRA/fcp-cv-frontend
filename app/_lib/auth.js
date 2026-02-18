@@ -6,7 +6,8 @@ export const clientAuthConfig = {
   disabled: config.get('userAuth.disabled'),
   authority: config.get('userAuth.authority'),
   clientId: config.get('userAuth.clientId'),
-  redirectUri: config.get('userAuth.redirectUri')
+  redirectUri: config.get('userAuth.redirectUri'),
+  scope: config.get('userAuth.scope')
 }
 
 const AUDIENCE = config.get('userAuth.clientId')
@@ -22,16 +23,11 @@ function getJWKS() {
 }
 
 export async function getEmailFromToken(headers) {
-  if (clientAuthConfig.disabled) return ''
+  if (clientAuthConfig.disabled) return config.get('dal.email')
 
-  const authHeader = headers.get('authorization')
+  const token = headers.get('x-msal-id-token')
 
-  if (!authHeader) throw new Error('no auth header')
-
-  const match = authHeader.match(/^Bearer (.+)$/)
-  if (!match) throw new Error('malformed auth header')
-
-  const token = match[1]
+  if (!token) throw new Error('no id token')
 
   const { payload } = await jwtVerify(token, getJWKS(), {
     issuer: ISSUER,

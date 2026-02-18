@@ -38,7 +38,8 @@ const customerLinks = [
   }
 ]
 
-export default function ConsolidatedViewPage() {
+export default async function ConsolidatedViewPage({ searchParams }) {
+  const params = new URLSearchParams(await searchParams).toString()
   return (
     <div className="m-10">
       <div>
@@ -51,7 +52,7 @@ export default function ConsolidatedViewPage() {
             <ul className="list-disc list-inside ml-5">
               {businessLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="underline">
+                  <Link href={`${link.href}?${params}`} className="underline">
                     {link.name}
                   </Link>
                 </li>

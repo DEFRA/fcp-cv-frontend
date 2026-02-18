@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from '@/components/auth/auth-provider'
 import { cn } from '@/lib/utils'
 import { InteractionType } from '@azure/msal-browser'
 import { useMsalAuthentication } from '@azure/msal-react'
@@ -10,9 +11,6 @@ import {
   DialogTitle
 } from '@headlessui/react'
 
-const request = {
-  scopes: ['User.Read']
-}
 const className = cn(
   'rounded-md bg-green-600 px-3.5 py-2.5 text-sm font-semibold text-white ',
   'shadow-xs hover:bg-green-500 focus-visible:outline-2 dark:bg-green-500 ',
@@ -21,9 +19,11 @@ const className = cn(
 )
 
 export function EnsureSignIn({ children }) {
+  const { authenticationRequest } = useAuth()
+
   const { login, error } = useMsalAuthentication(
     InteractionType.Silent,
-    request
+    authenticationRequest
   )
 
   return (
@@ -38,7 +38,9 @@ export function EnsureSignIn({ children }) {
             </DialogTitle>
 
             <button
-              onClick={() => login(InteractionType.Popup, request)}
+              onClick={() =>
+                login(InteractionType.Popup, authenticationRequest)
+              }
               className={className}
             >
               Sign in

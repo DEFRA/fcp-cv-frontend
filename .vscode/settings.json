@@ -45,6 +45,7 @@
   ],
   "cSpell.language": "en,en-GB",
   "javascript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifierEnding": "minimal",
   "sonarlint.connectedMode.project": {
     "connectionId": "defra",
     "projectKey": "DEFRA_fcp-cv-frontend"

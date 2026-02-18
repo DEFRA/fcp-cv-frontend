@@ -1,5 +1,7 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+import { Transition } from '@headlessui/react'
 import {
   flexRender,
   getCoreRowModel,
@@ -28,21 +30,63 @@ function SortArrow({ direction }) {
   )
 }
 
-function SearchBar({ value, onChange }) {
+function SearchBar({
+  value = '',
+  onChange = () => {},
+  onClearClick = () => {}
+}) {
   const uniqueId = `search-${useId()}`
 
   return (
     <div className="mb-2 flex items-center gap-10">
-      <label className="text-sm font-bold" htmlFor={uniqueId}>
+      <label className="font-bold" htmlFor={uniqueId}>
         Search
       </label>
-      <input
-        id={uniqueId}
-        value={value}
-        onChange={onChange}
-        placeholder="Enter search term"
-        className="ml-auto w-full max-w-3xl border-2 border-green-700 p-2 text-sm placeholder-gray-500 focus:outline-none focus:ring-green-700"
-      />
+
+      <div className="relative ml-auto w-full max-w-3xl">
+        <input
+          id={uniqueId}
+          value={value}
+          onChange={onChange}
+          placeholder="Enter search term"
+          className="ml-auto w-full max-w-3xl border-2 border-green-700 p-2 placeholder-gray-500 focus:outline-none focus:ring-green-700 pr-12"
+        />
+
+        <Transition
+          show={!!value}
+          enter="transition-opacity duration-300 ease-out"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-200 ease-in"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <button
+            onClick={() => {
+              onChange({ target: { value: '' } })
+              onClearClick()
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-green-700 leading-none cursor-pointer"
+            type="button"
+            aria-label="Clear search"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="size-6"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="m15 9-6 6" />
+              <path d="m9 9 6 6" />
+            </svg>
+          </button>
+        </Transition>
+      </div>
     </div>
   )
 }
@@ -72,7 +116,7 @@ function Header({ headerGroup }) {
 
     const props = {
       className:
-        'border-r border-white p-2 text-left text-sm font-bold text-white last:border-r-0',
+        'border-r border-white p-2 text-left font-bold text-white last:border-r-0',
       ...(sortable ? { 'aria-sort': ariaSort } : {})
     }
 
@@ -90,7 +134,7 @@ function Header({ headerGroup }) {
   return <tr>{rows}</tr>
 }
 
-function Row({ row, onRowClick }) {
+function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
   const isRowClickable = typeof onRowClick === 'function'
 
   const handleRowClick = () => {
@@ -104,21 +148,22 @@ function Row({ row, onRowClick }) {
     }
   }
 
-  let rowClassName = ''
-  if (isRowClickable) {
-    rowClassName =
-      'cursor-pointer transition-colors hover:bg-green-100/70 focus-visible:outline-none focus-visible:ring-green-500'
-  }
-
   return (
     <tr
-      className={rowClassName}
+      className={cn([
+        isRowClickable &&
+          'cursor-pointer transition-colors hover:bg-green-100/70 focus-visible:outline-none focus-visible:ring-green-500',
+        selectedRow &&
+          selectedRowAccessorKey &&
+          row.original[selectedRowAccessorKey] === selectedRow &&
+          'bg-green-200'
+      ])}
       onClick={isRowClickable ? handleRowClick : undefined}
       onKeyDown={isRowClickable ? handleRowKeyDown : undefined}
       tabIndex={isRowClickable ? 0 : undefined}
     >
       {row.getVisibleCells().map((cell) => (
-        <td key={cell.id} className="px-1 py-2 text-sm text-gray-950">
+        <td key={cell.id} className="px-1 py-2  text-gray-950">
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>
       ))}
@@ -132,7 +177,10 @@ function TableInner({
   enableSearching = true,
   enableSorting = true,
   defaultSortColumn = columns[0]?.accessorKey,
-  onRowClick
+  onRowClick,
+  onClearClick,
+  selectedRow,
+  selectedRowAccessorKey
 }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState(() => {
@@ -169,6 +217,7 @@ function TableInner({
         <SearchBar
           value={globalFilter}
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
+          onClearClick={onClearClick}
         />
       )}
       <div className="inline-block min-w-full overflow-hidden">
@@ -192,7 +241,13 @@ function TableInner({
               table
                 .getRowModel()
                 .rows.map((row) => (
-                  <Row key={row.id} row={row} onRowClick={onRowClick} />
+                  <Row
+                    key={row.id}
+                    row={row}
+                    onRowClick={onRowClick}
+                    selectedRow={selectedRow}
+                    selectedRowAccessorKey={selectedRowAccessorKey}
+                  />
                 ))
             )}
           </tbody>

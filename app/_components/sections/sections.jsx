@@ -23,7 +23,7 @@ export function Sections({ srTitle, className, children }) {
 
 function Section({ srTitle, className, children, ...props }) {
   return (
-    <section className={cn('p-5', className)} {...props}>
+    <section className={className} {...props}>
       {srTitle && <h2 className="sr-only">{srTitle}</h2>}
       {children}
     </section>
@@ -36,7 +36,8 @@ export function FullWidthSection(props) {
       data-slot="full"
       className={cn(
         'row-start-1 col-span-2 border-primary',
-        'group-has-[[data-slot="left"],[data-slot="right"]]:border-b'
+        'group-has-[[data-slot="left"],[data-slot="right"]]:border-b',
+        'group-has-[[data-slot="left"],[data-slot="right"]]:pb-5'
       )}
       {...props}
     />
@@ -48,8 +49,9 @@ export function LeftSection(props) {
     <Section
       data-slot="left"
       className={cn(
-        'row-start-2 col-start-1 border-primary border-r',
-        'group-has-data-[slot="full"]:border-t'
+        'row-start-2 col-start-1 border-primary border-r pr-5',
+        'group-has-data-[slot="full"]:border-t',
+        'group-has-data-[slot="full"]:pt-5'
       )}
       {...props}
     />
@@ -61,8 +63,9 @@ export function RightSection(props) {
     <Section
       data-slot="right"
       className={cn(
-        'row-start-2 col-start-2 border-primary border-l',
-        'group-has-data-[slot="full"]:border-t'
+        'row-start-2 col-start-2 border-primary border-l pl-5',
+        'group-has-data-[slot="full"]:border-t',
+        'group-has-data-[slot="full"]:pt-5'
       )}
       {...props}
     />
