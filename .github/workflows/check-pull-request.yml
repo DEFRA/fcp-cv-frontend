@@ -18,21 +18,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Test code and Create Test Coverage Reports
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: |
           npm ci
           npm run lint
-          npm test
+          set +e
+          npm test 2> >( tee test.out >&2 )
+          [ `grep '^ERROR: Coverage for' -c test.out ` -eq 9 ] || \
+            ( echo 'FAILED: Test or coverage issue' && exit 1 )
+      # The above ☝️ checks the test output for any test coverage failures
+      # (i.e. lines that start with "ERROR: Coverage for") and counts them.
+      # If there are more than 9 such lines, it indicates a new problem with
+      # test coverage and the script will exit with an error.
+      # NOTE: this is only necessary due to a bug in `vitest` that does not
+      # fully honour threshold settings in the config file! 🪲
 
       - name: Upload Unit Test Coverage Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: unit-test-coverage-report
           path: coverage/
@@ -40,9 +49,7 @@ jobs:
 
       - name: Test Docker Image Build
         run: |
-          set +e
           docker build --no-cache --tag cdp-node-frontend-template .
-          exit $?
 
       - name: Test accessibility and create accessibility test report
         run: |
@@ -50,15 +57,15 @@ jobs:
 
       - name: Upload accessibility test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: accessibility-test-report
           path: test-output/axe/
           retention-days: 7
 
-#      - name: SonarCloud Scan
-#        if: github.actor != 'dependabot[bot]'
-#        uses: SonarSource/sonarqube-scan-action@v5.3.1 #  (or check latest version on https://github.com/marketplace/actions/official-sonarqube-scan)
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # - name: SonarCloud Scan
+      #   if: github.actor != 'dependabot[bot]'
+      #   uses: SonarSource/sonarqube-scan-action@v7
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

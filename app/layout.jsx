@@ -1,13 +1,12 @@
 export const dynamic = 'force-dynamic'
+
+import { AuthProvider } from '@/components/auth/auth-provider'
+import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary'
 import { IframeMessenger } from '@/components/iframe-messenger/IframeMessenger'
 import { Main } from '@/components/main/main'
 import Notifications from '@/components/notification/Notifications'
-import './globals.css'
-
-import { AuthProvider } from '@/components/auth/auth-provider.jsx'
-import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary'
 import { config } from '@/config'
-import { clientAuthConfig } from '@/lib/auth.js'
+import { clientAuthConfig } from '@/lib/auth'
 
 import './globals.css'
 

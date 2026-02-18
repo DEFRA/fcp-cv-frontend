@@ -18,14 +18,19 @@
   "cSpell.words": [
     "autoprefixer",
     "booleanise",
+    "callto",
     "defra",
     "defradigital",
+    "msal",
     "nationalarchives",
     "nodemon",
+    "nvmrc",
     "pino",
     "sbis",
     "sitiagri",
     "sonarcloud",
+    "sonarqube",
+    "Toastify",
     "TRUSTSTORE",
     "uprn"
   ],
@@ -39,5 +44,9 @@
     ".next"
   ],
   "cSpell.language": "en,en-GB",
-  "javascript.preferences.importModuleSpecifier": "non-relative"
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "sonarlint.connectedMode.project": {
+    "connectionId": "defra",
+    "projectKey": "DEFRA_fcp-cv-frontend"
+  }
 }

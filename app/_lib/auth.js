@@ -20,6 +20,7 @@ function getJWKS() {
   }
   return cachedJWKS
 }
+
 export async function getEmailFromToken(headers) {
   if (clientAuthConfig.disabled) return ''
 

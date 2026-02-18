@@ -1,4 +1,5 @@
 import { renderToString } from 'react-dom/server'
+
 import AppLink from './AppLink'
 
 describe('AppLink snapshot', () => {

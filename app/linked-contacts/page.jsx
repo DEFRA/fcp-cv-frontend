@@ -3,7 +3,6 @@
 import { ExternalLinkButton } from '@/components/button/Button'
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import AppLink from '@/components/link/AppLink'
-import { notification } from '@/components/notification/Notifications'
 import {
   LeftSection,
   RightSection,
@@ -21,23 +20,6 @@ export default function LinkedContactsPage() {
     { header: 'Last Name', accessorKey: 'lastName' }
   ]
 
-  const handleRowClick = (row) => {
-    const random = Math.random()
-    if (random < 0.3) {
-      notification.error(
-        `Error: Selected contact: ${row.firstName} ${row.lastName} (${row.crn})`
-      )
-    } else if (random < 0.6) {
-      notification.warning(
-        `Warning: Selected contact: ${row.firstName} ${row.lastName} (${row.crn})`
-      )
-    } else {
-      notification.info(
-        `Info: Selected contact: ${row.firstName} ${row.lastName} (${row.crn})`
-      )
-    }
-  }
-
   const items = {
     CRN: '8562286973',
     'Full Name:': 'Ms. Kailey Bridget Olson',
@@ -47,7 +29,7 @@ export default function LinkedContactsPage() {
   return (
     <Sections srTitle="Linked Contacts">
       <LeftSection srTitle="Contacts list">
-        <Table data={data} columns={columns} onRowClick={handleRowClick} />
+        <Table data={data} columns={columns} />
       </LeftSection>
       <RightSection srTitle="Selected contact">
         <div className="flex items-start justify-between gap-6">
