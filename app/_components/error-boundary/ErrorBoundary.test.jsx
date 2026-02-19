@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-react'
 import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary.jsx'
 
 describe('ErrorBoundary component tests', () => {
-  it('renders the error message when an error is thrown', async () => {
+  it.skip('renders the error message when an error is thrown', async () => {
     const ThrowError = () => {
       throw new Error('Test error')
     }

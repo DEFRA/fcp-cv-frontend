@@ -1,9 +1,9 @@
 'use client'
 
-import * as navigation from 'next/navigation'
+import { useSearchParams as nextUseSearchParams } from 'next/navigation'
 
 export function useSearchParams() {
-  const searchParams = navigation.useSearchParams()
+  const searchParams = nextUseSearchParams()
 
   return {
     searchParams,

@@ -14,12 +14,12 @@ const AUDIENCE = config.get('userAuth.clientId')
 const ISSUER = config.get('userAuth.authority')
 const JWKS_URL = config.get('userAuth.jwksUrl')
 
-let cachedJWKS = null
-function getJWKS() {
-  if (!cachedJWKS) {
-    cachedJWKS = createRemoteJWKSet(new URL(JWKS_URL))
+let remoteJWKSet = null
+function getRemoteJWKSet() {
+  if (!remoteJWKSet) {
+    remoteJWKSet = createRemoteJWKSet(new URL(JWKS_URL))
   }
-  return cachedJWKS
+  return remoteJWKSet
 }
 
 export async function getEmailFromToken(headers) {
@@ -29,12 +29,19 @@ export async function getEmailFromToken(headers) {
 
   if (!token) throw new Error('no id token')
 
-  const { payload } = await jwtVerify(token, getJWKS(), {
-    issuer: ISSUER,
-    audience: AUDIENCE
-  })
+  let email
 
-  const email = payload.email || payload.preferred_username
+  try {
+    const { payload } = await jwtVerify(token, getRemoteJWKSet(), {
+      issuer: ISSUER,
+      audience: AUDIENCE
+    })
+
+    email = payload.email || payload.preferred_username
+  } catch {
+    throw new Error('token verification failed')
+  }
+
   if (!email) throw new Error('no email in token')
 
   return email

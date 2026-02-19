@@ -41,25 +41,19 @@ export async function GET(_, { params }) {
     }
   })
 
-  if (!response.data) {
-    throw new Error('no data')
-  }
-
-  const name = response.data.customer.info.name
-
-  const permissions = []
+  const name = response?.data?.customer?.info?.name
 
   return NextResponse.json({
-    displayName: [name.first, name.last].join(' '),
+    displayName: [name?.first, name?.last].join(' '),
     details: [
-      { dt: 'CRN', dd: response.data.customer.crn },
+      { dt: 'CRN', dd: response?.data?.customer?.crn },
       {
         dt: 'Full Name',
-        dd: [name.title, name.first, name.middle, name.last].join(' ')
+        dd: [name?.title, name?.first, name?.middle, name?.last].join(' ')
       },
-      { dt: 'Role', dd: response.data.business.customer.role }
+      { dt: 'Role', dd: response?.data?.business?.customer?.role }
     ],
-    permissions: response.data.business.customer.permissionGroups.map(
+    permissions: response?.data?.business?.customer?.permissionGroups.map(
       (item) => ({
         dt: screamingSnakeToTitleCase(item.id),
         dd: screamingSnakeToTitleCase(item.level),

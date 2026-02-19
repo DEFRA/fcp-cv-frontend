@@ -4,8 +4,8 @@ import {
   Sections
 } from '@/components/sections/sections'
 
-import { LinkedContactsDetails } from 'linked-contacts/linked-contacts-details'
-import { LinkedContactsList } from 'linked-contacts/linked-contacts-list'
+import { LinkedContactsDetails } from './linked-contacts-details'
+import { LinkedContactsList } from './linked-contacts-list'
 
 export const metadata = {
   title: 'Consolidated View | Linked Contacts'

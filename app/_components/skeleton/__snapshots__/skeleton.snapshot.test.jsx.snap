@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Skeleton snapshot > renders content if not loading 1`] = `"Content"`;
+
+exports[`Skeleton snapshot > renders skeleton if loading 1`] = `"<div data-slot="skeleton" class="bg-gray-200 animate-pulse rounded-md"></div>"`;

@@ -1,7 +1,7 @@
 import { useMsal } from '@azure/msal-react'
+import useSWR from 'swr'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import useSWR from 'swr'
 
 async function fetcher(url, headers = {}) {
   const response = await fetch(url, { headers })

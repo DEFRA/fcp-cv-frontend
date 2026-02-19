@@ -9,7 +9,7 @@ import {
 } from '@/components/key-value-list-v2/key-value-list'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
-import { LinkedContactsAuthenticateQuestions } from 'linked-contacts/linked-contacts-authenticate-questions'
+import { LinkedContactsAuthenticateQuestions } from './linked-contacts-authenticate-questions'
 
 const defaultDetails = [{ dt: 'CRN' }, { dt: 'Full Name' }, { dt: 'Role' }]
 

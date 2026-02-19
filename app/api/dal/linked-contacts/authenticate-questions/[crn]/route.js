@@ -21,46 +21,42 @@ const query = `#graphql
 `
 
 export async function GET(_, { params }) {
-  const { sbi, crn } = await params
+  const { crn } = await params
 
   const response = await dalRequest({
     query,
     variables: {
-      sbi,
       crn
     }
   })
 
-  if (!response.data) {
-    throw new Error('no data')
-  }
-
-  const authenticationQuestions = response.data.customer.authenticationQuestions
+  const authenticationQuestions =
+    response?.data?.customer?.authenticationQuestions
 
   return NextResponse.json({
     items: [
       {
         dt: 'Date of Birth',
-        dd: response.data.customer.info.dateOfBirth
+        dd: response?.data?.customer?.info?.dateOfBirth
           ? formatDate(response.data.customer.info.dateOfBirth)
           : '(Not set)'
       },
       {
         dt: 'Memorable Date',
-        dd: authenticationQuestions.memorableDate || '(Not set)'
+        dd: authenticationQuestions?.memorableDate || '(Not set)'
       },
       {
         dt: 'Memorable Location',
-        dd: authenticationQuestions.memorableLocation || '(Not set)'
+        dd: authenticationQuestions?.memorableLocation || '(Not set)'
       },
       {
         dt: 'Memorable Event',
-        dd: authenticationQuestions.memorableEvent || '(Not set)'
+        dd: authenticationQuestions?.memorableEvent || '(Not set)'
       },
       {
         dt: 'Updated at',
-        dd: authenticationQuestions.updatedAt
-          ? formatDate(authenticationQuestions.updatedAt)
+        dd: authenticationQuestions?.updatedAt
+          ? formatDate(authenticationQuestions?.updatedAt)
           : '(Not set)'
       }
     ]

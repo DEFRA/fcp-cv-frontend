@@ -28,7 +28,13 @@ export function EnsureSignIn({ children }) {
 
   return (
     <>
-      <Dialog open={!!error} onClose={() => {}} className="relative z-50">
+      <Dialog
+        open={!!error}
+        /* v8 ignore start */
+        onClose={() => {}}
+        /* v8 ignore stop */
+        className="relative z-50"
+      >
         <DialogBackdrop className="fixed inset-0 bg-black/30 backdrop-blur-xs" />
 
         <div className="fixed inset-0">

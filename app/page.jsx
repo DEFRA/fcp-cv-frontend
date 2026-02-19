@@ -40,6 +40,7 @@ const customerLinks = [
 
 export default async function ConsolidatedViewPage({ searchParams }) {
   const params = new URLSearchParams(await searchParams).toString()
+
   return (
     <div className="m-10">
       <div>

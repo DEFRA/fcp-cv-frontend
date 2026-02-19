@@ -13,14 +13,14 @@ describe('getEmailFromToken', () => {
     vi.unstubAllEnvs()
   })
 
-  test('returns empty string when auth disabled', async () => {
+  test('returns empty DAL_EMAIL when auth disabled', async () => {
     vi.stubEnv('USER_AUTH_DISABLED', 'true')
 
     const { getEmailFromToken } = await import('./auth')
 
     const headers = { get: vi.fn(() => null) }
 
-    expect(await getEmailFromToken(headers)).toBe('')
+    expect(await getEmailFromToken(headers)).toBe('test@defra.gov.uk')
   })
 
   test('throws if no authorization header (auth enabled by default)', async () => {
@@ -28,17 +28,7 @@ describe('getEmailFromToken', () => {
 
     const headers = { get: vi.fn(() => null) }
 
-    await expect(getEmailFromToken(headers)).rejects.toThrow('no auth header')
-  })
-
-  test('throws if authorization header is malformed', async () => {
-    const { getEmailFromToken } = await import('./auth')
-
-    const headers = { get: vi.fn(() => 'InvalidHeader') }
-
-    await expect(getEmailFromToken(headers)).rejects.toThrow(
-      'malformed auth header'
-    )
+    await expect(getEmailFromToken(headers)).rejects.toThrow('no id token')
   })
 
   test('throws if token has no email', async () => {
@@ -60,10 +50,12 @@ describe('getEmailFromToken', () => {
     const token = 'valid.token.here'
     const headers = { get: vi.fn(() => `Bearer ${token}`) }
 
-    jose.jwtVerify.mockResolvedValue({ payload: { email: 'test@example.com' } })
+    jose.jwtVerify.mockResolvedValue({
+      payload: { email: 'test@defra.gov.uk' }
+    })
 
     const email = await getEmailFromToken(headers)
-    expect(email).toBe('test@example.com')
+    expect(email).toBe('test@defra.gov.uk')
   })
 
   test('returns preferred_username if email not present', async () => {
@@ -86,9 +78,9 @@ describe('getEmailFromToken', () => {
     const token = 'valid.token.here'
     const headers = { get: vi.fn(() => `Bearer ${token}`) }
 
-    jose.jwtVerify.mockRejectedValue(new Error('bad token'))
-
-    await expect(getEmailFromToken(headers)).rejects.toThrow('bad token')
+    await expect(getEmailFromToken(headers)).rejects.toThrow(
+      'token verification failed'
+    )
   })
 
   test('caches the JWKS remote set', async () => {

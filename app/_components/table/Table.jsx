@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import { Transition } from '@headlessui/react'
 import {
   flexRender,
@@ -30,11 +29,7 @@ function SortArrow({ direction }) {
   )
 }
 
-function SearchBar({
-  value = '',
-  onChange = () => {},
-  onClearClick = () => {}
-}) {
+function SearchBar({ value = '', onChange, onClearClick = () => {} }) {
   const uniqueId = `search-${useId()}`
 
   return (
@@ -148,16 +143,15 @@ function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
     }
   }
 
+  let rowClassName = ''
+  if (isRowClickable) {
+    rowClassName =
+      'cursor-pointer transition-colors hover:bg-green-100/70 focus-visible:outline-none focus-visible:ring-green-500'
+  }
+
   return (
     <tr
-      className={cn([
-        isRowClickable &&
-          'cursor-pointer transition-colors hover:bg-green-100/70 focus-visible:outline-none focus-visible:ring-green-500',
-        selectedRow &&
-          selectedRowAccessorKey &&
-          row.original[selectedRowAccessorKey] === selectedRow &&
-          'bg-green-200'
-      ])}
+      className={rowClassName}
       onClick={isRowClickable ? handleRowClick : undefined}
       onKeyDown={isRowClickable ? handleRowKeyDown : undefined}
       tabIndex={isRowClickable ? 0 : undefined}

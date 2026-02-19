@@ -16,9 +16,5 @@ export async function dalRequest({ query, variables }) {
     })
   })
 
-  if (response.status !== 200) {
-    throw new Error('DAL request error')
-  }
-
   return response.json()
 }

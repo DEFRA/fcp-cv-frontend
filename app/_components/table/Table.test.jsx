@@ -1,5 +1,5 @@
-import { userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
+import { userEvent } from 'vitest/browser'
 
 import Table from '@/components/table/Table'
 
@@ -55,6 +55,21 @@ describe('Table component tests', () => {
       await expect
         .element(getByPlaceholder(searchPlaceholder))
         .not.toBeInTheDocument()
+    })
+
+    it('search clears on "Clear search" click', async () => {
+      const { getByPlaceholder, getByRole } = await render(
+        <Table data={defaultData} columns={defaultColumns} />
+      )
+
+      const rowLocators = getByRole('row')
+      expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
+
+      // table data filters as search term changes...
+      await userEvent.type(getByPlaceholder(searchPlaceholder), 'ce')
+      expect(rowLocators).toHaveLength(3) // 3 data rows + 1 header row
+      await getByRole('button', { name: 'Clear search' }).click()
+      expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
     })
 
     it('filters rows to match search term', async () => {
