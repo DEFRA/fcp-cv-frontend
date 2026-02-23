@@ -2,8 +2,7 @@ import { render } from 'vitest-browser-react'
 
 import Page from './page.jsx'
 
-describe('LinkedContactPage tests', () => {
-
+describe('LinkedContactsPage tests', () => {
   it('renders the main LinkedContacts page component with content', async () => {
     const { getByRole, getByText, getByLabelText } = await render(<Page />)
 
@@ -16,19 +15,19 @@ describe('LinkedContactPage tests', () => {
       .toBeInTheDocument()
 
     await expect
-      .element(getByRole('table')) // This will fail for pages with more than one table, need a solution in those situations
+      .element(getByRole('table')) // This will fail/report incorrectly for pages with more than one table, need a solution in those situations
       .toBeInTheDocument()
 
     await expect
-      .element(getByRole('button', { name: 'CRN'})) // Table header is a th/button/span
+      .element(getByRole('button', { name: 'CRN' })) // Table header is a th/button/span
       .toBeInTheDocument()
 
     await expect
-      .element(getByRole('button', { name: 'First Name'})) // Table header is a th/button/span
+      .element(getByRole('button', { name: 'First Name' })) // Table header is a th/button/span
       .toBeInTheDocument()
 
     await expect
-      .element(getByRole('button', { name: 'Last Name'})) // Table header is a th/button/span
+      .element(getByRole('button', { name: 'Last Name' })) // Table header is a th/button/span
       .toBeInTheDocument()
 
     await expect
@@ -47,16 +46,14 @@ describe('LinkedContactPage tests', () => {
       .element(getByRole('link', { name: 'View customer' }))
       .toBeInTheDocument()
 
+    await expect.element(getByLabelText('Search')).toBeInTheDocument()
+
     await expect
-      .element(getByLabelText('Search'))
+      .element(getByRole('textbox')) // Search box
       .toBeInTheDocument()
 
     await expect
-      .element(getByRole( 'textbox' )) // Search box
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole( 'heading', { name: 'Kailey Olson' })) // This text selector is data-reliant, brittle?
+      .element(getByRole('heading', { name: 'Kailey Olson' })) // This text selector is data-reliant, brittle?
       .toHaveClass(/font-bold/)
 
     // TODO
