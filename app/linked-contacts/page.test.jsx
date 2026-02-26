@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-react'
 import Page from './page.jsx'
 
 describe('LinkedContactsPage tests', () => {
-  it('renders the main LinkedContacts page component with content', async () => {
+   it('renders the main LinkedContacts page component with content', async () => {
     const { getByRole, getByText, getByLabelText } = await render(<Page />)
 
     await expect
