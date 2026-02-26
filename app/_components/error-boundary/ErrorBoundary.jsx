@@ -4,7 +4,6 @@ import React from 'react'
 import { Button } from '../button/Button'
 import { FullWidthSection, Sections } from '../sections/sections'
 
-/* v8 ignore start */
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
@@ -15,9 +14,11 @@ export class ErrorBoundary extends React.Component {
     return { hasError: true, error }
   }
 
+  /* v8 ignore start  */
   handleRefresh = () => {
     window.location.reload()
   }
+  /* v8 ignore stop  */
 
   render() {
     if (!this.state.hasError) return this.props.children
@@ -75,4 +76,3 @@ export class ErrorBoundary extends React.Component {
     )
   }
 }
-/* v8 ignore stop */
