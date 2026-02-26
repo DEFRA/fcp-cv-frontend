@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import { formatDate, uppercaseSnakeToTitleCase } from '@/lib/formatters'
 
-describe('screamingSnakeToTitleCase', () => {
+describe('uppercaseSnakeToTitleCase', () => {
   it('converts standard SCREAMING_SNAKE_CASE → Title Case', () => {
     expect(uppercaseSnakeToTitleCase('USER_FULL_NAME')).toBe('User Full Name')
     expect(uppercaseSnakeToTitleCase('CREATED_AT')).toBe('Created At')
