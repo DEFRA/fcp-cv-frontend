@@ -36,6 +36,28 @@ export const config = convict({
       default: null,
       env: 'USER_AUTH_CLIENT_ID',
       nullable: process.env.USER_AUTH_DISABLED === 'true'
+    },
+    scope: {
+      doc: 'The scope required for the Microsoft Entra ID user to access dataverse',
+      format: String,
+      default: null,
+      env: 'USER_AUTH_SCOPE',
+      nullable: process.env.USER_AUTH_DISABLED === 'true'
+    }
+  },
+  dal: {
+    url: {
+      doc: 'URL for Data Access Layer (DAL)',
+      format: String,
+      default: null,
+      env: 'DAL_URL'
+    },
+    email: {
+      doc: 'Email address to send to DAL for local dev/testing when auth is disabled',
+      format: String,
+      default: null,
+      env: 'DAL_EMAIL',
+      nullable: process.env.USER_AUTH_DISABLED !== 'true'
     }
   },
   iframeMessenger: {
@@ -45,6 +67,14 @@ export const config = convict({
       default: null,
       env: 'IFRAME_MESSENGER_CRM_ORIGIN',
       nullable: true
+    }
+  },
+  dataverse: {
+    url: {
+      doc: 'URL for Dataverse',
+      format: String,
+      default: null,
+      env: 'DATAVERSE_URL'
     }
   }
 })
