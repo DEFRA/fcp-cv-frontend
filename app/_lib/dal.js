@@ -8,7 +8,6 @@ export async function dalRequest({ query, variables }) {
     headers: {
       'content-type': 'application/json',
       email: await getEmailFromToken(await headers())
-      //   authorization: `Bearer ${token}` // TODO: Need to get a token for this!
     },
     body: JSON.stringify({
       query,

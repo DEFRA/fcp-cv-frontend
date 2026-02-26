@@ -1,7 +1,7 @@
 import { TZDate } from '@date-fns/tz'
 import { format } from 'date-fns'
 
-export function screamingSnakeToTitleCase(input) {
+export function uppercaseSnakeToTitleCase(input) {
   // Handle falsy / empty / non-string early
   if (!input || typeof input !== 'string') {
     return ''

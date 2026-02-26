@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { dalRequest } from '@/lib/dal'
-import { screamingSnakeToTitleCase } from '@/lib/formatters'
+import { uppercaseSnakeToTitleCase } from '@/lib/formatters'
 
 const query = `#graphql
   query CVLinkedContactsDetail($sbi: ID!, $crn: ID!) {
@@ -55,8 +55,8 @@ export async function GET(_, { params }) {
     ],
     permissions: response?.data?.business?.customer?.permissionGroups.map(
       (item) => ({
-        dt: screamingSnakeToTitleCase(item.id),
-        dd: screamingSnakeToTitleCase(item.level),
+        dt: uppercaseSnakeToTitleCase(item.id),
+        dd: uppercaseSnakeToTitleCase(item.level),
         expand: item.functions
       })
     )

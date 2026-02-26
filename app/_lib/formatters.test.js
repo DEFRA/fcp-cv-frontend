@@ -1,66 +1,66 @@
 import { TZDate } from '@date-fns/tz'
 import { describe, expect, it } from 'vitest'
 
-import { formatDate, screamingSnakeToTitleCase } from '@/lib/formatters'
+import { formatDate, uppercaseSnakeToTitleCase } from '@/lib/formatters'
 
 describe('screamingSnakeToTitleCase', () => {
   it('converts standard SCREAMING_SNAKE_CASE → Title Case', () => {
-    expect(screamingSnakeToTitleCase('USER_FULL_NAME')).toBe('User Full Name')
-    expect(screamingSnakeToTitleCase('CREATED_AT')).toBe('Created At')
-    expect(screamingSnakeToTitleCase('VAT_NUMBER')).toBe('Vat Number')
+    expect(uppercaseSnakeToTitleCase('USER_FULL_NAME')).toBe('User Full Name')
+    expect(uppercaseSnakeToTitleCase('CREATED_AT')).toBe('Created At')
+    expect(uppercaseSnakeToTitleCase('VAT_NUMBER')).toBe('Vat Number')
   })
 
   it('handles single word', () => {
-    expect(screamingSnakeToTitleCase('EMAIL')).toBe('Email')
-    expect(screamingSnakeToTitleCase('ID')).toBe('Id')
-    expect(screamingSnakeToTitleCase('T')).toBe('T')
+    expect(uppercaseSnakeToTitleCase('EMAIL')).toBe('Email')
+    expect(uppercaseSnakeToTitleCase('ID')).toBe('Id')
+    expect(uppercaseSnakeToTitleCase('T')).toBe('T')
   })
 
   it('handles multiple / consecutive underscores', () => {
-    expect(screamingSnakeToTitleCase('START__END___TIME')).toBe(
+    expect(uppercaseSnakeToTitleCase('START__END___TIME')).toBe(
       'Start End Time'
     )
-    expect(screamingSnakeToTitleCase('___')).toBe('')
-    expect(screamingSnakeToTitleCase('HELLO___WORLD__')).toBe('Hello World')
+    expect(uppercaseSnakeToTitleCase('___')).toBe('')
+    expect(uppercaseSnakeToTitleCase('HELLO___WORLD__')).toBe('Hello World')
   })
 
   it('returns empty string for falsy / emptyish input', () => {
-    expect(screamingSnakeToTitleCase('')).toBe('')
-    expect(screamingSnakeToTitleCase(null)).toBe('')
-    expect(screamingSnakeToTitleCase(undefined)).toBe('')
-    expect(screamingSnakeToTitleCase(0)).toBe('')
+    expect(uppercaseSnakeToTitleCase('')).toBe('')
+    expect(uppercaseSnakeToTitleCase(null)).toBe('')
+    expect(uppercaseSnakeToTitleCase(undefined)).toBe('')
+    expect(uppercaseSnakeToTitleCase(0)).toBe('')
   })
 
   it('handles already-lowercase input', () => {
-    expect(screamingSnakeToTitleCase('user_full_name')).toBe('User Full Name')
-    expect(screamingSnakeToTitleCase('created_at')).toBe('Created At')
+    expect(uppercaseSnakeToTitleCase('user_full_name')).toBe('User Full Name')
+    expect(uppercaseSnakeToTitleCase('created_at')).toBe('Created At')
   })
 
   it('preserves numbers and treats them as part of word', () => {
-    expect(screamingSnakeToTitleCase('API_V2_KEY')).toBe('Api V2 Key')
-    expect(screamingSnakeToTitleCase('USER_2FA_ENABLED')).toBe(
+    expect(uppercaseSnakeToTitleCase('API_V2_KEY')).toBe('Api V2 Key')
+    expect(uppercaseSnakeToTitleCase('USER_2FA_ENABLED')).toBe(
       'User 2fa Enabled'
     )
-    expect(screamingSnakeToTitleCase('X_API_TOKEN_2FA')).toBe('X Api Token 2fa')
+    expect(uppercaseSnakeToTitleCase('X_API_TOKEN_2FA')).toBe('X Api Token 2fa')
   })
 
   it('handles mixed case + numbers + special chars', () => {
-    expect(screamingSnakeToTitleCase('HTTP_STATUS_429_TOO_MANY_REQUESTS')).toBe(
+    expect(uppercaseSnakeToTitleCase('HTTP_STATUS_429_TOO_MANY_REQUESTS')).toBe(
       'Http Status 429 Too Many Requests'
     )
-    expect(screamingSnakeToTitleCase('AWS_S3_BUCKET_NAME_V2')).toBe(
+    expect(uppercaseSnakeToTitleCase('AWS_S3_BUCKET_NAME_V2')).toBe(
       'Aws S3 Bucket Name V2'
     )
   })
 
   it('handles input with leading/trailing underscores', () => {
-    expect(screamingSnakeToTitleCase('_DEBUG_MODE_')).toBe('Debug Mode')
-    expect(screamingSnakeToTitleCase('__SECRET_KEY__')).toBe('Secret Key')
+    expect(uppercaseSnakeToTitleCase('_DEBUG_MODE_')).toBe('Debug Mode')
+    expect(uppercaseSnakeToTitleCase('__SECRET_KEY__')).toBe('Secret Key')
   })
 
   it('handles very short / single-letter words after split', () => {
-    expect(screamingSnakeToTitleCase('A_B_C')).toBe('A B C')
-    expect(screamingSnakeToTitleCase('X_Y_Z_1')).toBe('X Y Z 1')
+    expect(uppercaseSnakeToTitleCase('A_B_C')).toBe('A B C')
+    expect(uppercaseSnakeToTitleCase('X_Y_Z_1')).toBe('X Y Z 1')
   })
 })
 
