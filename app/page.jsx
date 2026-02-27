@@ -66,7 +66,7 @@ export default async function ConsolidatedViewPage({ searchParams }) {
             <ul className="list-disc list-inside ml-5">
               {customerLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="underline">
+                  <Link href={`${link.href}?${params}`} className="underline">
                     {link.name}
                   </Link>
                 </li>

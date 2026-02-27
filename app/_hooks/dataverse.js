@@ -19,3 +19,21 @@ export function useDataverseAccountIDToSBI() {
     }
   }, [data, setSearchParam])
 }
+
+export function useDataverseContactIDToCRN() {
+  const { searchParams, setSearchParam } = useSearchParams()
+
+  const typename = searchParams.get('typename')
+  const id = searchParams.get('id')
+  const crn = searchParams.get('crn')
+
+  const { data } = useDataverse(['contact', id], [typename === 'contact', !crn])
+
+  console.log(data)
+
+  useEffect(() => {
+    if (data?.rpa_capcustomerid) {
+      setSearchParam('crn', data.rpa_capcustomerid)
+    }
+  }, [data, setSearchParam])
+}
