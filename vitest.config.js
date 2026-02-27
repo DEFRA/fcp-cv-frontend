@@ -24,7 +24,9 @@ export default defineConfig({
         'app/_hooks',
         'app/linked-contacts',
         'app/county-parish-holdings',
-        'app/applications'
+        'app/applications',
+        'app/linked-businesses',
+        'app/authenticate'
       ],
       include: 'app/**/*.{js,jsx}',
       provider: 'v8',

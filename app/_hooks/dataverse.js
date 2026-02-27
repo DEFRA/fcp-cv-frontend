@@ -29,8 +29,6 @@ export function useDataverseContactIDToCRN() {
 
   const { data } = useDataverse(['contact', id], [typename === 'contact', !crn])
 
-  console.log(data)
-
   useEffect(() => {
     if (data?.rpa_capcustomerid) {
       setSearchParam('crn', data.rpa_capcustomerid)

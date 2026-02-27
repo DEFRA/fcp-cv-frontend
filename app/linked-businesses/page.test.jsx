@@ -1,89 +1,89 @@
+import { AuthProvider } from '@/components/auth/auth-provider'
+import { http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
-
+import { userEvent } from 'vitest/browser'
+import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
-describe('LinkedBusinessesPage tests', () => {
-  it('renders the page component with content', async () => {
-    const { getByRole } = await render(<Page />)
+describe('Linked Businesses page tests', () => {
+  testWithWorker(
+    'renders the page component with content',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/contact/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ rpa_capcustomerid: '12345678' })
+        ),
+        http.get('/api/dal/linked-businesses/list/12345678', () =>
+          HttpResponse.json([
+            { sbi: '1111111111', name: 'Business Name One' },
+            { sbi: '2222222222', name: 'Business Name Two' }
+          ])
+        ),
+        http.get('/api/dal/linked-businesses/details/12345678/1111111111', () =>
+          HttpResponse.json({
+            name: 'Business Name One',
+            details: [
+              { dt: 'SBI', dd: '1111111111' },
+              { dt: 'Role', dd: 'Business Partner' }
+            ],
+            permissions: [
+              {
+                dt: 'Permission Title',
+                dd: 'Permission Description',
+                expand: ['Permission Function']
+              }
+            ]
+          })
+        ),
+        http.get('/api/dal/linked-businesses/details/12345678/2222222222', () =>
+          HttpResponse.json({})
+        )
+      )
 
-    await expect
-      .element(getByRole('heading', { name: 'Linked businesses' }))
-      .toBeInTheDocument()
+      // Params that are set by CRM
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=contact`
+      )
 
-    /* Uncomment and test when Linked businesses page is complete
-    await expect
-      .element(getByLabelText('Search'))
-      .toBeInTheDocument()
+      const { getByRole, getByText, getByPlaceholder } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
 
-    await expect
-      .element(getByRole( 'textbox' )) // Search box
-      .toBeInTheDocument()
+      await expect
+        .element(getByRole('heading', { name: 'Linked Businesses' }))
+        .toBeInTheDocument()
 
-    await expect
-      .element(getByRole('table')) // This will fail/report incorrectly for pages with more than one table, need a solution in those situations
-      .toBeInTheDocument()
+      // Table present with correct columns
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'SBI' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Name' }))
+        .toBeInTheDocument()
 
-    await expect
-      .element(getByRole('button', { name: 'SBI'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // Click a row
+      await getByText('1111111111').click()
 
-    await expect
-      .element(getByRole('button', { name: 'Name'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // Click to expand permission
+      await getByRole('button', {
+        name: 'Permission Description'
+      }).click()
+      await expect.element(getByText('Permission Function')).toBeInTheDocument()
 
-    // TODO
-    // And the first item of the 'Businesses' table is selected
+      // Search for an item
+      await userEvent.type(getByPlaceholder('Enter search term'), '2222222222')
 
-    const selectedBusinessName = 'Business name' // Need to seed some data and add this
-    await expect
-      .element(getByRole( 'heading', { name: selectedBusinessName })) // This text selector is data-reliant, brittle?
-      .toHaveClass(/font-bold/)
+      // Click result
+      await getByText('2222222222').click()
 
-    await expect
-      .element(getByText('SBI')) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText('Role')) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText('SBI')) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByText('Role')) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByRole('link', { name: 'View business' }))
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole('table')) // Permissions table (needs to be refactored, there are more than one table on this page)
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole('button', { name: 'Permission'})) // Table header is a th/button/span
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole('button', { name: 'Level'})) // Table header is a th/button/span
-      .toBeInTheDocument()
-
-    // TODO
-    // And the first item of the 'permissions' table is selected
-
-    await expect
-      .element(getByRole('table')) // Permissions description table (needs to be refactored, there are more than one table on this page)
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole('button', { name: 'Permission Description'})) // Table header is a th/button/span
-      .toBeInTheDocument()
-
-    // TODO
-    // And the first item of the 'permissions' table is selected
-    */
-  })
+      // Clear result
+      await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
 })
