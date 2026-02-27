@@ -16,7 +16,8 @@ export default defineConfig({
     ...base.resolve,
     alias: {
       ...base.resolve.alias,
-      'next/link': '/test/mocks/next-link-mock.jsx'
+      'next/link': '/test/mocks/next-link-mock.jsx',
+      'next/navigation': '/test/mocks/next-navigation-mock.js'
     }
   },
   test: {

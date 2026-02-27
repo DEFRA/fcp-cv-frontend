@@ -1,102 +1,125 @@
+import { http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
+import { userEvent } from 'vitest/browser'
 
+import { AuthProvider } from '@/components/auth/auth-provider'
+import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
 describe('CountyParishHoldingsPage tests', () => {
-  it('renders the page component with content', async () => {
-    const { getByRole } = await render(<Page />)
+  testWithWorker(
+    'renders the page component with content',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ rpa_sbinumber: '12345678' })
+        ),
+        http.get('/api/dal/county-parish-holdings/12345678', () =>
+          HttpResponse.json({
+            details: {
+              '11/222/3333': [
+                {
+                  dd: 'Someplace',
+                  dt: 'Parish'
+                },
+                {
+                  dd: 'Start Date',
+                  dt: '01/01/2000'
+                },
+                {
+                  dd: 'End Date',
+                  dt: '31/12/2000'
+                },
+                {
+                  dd: '111111, 222222',
+                  dt: 'Coordinates (x, y)'
+                },
+                {
+                  dd: 'SPECIES',
+                  dt: 'Species'
+                },
+                {
+                  dd: 'ADDRESS',
+                  dt: 'Address'
+                }
+              ]
+            },
+            list: [
+              {
+                address: 'ADDRESS',
+                cphNumber: '11/222/3333',
+                endDate: '31/12/2000',
+                parish: 'Someplace',
+                species: 'SPECIES',
+                startDate: '01/01/2000',
+                xCoordinate: 111111,
+                yCoordinate: 222222
+              },
+              {
+                address: 'ADDRESS',
+                cphNumber: '00/111/22222',
+                endDate: '31/12/2000',
+                parish: 'Some Town',
+                species: 'SPECIES',
+                startDate: '01/01/2000',
+                xCoordinate: 111111,
+                yCoordinate: 222222
+              }
+            ]
+          })
+        )
+      )
 
-    await expect
-      .element(getByRole('heading', { name: 'County Parish Holdings' }))
-      .toBeInTheDocument()
+      // Params that are set by CRM
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
 
-    /* Uncomment and test when CPH page is complete
-    await expect
-      .element(getByRole('table')) // This will fail/report incorrectly for pages with more than one table, need a solution in those situations
-      .toBeInTheDocument()
+      const { getByRole, getByText, getByPlaceholder, getByLabelText } =
+        await render(
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+          </AuthProvider>
+        )
 
-    await expect
-      .element(getByRole('button', { name: 'CPH number'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      await expect
+        .element(getByRole('heading', { name: 'County Parish Holdings' }))
+        .toBeInTheDocument()
 
-    await expect
-      .element(getByRole('button', { name: 'Parish'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // Table present with correct columns
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'CPH number' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Parish' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Start Date' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'End Date' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Species' }))
+        .not.toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Address' }))
+        .not.toBeInTheDocument()
 
-    await expect
-      .element(getByRole('button', { name: 'Start Date'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // Click a row
+      await getByText('00/111/22222').click()
 
-    await expect
-      .element(getByRole('button', { name: 'End Date'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // Search for an item
+      await userEvent.type(getByPlaceholder('Enter search term'), '11/222/3333')
 
-    // TODO
-    // And the first item of the 'CPH' table is selected
+      // Click result
+      await getByText('11/222/3333').click()
 
-    await expect
-      .element(getByLabelText('Search'))
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole( 'textbox' )) // Search box
-      .toBeInTheDocument()
-
-    // TODO
-    // And I see a CPH Details pane on the right
-
-    const selectedCph = 'My cph' // Need to seed some data and add this
-    await expect
-      .element(getByRole( 'heading', { name: 'CPH Number: ' + selectedCph })) // This text selector is data-reliant, brittle?
-      .toHaveClass(/font-bold/)
-
-   await expect
-     .element(getByText('Parish'))
-      .toBeInTheDocument()
-
-   await expect
-     .element(getByText('Start Date'))
-      .toBeInTheDocument()
-
-   await expect
-     .element(getByText('End Date'))
-      .toBeInTheDocument()
-
-   await expect
-     .element(getByText('Coordinates (x, y)'))
-      .toBeInTheDocument()
-
-   await expect
-     .element(getByText('Species'))
-      .toBeInTheDocument()
-
-   await expect
-     .element(getByText('Address'))
-      .toBeInTheDocument()
-
-   await expect
-     .element(getByLabel('Parish'))
-     .not.toBeEmpty()
-
-   await expect
-     .element(getByLabel('Start Date'))
-     .not.toBeEmpty()
-
-   await expect
-     .element(getByLabel('End Date'))
-     .not.toBeEmpty()
-
-   await expect
-     .element(getByLabel('Coordinates (x, y)'))
-     .not.toBeEmpty()
-
-   await expect
-     .element(getByLabel('Species'))
-     .not.toBeEmpty()
-
-   await expect
-     .element(getByLabel('Address'))
-     .not.toBeEmpty()
-  */
-  })
+      await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
 })
