@@ -1,147 +1,110 @@
+import { http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
+import { userEvent } from 'vitest/browser'
 
+import { AuthProvider } from '@/components/auth/auth-provider'
+import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
 describe('ApplicationsPage tests', () => {
-  it('renders the page component with content', async () => {
-    const { getByRole } = await render(<Page />)
+  testWithWorker(
+    'renders the page component with content',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ rpa_sbinumber: '12345678' })
+        ),
+        http.get('/api/dal/applications/12345678', () =>
+          HttpResponse.json({
+            list: [
+              {
+                id: '5836775937',
+                year: 2022,
+                name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
+                status: 'PAID'
+              },
+              {
+                id: '5836775938',
+                year: 2022,
+                name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
+                status: 'PAID'
+              }
+            ],
+            details: {
+              5836775937: {
+                name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
+                summary: [
+                  { dt: 'Application ID', dd: '5836775937' },
+                  {
+                    dt: 'Scheme',
+                    dd: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO'
+                  },
+                  { dt: 'Year', dd: 2022 },
+                  { dt: 'Status', dd: 'PAID' },
+                  { dt: 'Status (Portal)', dd: null },
+                  { dt: 'Submitted Date', dd: '31/12/2022' },
+                  { dt: 'Agreement References', dd: ['3242226112'] },
+                  { dt: 'Last Movement', dd: 'TO PAID' },
+                  { dt: 'Last Movement Date/Time', dd: '31/12/2022' }
+                ],
+                movementHistory: [
+                  {
+                    id: '6338450300',
+                    name: 'TO PAID',
+                    timestamp: '2022-12-31T06:30:16.953Z',
+                    checkStatus: 'PASSED'
+                  }
+                ]
+              }
+            }
+          })
+        )
+      )
 
-    await expect
-      .element(getByRole('heading', { name: 'Applications list' }))
-      .toBeInTheDocument()
+      // Params that are set by CRM
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
 
-    /* Uncomment and test when applications page is complete
+      const { getByRole, getByText, getByPlaceholder, getByLabelText } =
+        await render(
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+          </AuthProvider>
+        )
 
-    await expect
-      .element(getByRole('table')) // Needs to be refactored as we have multiple tables on this screen ('Applications list' table)
-      .toBeInTheDocument()
+      await expect
+        .element(getByRole('heading', { name: 'Applications', exact: true }))
+        .toBeInTheDocument()
 
-    await expect
-      .element(getByRole('button', { name: 'Application ID'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // Table present with correct columns
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Application ID' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Year' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Application Name' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Status' }))
+        .toBeInTheDocument()
 
-    await expect
-      .element(getByRole('button', { name: 'Year'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // // Click a row
+      await getByText('5836775937').click()
 
-    await expect
-      .element(getByRole('button', { name: 'Application Name'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // // Search for an item
+      await userEvent.type(getByPlaceholder('Enter search term'), '5836775938')
 
-    await expect
-      .element(getByRole('button', { name: 'Status'})) // Table header is a th/button/span
-      .toBeInTheDocument()
+      // // Click result
+      await getByText('5836775938').click()
 
-    // TODO
-    // And the first item of the 'Applications' table is selected
-
-    await expect
-      .element(getByLabelText('Search'))
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole( 'textbox' )) // Search box
-      .toBeInTheDocument()
-
-    // TODO
-    // And there is an Application Details pane on the right-hand pane
-
-    const selectedApplicationName = 'My name' // Need to seed some data and add this
-    await expect
-      .element(getByRole( 'heading', { name: selectedApplicationName })) // This text selector is data-reliant, brittle?
-      .toHaveClass(/font-bold/)
-
-    await expect
-      .element(getByText( 'Application ID' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Scheme' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Year' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Status' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Status (Portal)' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Submitted Date' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Agreement References' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Last Movement' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByText( 'Last Movement Date/Time' )) // Label
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByLabel( 'Application ID' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Scheme' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Year' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Status' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Status (Portal)' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Submitted Date' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Agreement References' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Last Movement' )) // Value
-      .not.toBeEmpty()
-
-    await expect
-      .element(getByLabel( 'Last Movement Date/Time' )) // Value
-      .not.toBeEmpty()
-
-    // TODO
-    // And the Application Details pane has a Movement History section
-
-    await expect
-      .element(getByRole('table')) // Needs to be refactored as we have multiple tables on this screen ('Movements History' table)
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole('button', { name: 'Date/Time'})) // Table header is a th/button/span
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole('button', { name: 'Movement'})) // Table header is a th/button/span
-      .toBeInTheDocument()
-
-    await expect
-      .element(getByRole('button', { name: 'Check'})) // Table header is a th/button/span
-      .toBeInTheDocument()
-
-    */
-  })
+      await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
 })

@@ -14,8 +14,6 @@ export function ApplicationsList() {
     ['applications', searchParams.get('sbi')]
   )
 
-  console.log(data)
-
   return (
     <Table
       loading={isLoading}
