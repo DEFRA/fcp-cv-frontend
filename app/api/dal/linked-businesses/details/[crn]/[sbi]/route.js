@@ -4,7 +4,7 @@ import { dalRequest } from '@/lib/dal'
 import { uppercaseSnakeToTitleCase } from '@/lib/formatters'
 
 const query = `#graphql
-  query CVLinkedBusinessDetail($sbi: ID!, $crn: ID!) {
+  query CVLinkedBusinessesDetails($sbi: ID!, $crn: ID!) {
     customer(crn: $crn) {
       business(sbi: $sbi) {
         name

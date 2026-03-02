@@ -6,6 +6,49 @@ import { AuthProvider } from '@/components/auth/auth-provider'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
+const applications = [
+  {
+    id: '5836775937',
+    year: 2022,
+    name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
+    status: 'PAID'
+  },
+  {
+    id: '5836775938',
+    year: 2022,
+    name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
+    status: 'PAID'
+  }
+]
+
+const applicationDetails = {
+  5836775937: {
+    name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
+    summary: [
+      { dt: 'Application ID', dd: '5836775937' },
+      {
+        dt: 'Scheme',
+        dd: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO'
+      },
+      { dt: 'Year', dd: 2022 },
+      { dt: 'Status', dd: 'PAID' },
+      { dt: 'Status (Portal)', dd: null },
+      { dt: 'Submitted Date', dd: '31/12/2022' },
+      { dt: 'Agreement References', dd: ['3242226112'] },
+      { dt: 'Last Movement', dd: 'TO PAID' },
+      { dt: 'Last Movement Date/Time', dd: '31/12/2022' }
+    ],
+    movementHistory: [
+      {
+        id: '6338450300',
+        name: 'TO PAID',
+        timestamp: '2022-12-31T06:30:16.953Z',
+        checkStatus: 'PASSED'
+      }
+    ]
+  }
+}
+
 describe('ApplicationsPage tests', () => {
   testWithWorker(
     'renders the page component with content',
@@ -17,47 +60,8 @@ describe('ApplicationsPage tests', () => {
         ),
         http.get('/api/dal/applications/12345678', () =>
           HttpResponse.json({
-            list: [
-              {
-                id: '5836775937',
-                year: 2022,
-                name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-                status: 'PAID'
-              },
-              {
-                id: '5836775938',
-                year: 2022,
-                name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-                status: 'PAID'
-              }
-            ],
-            details: {
-              5836775937: {
-                name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-                summary: [
-                  { dt: 'Application ID', dd: '5836775937' },
-                  {
-                    dt: 'Scheme',
-                    dd: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO'
-                  },
-                  { dt: 'Year', dd: 2022 },
-                  { dt: 'Status', dd: 'PAID' },
-                  { dt: 'Status (Portal)', dd: null },
-                  { dt: 'Submitted Date', dd: '31/12/2022' },
-                  { dt: 'Agreement References', dd: ['3242226112'] },
-                  { dt: 'Last Movement', dd: 'TO PAID' },
-                  { dt: 'Last Movement Date/Time', dd: '31/12/2022' }
-                ],
-                movementHistory: [
-                  {
-                    id: '6338450300',
-                    name: 'TO PAID',
-                    timestamp: '2022-12-31T06:30:16.953Z',
-                    checkStatus: 'PASSED'
-                  }
-                ]
-              }
-            }
+            list: applications,
+            details: applicationDetails
           })
         )
       )
@@ -99,10 +103,13 @@ describe('ApplicationsPage tests', () => {
       await getByText('5836775937').click()
 
       // // Search for an item
-      await userEvent.type(getByPlaceholder('Enter search term'), '5836775938')
+      await userEvent.type(
+        getByPlaceholder('Enter search term'),
+        applications[1].id
+      )
 
       // // Click result
-      await getByText('5836775938').click()
+      await getByText(applications[1].id).click()
 
       await getByRole('button', { name: 'Clear search' }).click()
     }

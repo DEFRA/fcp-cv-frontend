@@ -36,7 +36,7 @@ describe('Applications API route', () => {
     )
   })
 
-  test('should sort customers by first then last name', async () => {
+  test('should return applications', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         business: {

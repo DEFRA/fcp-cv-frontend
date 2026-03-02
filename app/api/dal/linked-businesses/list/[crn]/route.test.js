@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 
 import { GET } from './route'
 
-describe('Linked Contacts List API route', () => {
+describe('Linked Businesses List API route', () => {
   beforeAll(() => {
     vi.mock('next/headers', () => ({
       headers: () => ({
@@ -19,9 +19,9 @@ describe('Linked Contacts List API route', () => {
     }))
   })
 
-  test('should make dal request with sbi param', async () => {
+  test('should make dal request with crm param', async () => {
     const response = await GET(new NextRequest('http://localhost'), {
-      params: Promise.resolve({ sbi: 'sbiParam', crn: 'crnParam' })
+      params: Promise.resolve({ crn: 'crnParam' })
     })
 
     expect(response.status).toBe(200)
@@ -30,13 +30,13 @@ describe('Linked Contacts List API route', () => {
     expect(dalRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         variables: expect.objectContaining({
-          sbi: 'sbiParam'
+          crn: 'crnParam'
         })
       })
     )
   })
 
-  test('should sort customers by first then last name', async () => {
+  test('should return linked businesses', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         customer: {

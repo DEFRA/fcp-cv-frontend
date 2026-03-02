@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 
 import { GET } from './route'
 
-describe('Linked Contacts Details API route', () => {
+describe('Linked Businesses Details API route', () => {
   beforeAll(() => {
     vi.mock('next/headers', () => ({
       headers: () => ({
@@ -36,7 +36,7 @@ describe('Linked Contacts Details API route', () => {
     )
   })
 
-  test('should sort customers by first then last name', async () => {
+  test('should return linked businesses', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         customer: {

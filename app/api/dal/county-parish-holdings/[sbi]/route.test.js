@@ -36,7 +36,7 @@ describe('County Parish Holdings API route', () => {
     )
   })
 
-  test('should sort customers by first then last name', async () => {
+  test('should return CPH data', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         business: {

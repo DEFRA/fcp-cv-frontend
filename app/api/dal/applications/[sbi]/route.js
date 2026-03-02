@@ -31,60 +31,40 @@ export async function GET(_, { params }) {
     variables: await params
   })
 
-  return Response.json(
-    (response?.data?.business?.applications || []).reduce(
-      (
-        { list, details },
+  const applications = response?.data?.business?.applications || []
+
+  const list = []
+  const details = {}
+
+  for (const application of applications) {
+    const lastMovement = application.transitionHistory?.at(-1)
+
+    list.push({
+      id: application.id,
+      year: application.year,
+      name: application.name,
+      status: application.status
+    })
+
+    details[application.id] = {
+      name: application.name,
+      summary: [
+        { dt: 'Application ID', dd: application.id },
+        { dt: 'Scheme', dd: application.scheme },
+        { dt: 'Year', dd: application.year },
+        { dt: 'Status', dd: application.status },
+        { dt: 'Status (Portal)', dd: application.portalStatus },
+        { dt: 'Submitted Date', dd: formatDate(application.submissionDate) },
+        { dt: 'Agreement References', dd: application.agreementReferences },
+        { dt: 'Last Movement', dd: lastMovement?.name },
         {
-          id,
-          year,
-          name,
-          status,
-          scheme,
-          portalStatus,
-          submissionDate,
-          agreementReferences,
-          transitionHistory
+          dt: 'Last Movement Date/Time',
+          dd: formatDate(lastMovement?.timestamp)
         }
-      ) => {
-        const lastMovement = transitionHistory[transitionHistory.length - 1]
-        return {
-          list: [
-            ...list,
-            {
-              id: id,
-              year: year,
-              name: name,
-              status: status
-            }
-          ],
-          details: {
-            ...details,
-            [id]: {
-              name,
-              summary: [
-                { dt: 'Application ID', dd: id },
-                { dt: 'Scheme', dd: scheme },
-                { dt: 'Year', dd: year },
-                { dt: 'Status', dd: status },
-                { dt: 'Status (Portal)', dd: portalStatus },
-                { dt: 'Submitted Date', dd: formatDate(submissionDate) },
-                { dt: 'Agreement References', dd: agreementReferences },
-                { dt: 'Last Movement', dd: lastMovement.name },
-                {
-                  dt: 'Last Movement Date/Time',
-                  dd: formatDate(lastMovement.timestamp)
-                }
-              ],
-              movementHistory: transitionHistory
-            }
-          }
-        }
-      },
-      {
-        list: [],
-        details: {}
-      }
-    )
-  )
+      ],
+      movementHistory: application.transitionHistory
+    }
+  }
+
+  return Response.json({ list, details })
 }

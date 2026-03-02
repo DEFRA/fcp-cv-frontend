@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 
 import { GET } from './route'
 
-describe('County Parish Holdings API route', () => {
+describe('Authenticate API route', () => {
   beforeAll(() => {
     vi.mock('next/headers', () => ({
       headers: () => ({
@@ -19,7 +19,7 @@ describe('County Parish Holdings API route', () => {
     }))
   })
 
-  test('should make dal request with sbi param', async () => {
+  test('should make dal request with crn param', async () => {
     const response = await GET(new NextRequest('http://localhost'), {
       params: new Promise((resolve) => resolve({ crn: 'crnParam' }))
     })
@@ -36,7 +36,7 @@ describe('County Parish Holdings API route', () => {
     )
   })
 
-  test('should sort customers by first then last name', async () => {
+  test('should return memorable questions', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         customer: {
