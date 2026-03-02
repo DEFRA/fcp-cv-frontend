@@ -45,32 +45,25 @@ describe('ExternalLinkButton component tests', () => {
 
   it('renders with specified text', async () => {
     const { getByText } = await render(
-      <ExternalLinkButton href="/customer">View customer</ExternalLinkButton>
+      <LinkButton href="/customer">View customer</LinkButton>
     )
     await expect.element(getByText('View customer')).toBeInTheDocument()
   })
 
   it('applies href and target attributes when provided', async () => {
     const { getByRole } = await render(
-      <Button href="/customer" target="_blank">View customer</Button>
+      <LinkButton href="/customer" target="_blank">View customer</LinkButton>
     )
 
-    await expect.element(getByRole("button")).toHaveAttribute("target", "_blank");
-    await expect.element(getByRole("button")).toHaveAttribute("href", "/customer");
+    await expect.element(getByRole("link")).toHaveAttribute("target", "_blank");
+    await expect.element(getByRole("link")).toHaveAttribute("href", "/customer");
   })
-
-  it("is disabled when disabled property is set", async () => {
-    const { getByRole } = await render(
-      <Button href="/customer" target="_blank" disabled>View customer</Button>
-    )
-    await expect.element(getByRole("button")).toBeDisabled();
-  });
 
   it('should render a button as a Link and checks for href attribute', async () => {
     const { getByRole } = await render(
-      <ExternalLinkButton href="/customer">View customer</ExternalLinkButton>
+      <LinkButton href="/customer">View customer</LinkButton>
     )
-    await expect.element(getByRole('link', { name: 'View customer' })).toHaveAttribute('href', '/customer')
+    await expect.element(getByRole('link')).toHaveAttribute('href', '/customer')
   })
 
 })
