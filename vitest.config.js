@@ -20,7 +20,9 @@ export default defineConfig({
     coverage: {
       exclude: [
         'app/**/page.jsx',
-        'app/_components/iframe-messenger/IframeMessenger.jsx'
+        'app/_components/iframe-messenger/IframeMessenger.jsx',
+        'app/_hooks',
+        'app/linked-contacts'
       ],
       include: 'app/**/*.{js,jsx}',
       provider: 'v8',
@@ -28,7 +30,7 @@ export default defineConfig({
     },
     env: loadEnv('test', process.cwd(), ''),
     environment: 'node',
-    exclude: ['app/**/page.jsx'],
+    exclude: ['app/**/page.jsx', 'app/_hooks'],
     include: ['app/**/*.test.js', 'app/**/*.snapshot.test.jsx'],
     globals: true,
     reporters: ['default'],

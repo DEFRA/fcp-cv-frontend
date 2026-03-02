@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`KeyValueList snapshot > matches the rendered structure 1`] = `"<div class="space-y-4"><h2 class="text-3xl font-bold">Land Summary</h2><dl class="grid gap-y-1"><div class="grid grid-cols-[1fr_auto] gap-x-10"><dt class="font-bold">Total Number of Parcels:</dt><dd class="text-right tabular-nums">10</dd></div><div class="grid grid-cols-[1fr_auto] gap-x-10"><dt class="font-bold">Total Area (ha):</dt><dd class="text-right tabular-nums">583.03</dd></div><div class="grid grid-cols-[1fr_auto] gap-x-10"><dt class="font-bold">Total Parcels With Pending Customer Notified Land Changes:</dt><dd class="text-right tabular-nums">0</dd></div></dl></div>"`;

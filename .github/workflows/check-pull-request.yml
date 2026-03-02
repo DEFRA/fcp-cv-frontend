@@ -26,18 +26,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: |
+          npm audit --omit=dev
           npm ci
           npm run lint
-          set +e
-          npm test 2> >( tee test.out >&2 )
-          [ `grep '^ERROR: Coverage for' -c test.out ` -eq 9 ] || \
-            ( echo 'FAILED: Test or coverage issue' && exit 1 )
-      # The above ☝️ checks the test output for any test coverage failures
-      # (i.e. lines that start with "ERROR: Coverage for") and counts them.
-      # If there are more than 9 such lines, it indicates a new problem with
-      # test coverage and the script will exit with an error.
-      # NOTE: this is only necessary due to a bug in `vitest` that does not
-      # fully honour threshold settings in the config file! 🪲
+          npm test
 
       - name: Upload Unit Test Coverage Report
         if: always()

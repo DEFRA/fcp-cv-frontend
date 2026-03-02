@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config'
 import { playwright } from '@vitest/browser-playwright'
+import { defineConfig } from 'vitest/config'
 
 import base from './vitest.config.js'
 
@@ -34,14 +34,14 @@ export default defineConfig({
       all: true,
       clean: false,
       exclude: ['app/_components/iframe-messenger/IframeMessenger.jsx'],
-      include: ['app/**/*.jsx'],
+      include: ['app/**/*.jsx', 'app/_hooks/*.js'],
       reporter: [['html'], ['json', { file: 'client-coverage.json' }]]
     },
     exclude: [
       'app/**/*.snapshot.test.jsx',
       'app/_components/iframe-messenger/IframeMessenger.test.jsx'
     ],
-    include: ['app/**/*.test.jsx'],
+    include: ['app/**/*.test.jsx', 'app/_hooks/*.test.js'],
     reporters: ['default'],
     outputFile: { blob: 'coverage/merge/client-coverage.blob' },
     setupFiles: './test/setup-browser.jsx',

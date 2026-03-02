@@ -5,7 +5,7 @@ import { PublicClientApplication } from '@azure/msal-browser'
 import { MsalProvider } from '@azure/msal-react'
 import { createContext, useContext, useState } from 'react'
 
-const context = createContext({ isDisabled: false })
+const context = createContext({ isDisabled: false, authenticationRequest: {} })
 
 export function AuthProvider({ children, config }) {
   const [instance] = useState(() =>
@@ -24,7 +24,12 @@ export function AuthProvider({ children, config }) {
   )
 
   return (
-    <context.Provider value={{ isDisabled: config.disabled }}>
+    <context.Provider
+      value={{
+        isDisabled: config.disabled,
+        authenticationRequest: { scopes: [config.scope] }
+      }}
+    >
       {config.disabled ? (
         <>{children}</>
       ) : (

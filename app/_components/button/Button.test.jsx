@@ -1,7 +1,7 @@
 import { render } from 'vitest-browser-react'
 import { screen, fireEvent } from "@testing-library/react";
 
-import { Button, ExternalLinkButton } from './Button'
+import { Button, LinkButton } from './Button'
 
 describe('Button component tests', () => {
   it('renders with specified text', async () => {

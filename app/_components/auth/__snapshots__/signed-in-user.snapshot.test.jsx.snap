@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SignedInUser snapshot > renders lowercase username button when authenticated 1`] = `"<button class="inline-flex items-center justify-center gap-3 rounded-lg border shadow-sm border-gray-300 bg-white px-10 py-6 text-lg font-semibold text-gray-950 active:bg-gray-100 transition-colors cursor-pointer hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">john.smith@email.com</button>"`;
+exports[`SignedInUser snapshot > renders lowercase username button when authenticated 1`] = `"<button>john.smith@email.com</button>"`;
 
-exports[`SignedInUser snapshot > renders nothing when authenticated but no accounts exist 1`] = `"<button class="inline-flex items-center justify-center gap-3 rounded-lg border shadow-sm border-gray-300 bg-white px-10 py-6 text-lg font-semibold text-gray-950 active:bg-gray-100 transition-colors cursor-pointer hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"></button>"`;
+exports[`SignedInUser snapshot > renders nothing when authenticated but no accounts exist 1`] = `"<button></button>"`;
 
 exports[`SignedInUser snapshot > renders nothing when user is not authenticated 1`] = `""`;

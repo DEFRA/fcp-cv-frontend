@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import * as msalReact from '@azure/msal-react'
+import { vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
@@ -41,7 +41,8 @@ describe('AuthProvider component tests', () => {
       <AuthProvider
         config={{
           authority: 'https://login.microsoftonline.com/test-tenant',
-          redirectUri: 'http://localhost:3000'
+          redirectUri: 'http://localhost:3000',
+          scope: 'test-scope'
         }}
       >
         <div>Test child content</div>
@@ -67,7 +68,8 @@ describe('AuthProvider component tests', () => {
       <AuthProvider
         config={{
           authority: 'https://login.microsoftonline.com/test-tenant',
-          redirectUri: 'http://localhost:3000'
+          redirectUri: 'http://localhost:3000',
+          scope: 'test-scope'
         }}
       >
         <div data-testid="child">Hello World — protected content</div>
@@ -87,7 +89,7 @@ describe('AuthProvider component tests', () => {
     expect(msalReact.useMsalAuthentication().login).toHaveBeenCalledWith(
       'popup',
       {
-        scopes: ['User.Read']
+        scopes: ['test-scope']
       }
     )
   })
@@ -103,7 +105,8 @@ describe('AuthProvider component tests', () => {
       <AuthProvider
         config={{
           authority: 'https://login.microsoftonline.com/test-tenant',
-          redirectUri: 'http://localhost:3000'
+          redirectUri: 'http://localhost:3000',
+          scope: 'test-scope'
         }}
       >
         <p>Some content</p>

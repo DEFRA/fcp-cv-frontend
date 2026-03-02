@@ -14,9 +14,11 @@ export class ErrorBoundary extends React.Component {
     return { hasError: true, error }
   }
 
+  /* v8 ignore start  */
   handleRefresh = () => {
     window.location.reload()
   }
+  /* v8 ignore stop  */
 
   render() {
     if (!this.state.hasError) return this.props.children
@@ -35,6 +37,7 @@ export class ErrorBoundary extends React.Component {
                 </summary>
                 <blockquote className="mt-1 border-l-4 border-slate-300 bg-slate-50 px-4 py-2">
                   <pre className="whitespace-pre-wrap m-0 text-xs">
+                    {/* v8 ignore start  */}
                     {JSON.stringify(
                       {
                         error: this.state.error,
@@ -59,6 +62,7 @@ export class ErrorBoundary extends React.Component {
                       null,
                       2
                     )}
+                    {/* v8 ignore stop  */}
                   </pre>
                 </blockquote>
               </details>

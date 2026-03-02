@@ -1,0 +1,19 @@
+import { config } from '@/config'
+import { getEmailFromToken } from '@/lib/auth'
+import { headers } from 'next/headers'
+
+export async function dalRequest({ query, variables }) {
+  const response = await fetch(config.get('dal.url'), {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      email: await getEmailFromToken(await headers())
+    },
+    body: JSON.stringify({
+      query,
+      variables
+    })
+  })
+
+  return response.json()
+}

@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* Base font size in the CRM */
+html {
+  font-size: 14px;
+}
+
 :root {
   --primary: #009e43;
 }

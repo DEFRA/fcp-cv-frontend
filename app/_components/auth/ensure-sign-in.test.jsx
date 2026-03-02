@@ -9,7 +9,15 @@ const msalSession = { login, error: 'not-logged-in' }
 describe('EnsureSignIn component tests', () => {
   beforeAll(() => {
     vi.mock('@azure/msal-react', () => ({
+      MsalProvider: ({ children }) => <>{children}</>,
       useMsalAuthentication: () => msalSession
+    }))
+    vi.mock('@/components/auth/auth-provider', () => ({
+      useAuth: () => ({
+        authenticationRequest: {
+          scopes: ['test-scope']
+        }
+      })
     }))
   })
 
@@ -31,7 +39,7 @@ describe('EnsureSignIn component tests', () => {
     await expect.element(signInButton).toBeVisible()
     await signInButton.click()
     expect(login).toHaveBeenCalledWith('popup', {
-      scopes: ['User.Read']
+      scopes: ['test-scope']
     })
     await expect.element(getByRole('dialog')).not.toBeVisible()
   })
