@@ -1,5 +1,4 @@
 import { render } from 'vitest-browser-react'
-import user from '@testing-library/user-event';
 import packageJson from '../../../package.json' assert { type: 'json' }
 
 import { Main } from '@/components/main/main'
@@ -39,6 +38,7 @@ describe('Main component tests', () => {
     )
 
     /* TODDO - Focus on elements does not work here
+    // Required @testing-library/user-event for the code below anyway
     // Get the focus on the button
     await getByRole('button').click()
 

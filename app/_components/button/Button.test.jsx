@@ -1,5 +1,5 @@
 import { render } from 'vitest-browser-react'
-import { fireEvent, screen } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
 
 import { Button, ExternalLinkButton } from './Button'
 
@@ -16,7 +16,9 @@ describe('Button component tests', () => {
     const { getByText } = await render(
       <Button onClick={handleClick}>View customer</Button>
     )
-    await fireEvent.click(await screen.getByText("View customer"));
+
+    const vc = await getByText("View customer")
+    await vc.click()
     expect(handleClick).toHaveBeenCalledTimes(1);
   })
 
@@ -25,7 +27,8 @@ describe('Button component tests', () => {
     const { getByText } = await render(
       <Button onClick={handleClick} disabled>View customer</Button>
     )
-    await fireEvent.click(await screen.getByText("View customer"));
+
+    await fireEvent.click(screen.getByText("View customer"));
     await expect(handleClick).toHaveBeenCalledTimes(0);
   })
 
@@ -33,7 +36,7 @@ describe('Button component tests', () => {
     const { getByRole } = await render(
       <Button disabled>View customer</Button>
     )
-    await expect.element(screen.getByRole("button")).toBeDisabled();
+    await expect.element(getByRole("button")).toBeDisabled();
   });
 
 })
