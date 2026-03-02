@@ -14,5 +14,7 @@ export async function GET(_, { params }) {
     }
   )
 
-  return NextResponse.json(await response.json())
+  const data = await response.json()
+
+  return NextResponse.json({ sbi: data?.rpa_sbinumber })
 }

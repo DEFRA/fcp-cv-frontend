@@ -13,7 +13,7 @@ describe('ApplicationsPage tests', () => {
       worker.use(
         http.get(
           '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
-          () => HttpResponse.json({ rpa_sbinumber: '12345678' })
+          () => HttpResponse.json({ sbi: '12345678' })
         ),
         http.get('/api/dal/applications/12345678', () =>
           HttpResponse.json({

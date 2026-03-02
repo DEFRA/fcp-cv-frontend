@@ -13,6 +13,7 @@ export async function GET(_, { params }) {
       }
     }
   )
+  const data = await response.json()
 
-  return NextResponse.json(await response.json())
+  return NextResponse.json({ crn: data?.rpa_capcustomerid })
 }

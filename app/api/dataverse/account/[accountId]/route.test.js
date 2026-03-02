@@ -8,7 +8,7 @@ describe('Dataverse Account API route', () => {
     vi.stubGlobal('fetch', vi.fn())
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({
-        message: 'Test response'
+        rpa_sbinumber: '111111111'
       })
     })
 
@@ -43,6 +43,6 @@ describe('Dataverse Account API route', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(await response.json()).toStrictEqual({ message: 'Test response' })
+    expect(await response.json()).toStrictEqual({ sbi: '111111111' })
   })
 })

@@ -12,7 +12,7 @@ describe('Linked Businesses page tests', () => {
       worker.use(
         http.get(
           '/api/dataverse/contact/8b725f88-1562-4d4c-8c21-c185e46fa56c',
-          () => HttpResponse.json({ rpa_capcustomerid: '12345678' })
+          () => HttpResponse.json({ crn: '12345678' })
         ),
         http.get('/api/dal/linked-businesses/list/12345678', () =>
           HttpResponse.json([
