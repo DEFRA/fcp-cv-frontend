@@ -174,7 +174,8 @@ function TableInner({
   onRowClick,
   onClearClick,
   selectedRow,
-  selectedRowAccessorKey
+  selectedRowAccessorKey,
+  columnVisibility
 }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState(() => {
@@ -202,7 +203,10 @@ function TableInner({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: enableSearching ? getFilteredRowModel() : undefined,
     getSortedRowModel: enableSorting ? getSortedRowModel() : undefined,
-    enableSorting
+    enableSorting,
+    initialState: {
+      columnVisibility
+    }
   })
 
   return (

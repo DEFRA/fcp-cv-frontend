@@ -4,18 +4,27 @@ import { useDataverse } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
 import { useEffect } from 'react'
 
-export function useDataverseAccountIDToSBI() {
+function useDataverseIDToParam(entity, key) {
   const { searchParams, setSearchParam } = useSearchParams()
 
   const typename = searchParams.get('typename')
   const id = searchParams.get('id')
-  const sbi = searchParams.get('sbi')
+  const currentValue = searchParams.get(key)
 
-  const { data } = useDataverse(['account', id], [typename === 'account', !sbi])
+  const { data } = useDataverse([entity, id], [!currentValue])
 
   useEffect(() => {
-    if (data?.rpa_sbinumber) {
-      setSearchParam('sbi', data.rpa_sbinumber)
+    const value = data?.[key]
+    if (value) {
+      setSearchParam(key, value)
     }
-  }, [data, setSearchParam])
+  }, [data, key, setSearchParam])
+}
+
+export function useDataverseAccountIDToSBI() {
+  useDataverseIDToParam('account', 'sbi')
+}
+
+export function useDataverseContactIDToCRN() {
+  useDataverseIDToParam('contact', 'crn')
 }

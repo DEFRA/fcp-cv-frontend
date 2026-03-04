@@ -8,7 +8,7 @@ describe('Dataverse Account API route', () => {
     vi.stubGlobal('fetch', vi.fn())
     vi.mocked(global.fetch).mockResolvedValue({
       json: async () => ({
-        rpa_sbinumber: '111111111'
+        rpa_capcustomerid: '111111111'
       })
     })
 
@@ -19,14 +19,14 @@ describe('Dataverse Account API route', () => {
     }))
   })
 
-  test('should make dataverse request with accountId param', async () => {
+  test('should make dataverse request with contactId param', async () => {
     const response = await GET(new NextRequest('http://localhost'), {
-      params: Promise.resolve({ accountId: 'accountIdParam' })
+      params: Promise.resolve({ contactId: 'contactIdParam' })
     })
 
     expect(fetch).toHaveBeenCalled(1)
     expect(fetch).toHaveBeenCalledWith(
-      'https://tenant.dynamics.com/api/data/v9.2/accounts(accountIdParam)?$select=rpa_sbinumber',
+      'https://tenant.dynamics.com/api/data/v9.2/contacts(contactIdParam)?$select=rpa_capcustomerid',
       {
         headers: {
           Authorization: 'Bearer mocked-token'
@@ -43,6 +43,6 @@ describe('Dataverse Account API route', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(await response.json()).toStrictEqual({ sbi: '111111111' })
+    expect(await response.json()).toStrictEqual({ crn: '111111111' })
   })
 })

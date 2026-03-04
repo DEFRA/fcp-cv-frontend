@@ -8,7 +8,7 @@ import { LinkedContactsDetails } from './linked-contacts-details'
 import { LinkedContactsList } from './linked-contacts-list'
 
 export const metadata = {
-  title: 'Consolidated View | Linked Contacts'
+  title: 'Linked Contacts'
 }
 
 export default function LinkedContactsPage() {

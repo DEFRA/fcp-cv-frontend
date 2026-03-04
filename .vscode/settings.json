@@ -19,6 +19,7 @@
     "autoprefixer",
     "booleanise",
     "callto",
+    "dataverse",
     "defra",
     "defradigital",
     "msal",
