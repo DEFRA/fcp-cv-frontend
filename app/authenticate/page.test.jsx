@@ -52,26 +52,26 @@ describe('Authenticate page tests', () => {
         .element(getByRole('heading', { name: 'Memorable questions' }))
         .toBeInTheDocument()
 
-      // Table present with correct columns
       await expect
-        .element(getByText('Memorable Date', { exact: true }))
+        .element(getByText('Memorable Date' + '01/01/2000'))
         .toBeInTheDocument()
-      await expect.element(getByText('01/01/2000')).toBeInTheDocument()
 
       await expect
-        .element(getByText('Memorable Location', { exact: true }))
+        .element(
+          getByText('Memorable Location' + 'Stoltenberg-under-Bechtelar')
+        )
         .toBeInTheDocument()
       await expect
         .element(getByText('Stoltenberg-under-Bechtelar'))
         .toBeInTheDocument()
 
       await expect
-        .element(getByText('Memorable Event', { exact: true }))
+        .element(getByText('Memorable Event' + 'aureus'))
         .toBeInTheDocument()
-      await expect.element(getByText('aureus')).toBeInTheDocument()
 
-      await expect.element(getByText('Updated at')).toBeInTheDocument()
-      await expect.element(getByText('02/02/2000')).toBeInTheDocument()
+      await expect
+        .element(getByText('Updated at' + '02/02/2000'))
+        .toBeInTheDocument()
     }
   )
 })

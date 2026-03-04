@@ -108,11 +108,13 @@ describe('Linked Contacts page tests', () => {
       await expect.element(getByText('Permission Function')).toBeInTheDocument()
 
       await getByText('View Authenticate Questions').click()
-      await expect.element(await getByText('Memorable Date'))
-      await expect.element(await getByText('Date of Birth'))
-      await expect.element(await getByText('Memorable Location'))
-      await expect.element(await getByText('Memorable Event'))
-      await expect.element(await getByText('Updated at'))
+      await expect.element(getByText('Memorable Date' + '11/19/2024'))
+      await expect.element(getByText('Date of Birth' + '01/01/2025'))
+      await expect.element(
+        getByText('Memorable Location' + 'memorableLocation')
+      )
+      await expect.element(getByText('Memorable Event' + 'memorableEvent'))
+      await expect.element(getByText('Updated at' + '31/12/2024'))
 
       // Search for an item
       await userEvent.type(getByPlaceholder('Enter search term'), '222222222')

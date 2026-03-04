@@ -21,9 +21,7 @@ describe('Linked Contacts Details API route', () => {
 
   test('should make dal request with sbi and crn param', async () => {
     const response = await GET(new NextRequest('http://localhost'), {
-      params: new Promise((resolve) =>
-        resolve({ sbi: 'sbiParam', crn: 'crnParam' })
-      )
+      params: Promise.resolve({ sbi: 'sbiParam', crn: 'crnParam' })
     })
 
     expect(response.status).toBe(200)
@@ -69,7 +67,7 @@ describe('Linked Contacts Details API route', () => {
     })
 
     const response = await GET(new NextRequest('http://localhost'), {
-      params: new Promise((resolve) => resolve({ sbi: 'sbiParam' }))
+      params: Promise.resolve({ sbi: 'sbiParam' })
     })
 
     expect(response.status).toBe(200)

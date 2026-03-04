@@ -21,7 +21,7 @@ describe('Dataverse Account API route', () => {
 
   test('should make dataverse request with accountId param', async () => {
     const response = await GET(new NextRequest('http://localhost'), {
-      params: new Promise((resolve) => resolve({ accountId: 'accountIdParam' }))
+      params: Promise.resolve({ accountId: 'accountIdParam' })
     })
 
     expect(fetch).toHaveBeenCalled(1)
@@ -39,7 +39,7 @@ describe('Dataverse Account API route', () => {
 
   test('should return dataverse response', async () => {
     const response = await GET(new NextRequest('http://localhost'), {
-      params: new Promise((resolve) => resolve({ accountId: 'accountIdParam' }))
+      params: Promise.resolve({ accountId: 'accountIdParam' })
     })
 
     expect(response.status).toBe(200)
