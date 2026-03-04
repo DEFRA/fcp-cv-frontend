@@ -57,7 +57,42 @@ export const config = convict({
       format: String,
       default: null,
       env: 'DAL_EMAIL',
-      nullable: process.env.USER_AUTH_DISABLED !== 'true'
+      nullable: process.env.DAL_AUTH_DISABLED !== 'true'
+    },
+    tokenGenerationDisabled: {
+      doc: 'Option to disable token generation for local dev/testing',
+      format: Boolean,
+      default: null,
+      nullable: true,
+      env: 'DAL_TOKEN_GENERATION_DISABLED'
+    },
+    tokenGenerationClientId: {
+      doc: 'Client ID used to generate token to access DAL',
+      format: String,
+      default: null,
+      env: 'DAL_TOKEN_GENERATION_CLIENT_ID',
+      nullable: process.env.DAL_TOKEN_GENERATION_DISABLED !== 'true'
+    },
+    tokenGenerationAuthority: {
+      doc: 'Authority URL used to generate token to access DAL',
+      format: String,
+      default: null,
+      env: 'DAL_TOKEN_GENERATION_AUTHORITY',
+      nullable: process.env.DAL_TOKEN_GENERATION_DISABLED !== 'true'
+    },
+    tokenGenerationClientSecret: {
+      doc: 'Client Secret used to generate token to access DAL',
+      format: String,
+      default: null,
+      env: 'DAL_TOKEN_GENERATION_CLIENT_SECRET',
+      nullable: process.env.DAL_TOKEN_GENERATION_DISABLED !== 'true'
+    },
+    tokenGenerationScope: {
+      doc: 'Scopes granted to token used to generate token to access DAL',
+      format: String,
+      default: null,
+      env: 'DAL_TOKEN_GENERATION_SCOPE',
+      nullable: process.env.DAL_TOKEN_GENERATION_DISABLED !== 'true'
     }
   },
   iframeMessenger: {
