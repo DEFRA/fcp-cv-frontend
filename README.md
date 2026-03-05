@@ -4,40 +4,55 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 
-FCP CV Node.js Frontend.
+<abbr title="Farming & Countryside Programme">FCP</abbr>'s <abbr title="Consolidated View">CV</abbr> service (a.k.a. <abbr title="Single Customer View">SCV</abbr>).
+Principally a `React` frontend UI, built on top of the `Next.js` framework (including a Node.js <abbr title="Backend For Frontend">BFF</abbr>).
+The service displays DEFRA data relating to businesses and people, requested form the <abbr title="Data Access Layer">DAL</abbr> API.
+The service comprises a collection of micro SPAs delivered through an iframe in the FCP CRM.
 
-- [fcp-cv-frontend](#fcp-cv-frontend)
-  - [Requirements](#requirements)
-    - [Node.js](#nodejs)
-  - [Server-side Caching](#server-side-caching)
-  - [Redis](#redis)
-  - [Proxy](#proxy)
-  - [Local Development](#local-development)
-    - [Setup](#setup)
-    - [Development](#development)
-    - [Production](#production)
-    - [Npm scripts](#npm-scripts)
-    - [Update dependencies](#update-dependencies)
-    - [Formatting](#formatting)
-      - [Windows prettier issue](#windows-prettier-issue)
-  - [Docker](#docker)
-    - [Development image](#development-image)
-    - [Production image](#production-image)
-    - [Docker Compose](#docker-compose)
-    - [Dependabot](#dependabot)
-    - [SonarCloud](#sonarcloud)
-  - [Test structure](#test-structure)
-    - [How to run tests](#how-to-run-tests)
-    - [Running accessibility tests](#running-accessibility-tests)
-  - [Licence](#licence)
-    - [About the licence](#about-the-licence)
+```mermaid
+C4Context
+  title Consolidated View architecture overview
+
+  Boundary(vpn, "DEFRA VPC ☁️", "X-Scaler VPN") {
+    Boundary(ms, "Microsoft cloud ☁️", "VPC & services") {
+      System_Boundary(d365, "Microsoft Dynamics ⚙️") {
+        System_Ext(crm, "FCP CRM 📑", "Custom CRM UI built from Power Apps & Flows")
+      }
+
+      System_Ext(entra, "Entra ID 🛃", "Handles system authentication")
+      System_Ext(online, "Microsoft login 🛃", "Handles user authentication")
+    }
+
+    Boundary(cdp, "Core Development Platform (CDP) ☁️", "AWS DEFRA VPC") {
+      Person(user, "CV User", "Accesses the CV apps
+        <br />
+        (delivered via an iframe in the CRM)")
+
+      System(cv, "FCP-CV-Frontend 📊", "Next.js backend serving React UI micro apps
+        <br />
+        displaying FCP data about businesses and people")
+      System_Ext(dal, "FCP-DAL-API ℹ️", "Data Access Layer (DAL) provides FCP data
+        <br />
+        (via GraphQL API)")
+    }
+  }
+
+  Rel(user, crm, "Access")
+  Rel(user, online, "Login 🔑")
+  Rel(user, cv, "View 💻")
+  Rel(crm, cv, "Load (iframe)")
+  Rel(cv, online, "Verify user (JWT) 🔐")
+  Rel(cv, dal, "Query (GraphQL) 💬")
+  Rel(cv, entra, "Service login 🔑")
+  Rel(dal, entra, "Verify service (JWT) 🔐")
+```
 
 ## Requirements
 
 ### Node.js
 
-Please install [Node.js](http://nodejs.org/) `>= v22` and [npm](https://nodejs.org/) `>= v9`. You will find it
-easier to use the Node Version Manager [nvm](https://github.com/creationix/nvm)
+Please install [Node.js](http://nodejs.org/) `>= v24` and [npm](https://nodejs.org/) `>= v11`.
+You will find it easier to use the Node Version Manager [nvm](https://github.com/creationix/nvm)
 
 To use the correct version of Node.js for this application, via nvm:
 
@@ -46,46 +61,11 @@ cd fcp-cv-frontend
 nvm use
 ```
 
-## Server-side Caching
-
-We use Catbox for server-side caching. By default the service will use CatboxRedis when deployed and CatboxMemory for
-local development.
-You can override the default behaviour by setting the `SESSION_CACHE_ENGINE` environment variable to either `redis` or
-`memory`.
-
-Please note: CatboxMemory (`memory`) is _not_ suitable for production use! The cache will not be shared between each
-instance of the service and it will not persist between restarts.
-
-## Redis
-
-Redis is an in-memory key-value store. Every instance of a service has access to the same Redis key-value store similar
-to how services might have a database (or MongoDB). All frontend services are given access to a namespaced prefixed that
-matches the service name. e.g. `my-service` will have access to everything in Redis that is prefixed with `my-service`.
-
-If your service does not require a session cache to be shared between instances or if you don't require Redis, you can
-disable setting `SESSION_CACHE_ENGINE=false` or changing the default value in `src/config/index.js`.
-
 ## Proxy
 
-We are using forward-proxy which is set up by default. To make use of this: `import { fetch } from 'undici'` then
-because of the `setGlobalDispatcher(new ProxyAgent(proxyUrl))` calls will use the ProxyAgent Dispatcher
-
-If you are not using Wreck, Axios or Undici or a similar http that uses `Request`. Then you may have to provide the
-proxy dispatcher:
-
-To add the dispatcher to your own client:
-
-```javascript
-import { ProxyAgent } from 'undici'
-
-return await fetch(url, {
-  dispatcher: new ProxyAgent({
-    uri: proxyUrl,
-    keepAliveTimeout: 10,
-    keepAliveMaxTimeout: 10
-  })
-})
-```
+We are using forward-proxy which is set up by default on CDP.
+No special effort is required to configure or use the out-bound proxy, it works automatically.
+By default, access to `login.microsoftonline.com` is allowed, as well as to other CDP services, i.e. the DAL (as such no further proxy config should be necessary).
 
 ## Local Development
 
@@ -99,7 +79,7 @@ npm install
 
 ### Development
 
-To run the application in `development` mode run:
+To run the `Next.js` server to access the application in `development` mode run:
 
 ```bash
 npm run dev
@@ -113,9 +93,9 @@ To mimic the application running in `production` mode locally run:
 npm start
 ```
 
-### Npm scripts
+### NPM scripts
 
-All available Npm scripts can be seen in [package.json](./package.json)
+All available NPM scripts can be seen in [package.json](./package.json)
 To view them in your command line run:
 
 ```bash
@@ -134,6 +114,21 @@ ncu --interactive --format group
 ```
 
 ### Formatting
+
+Formatting is provided by `prettier`.
+To check for issues, run:
+
+```bash
+npm run lint
+```
+
+...and to automatically fix issues, run:
+
+```bash
+npm run lint:fix
+```
+
+> NOTE: auto-save and automatic linting as an on save action have been setup for the VS Code IDE (see `./.vscode/settings.json`)
 
 #### Windows prettier issue
 
@@ -179,36 +174,42 @@ docker run -p 3000:3000 fcp-cv-frontend
 
 ### Docker Compose
 
-A local environment with:
+A simple local environment with:
 
-- Localstack for AWS services (S3, SQS)
-- Redis
-- MongoDB
-- This service.
-- A commented out backend example.
+- The DAL dependency setup
+- This service
 
 ```bash
 docker compose up --build -d
 ```
 
-### Dependabot
-
-We have added an example dependabot configuration file to the repository. You can enable it by renaming
-the [.github/example.dependabot.yml](.github/example.dependabot.yml) to `.github/dependabot.yml`
-
 ### SonarCloud
 
-Instructions for setting up SonarCloud can be found in [sonar-project.properties](./sonar-project.properties).
+SonarCloud has been setup for this repo, see the [sonar-project.properties](./sonar-project.properties) file for config.
 
 ## Test structure
 
 ### How to run tests
 
-A convenience script is provided to run automated tests in a containerised
-environment. This will rebuild images before running tests via docker compose,
-using `compose.yaml`.
-The command given to `docker compose run` may be customised by passing
-arguments to the test script.
+There are 2 distinct sides to the unit tests for this project, which reflect the different environments where the service is run:
+
+- the server-side code (and some basic SSR snapshot tests for the UI components) can be run in watch mode:
+
+  ```bash
+  npm run test:server
+  ```
+
+- the client-side UI can be rendered (also in watch mode) thanks to `vitest`'s "browser mode", by running:
+
+  ```bash
+  npm run test:browser
+  ```
+
+- the default, runs both sets of tests, producing a combined coverage report ✨
+  ```bash
+  npm t
+  ```
+  > NOTE: this mode is script friendly, and is run by the github Actions CI workflow
 
 ### Running accessibility tests
 
@@ -218,6 +219,14 @@ A docker compose exists for running an
 ```bash
 npm run test:accessibility:docker
 ```
+
+### E2E tests
+
+TODO: Gordon
+
+### Performance tests
+
+TODO: Gordon
 
 ## Licence
 
