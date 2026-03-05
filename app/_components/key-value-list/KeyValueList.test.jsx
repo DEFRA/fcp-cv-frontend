@@ -59,27 +59,27 @@ describe('KeyValueList component tests', () => {
     const heading = getByRole('heading')
     await expect.element(heading).not.toBeInTheDocument()
 
-        await expect.element(getByText('Business type:')).toBeInTheDocument()
-        await expect.element(getByText('Small holding')).toBeInTheDocument()
+    await expect.element(getByText('Business type:')).toBeInTheDocument()
+    await expect.element(getByText('Small holding')).toBeInTheDocument()
 
-        await expect.element(getByText('Business contact:')).toBeInTheDocument()
-        await expect.element(getByText('01235 567 890')).toBeInTheDocument()
+    await expect.element(getByText('Business contact:')).toBeInTheDocument()
+    await expect.element(getByText('01235 567 890')).toBeInTheDocument()
 
-        await expect
-          .element(getByText('Total Number of Parcels:'))
-          .toBeInTheDocument()
-        await expect.element(getByText('10')).toBeInTheDocument()
+    await expect
+      .element(getByText('Total Number of Parcels:'))
+      .toBeInTheDocument()
+    await expect.element(getByText('10')).toBeInTheDocument()
 
-        await expect.element(getByText('Total Area (ha):')).toBeInTheDocument()
-        await expect.element(getByText('583.03')).toBeInTheDocument()
+    await expect.element(getByText('Total Area (ha):')).toBeInTheDocument()
+    await expect.element(getByText('583.03')).toBeInTheDocument()
 
-        await expect
-          .element(
-            getByText('Total Parcels With Pending Customer Notified Land Changes:')
-          )
-          .toBeInTheDocument()
-        // NOTE: use exact regex to avoid matching 0s in other fields!..
-        await expect.element(getByText(/^0$/)).toBeInTheDocument()
+    await expect
+      .element(
+        getByText('Total Parcels With Pending Customer Notified Land Changes:')
+      )
+      .toBeInTheDocument()
+    // NOTE: use exact regex to avoid matching 0s in other fields!..
+    await expect.element(getByText(/^0$/)).toBeInTheDocument()
   })
 
   it('renders the KeyValueList header without items when items are not specified', async () => {
@@ -110,5 +110,4 @@ describe('KeyValueList component tests', () => {
     await expect.element(getByRole('dt')).not.toBeInTheDocument()
     await expect.element(getByRole('dd')).not.toBeInTheDocument()
   })
-
 })

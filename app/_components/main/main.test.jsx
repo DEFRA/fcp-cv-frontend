@@ -32,8 +32,12 @@ describe('Main component tests', () => {
     const { getByRole, getByText } = await render(
       <Main>
         <button type="submit">Submit</button>
-        <div><AppLink text="First link"/></div>
-        <div><AppLink text="Second link" /></div>
+        <div>
+          <AppLink text="First link" />
+        </div>
+        <div>
+          <AppLink text="Second link" />
+        </div>
       </Main>
     )
 
@@ -45,6 +49,5 @@ describe('Main component tests', () => {
     await user.tab()
     await expect(getByText('First link')).toHaveFocus()
     */
-
   })
 })
