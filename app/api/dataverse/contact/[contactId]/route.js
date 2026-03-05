@@ -6,15 +6,14 @@ export async function GET(_, { params }) {
   const token = (await headers()).get('x-msal-access-token')
 
   const response = await fetch(
-    `${config.get('dataverse.url')}/accounts(${(await params).accountId})?$select=rpa_sbinumber`,
+    `${config.get('dataverse.url')}/contacts(${(await params).contactId})?$select=rpa_capcustomerid`,
     {
       headers: {
         Authorization: `Bearer ${token}`
       }
     }
   )
-
   const data = await response.json()
 
-  return NextResponse.json({ sbi: data?.rpa_sbinumber })
+  return NextResponse.json({ crn: data?.rpa_capcustomerid })
 }

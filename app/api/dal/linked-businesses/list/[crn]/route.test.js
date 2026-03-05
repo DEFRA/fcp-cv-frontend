@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 
 import { GET } from './route'
 
-describe('Linked Contacts Authenticate Questions API route', () => {
+describe('Linked Businesses List API route', () => {
   beforeAll(() => {
     vi.mock('next/headers', () => ({
       headers: () => ({
@@ -19,7 +19,7 @@ describe('Linked Contacts Authenticate Questions API route', () => {
     }))
   })
 
-  test('should make dal request with sbi and crn param', async () => {
+  test('should make dal request with crm param', async () => {
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ crn: 'crnParam' })
     })
@@ -36,36 +36,32 @@ describe('Linked Contacts Authenticate Questions API route', () => {
     )
   })
 
-  test('should sort customers by first then last name', async () => {
+  test('should return linked businesses', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         customer: {
-          info: {
-            dateOfBirth: '2025-01-01'
-          },
-          authenticationQuestions: {
-            memorableDate: '11/19/2024',
-            memorableLocation: 'memorableLocation',
-            memorableEvent: 'memorableEvent',
-            updatedAt: '2024-12-31T14:34:17.091Z'
-          }
+          businesses: [
+            {
+              sbi: '1111111111',
+              name: 'Maggio, Murray and Dicki'
+            },
+            {
+              sbi: '2222222222',
+              name: "O'Keefe, Prosacco and Friesen"
+            }
+          ]
         }
       }
     })
 
     const response = await GET(new NextRequest('http://localhost'), {
-      params: Promise.resolve({ sbi: 'sbiParam' })
+      params: Promise.resolve({ sbi: 'sbiParam', crn: 'crnParam' })
     })
 
     expect(response.status).toBe(200)
-    expect(await response.json()).toStrictEqual({
-      items: [
-        { dt: 'Date of Birth', dd: '01/01/2025' },
-        { dt: 'Memorable Date', dd: '11/19/2024' },
-        { dt: 'Memorable Location', dd: 'memorableLocation' },
-        { dt: 'Memorable Event', dd: 'memorableEvent' },
-        { dt: 'Updated at', dd: '31/12/2024' }
-      ]
-    })
+    expect(await response.json()).toStrictEqual([
+      { sbi: '1111111111', name: 'Maggio, Murray and Dicki' },
+      { sbi: '2222222222', name: "O'Keefe, Prosacco and Friesen" }
+    ])
   })
 })
