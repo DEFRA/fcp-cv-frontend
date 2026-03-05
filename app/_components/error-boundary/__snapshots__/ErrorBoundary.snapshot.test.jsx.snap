@@ -4,7 +4,10 @@ exports[`ErrorBoundary snapshot > renders children when there is no error 1`] = 
 
 exports[`ErrorBoundary snapshot > renders fallback UI when there is an error 1`] = `
 "<div class="h-full group"><div class="h-full grid grid-rows-[auto_1fr] grid-cols-[calc(100%/3)_auto]"><section class="row-start-1 col-span-2 border-primary group-has-[[data-slot=&quot;left&quot;],[data-slot=&quot;right&quot;]]:border-b group-has-[[data-slot=&quot;left&quot;],[data-slot=&quot;right&quot;]]:pb-5" data-slot="full"><h2>Something went wrong</h2><div class="mt-2 text-sm text-slate-700">The page hit an unexpected error. You can try refreshing to recover from this error.<details class="mt-2 text-sm text-slate-700"><summary class="cursor-pointer font-medium">Error details</summary><blockquote class="mt-1 border-l-4 border-slate-300 bg-slate-50 px-4 py-2"><pre class="whitespace-pre-wrap m-0 text-xs">{
-  &quot;error&quot;: {},
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Error: Some error&quot;,
+    &quot;stack&quot;: &quot;Error: Some error\\n    at ErrorBoundary.snapshot.test.jsx:38:14&quot;
+  },
   &quot;userAgent&quot;: &quot;test-user-agent&quot;,
   &quot;platform&quot;: &quot;test-platform&quot;,
   &quot;language&quot;: &quot;test-language&quot;,

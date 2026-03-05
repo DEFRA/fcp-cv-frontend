@@ -22,6 +22,7 @@ export default defineConfig({
         'app/**/page.jsx',
         'app/_components/iframe-messenger/IframeMessenger.jsx',
         'app/_hooks',
+        'app/agreements',
         'app/linked-contacts',
         'app/county-parish-holdings',
         'app/applications',

@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { Transition } from '@headlessui/react'
 import {
   flexRender,
@@ -29,7 +30,12 @@ function SortArrow({ direction }) {
   )
 }
 
-function SearchBar({ value = '', onChange, onClearClick = () => {} }) {
+function SearchBar({
+  value = '',
+  onChange,
+  searchBarClassName = '',
+  onClearClick = () => {}
+}) {
   const uniqueId = `search-${useId()}`
 
   return (
@@ -38,7 +44,9 @@ function SearchBar({ value = '', onChange, onClearClick = () => {} }) {
         Search
       </label>
 
-      <div className="relative ml-auto w-full max-w-3xl">
+      <div
+        className={cn('relative ml-auto w-full max-w-3xl', searchBarClassName)}
+      >
         <input
           id={uniqueId}
           value={value}
@@ -171,6 +179,7 @@ function TableInner({
   enableSearching = true,
   enableSorting = true,
   defaultSortColumn = columns[0]?.accessorKey,
+  searchBarClassName = '',
   onRowClick,
   onClearClick,
   selectedRow,
@@ -213,6 +222,7 @@ function TableInner({
     <div className="overflow-x-auto">
       {enableSearching && (
         <SearchBar
+          searchBarClassName={searchBarClassName}
           value={globalFilter}
           onChange={(e) => table.setGlobalFilter(String(e.target.value))}
           onClearClick={onClearClick}
