@@ -3,16 +3,22 @@ import { getEmailFromToken } from '@/lib/auth'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
 
-const client = new ConfidentialClientApplication({
-  auth: {
-    clientId: config.get('dal.tokenGenerationClientId'),
-    authority: config.get('dal.tokenGenerationAuthority'),
-    clientSecret: config.get('dal.tokenGenerationClientSecret')
+let client = null
+function getClient() {
+  if (!client) {
+    client = new ConfidentialClientApplication({
+      auth: {
+        clientId: config.get('dal.tokenGenerationClientId'),
+        authority: config.get('dal.tokenGenerationAuthority'),
+        clientSecret: config.get('dal.tokenGenerationClientSecret')
+      }
+    })
   }
-})
+  return client
+}
 
 async function getAccessToken() {
-  const response = await client.acquireTokenByClientCredential({
+  const response = await getClient().acquireTokenByClientCredential({
     scopes: [config.get('dal.tokenGenerationScope')]
   })
 
