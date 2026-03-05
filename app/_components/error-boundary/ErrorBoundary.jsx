@@ -40,7 +40,10 @@ export class ErrorBoundary extends React.Component {
                     {/* v8 ignore start  */}
                     {JSON.stringify(
                       {
-                        error: this.state.error,
+                        error: {
+                          message: this.state?.error?.toString() || 'No error',
+                          stack: this.state?.error?.stack || 'No stack'
+                        },
                         url:
                           typeof window !== 'undefined'
                             ? window.location.href

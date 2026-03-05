@@ -33,9 +33,13 @@ describe('ErrorBoundary snapshot', () => {
       }
     })
 
+    const error = new Error('Some error')
+    error.stack =
+      'Error: Some error\n    at ErrorBoundary.snapshot.test.jsx:38:14'
+
     const html = renderBoundary({
       hasError: true,
-      error: new Error('Some error'),
+      error,
       children: <div data-testid="child">OK</div>
     })
 

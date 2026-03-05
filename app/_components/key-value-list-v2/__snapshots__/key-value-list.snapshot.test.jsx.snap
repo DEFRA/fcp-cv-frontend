@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`KeyValueList snapshot > shows content if not loading 1`] = `"<div class="space-y-4"><h2 class="text-2xl font-bold">Title</h2><dl class="grid grid-cols-[auto_1fr] gap-x-10 gap-y-2"><dt class="font-bold">dt</dt><dd class="tabular-nums"><div>dd</div></dd></dl></div>"`;
+exports[`KeyValueList snapshot > shows content if not loading 1`] = `"<div class="space-y-4"><h2 class="text-2xl font-bold">Title</h2><dl class="grid gap-x-10 gap-y-2 grid-cols-[auto_1fr]"><dt class="font-bold">dt</dt><dd class="tabular-nums"><div>dd</div></dd></dl></div>"`;
 
-exports[`KeyValueList snapshot > shows content if not loading with expand 1`] = `"<div class="space-y-4"><h2 class="text-2xl font-bold">Title</h2><dl class="grid grid-cols-[auto_1fr] gap-x-10 gap-y-2"><dt class="font-bold">dt</dt><dd class="tabular-nums"><div>dd</div></dd></dl></div>"`;
+exports[`KeyValueList snapshot > shows content if not loading with expand 1`] = `"<div class="space-y-4"><h2 class="text-2xl font-bold">Title</h2><dl class="grid gap-x-10 gap-y-2 grid-cols-[auto_1fr]"><dt class="font-bold">dt</dt><dd class="tabular-nums"><div>dd</div></dd></dl></div>"`;
 
-exports[`KeyValueList snapshot > shows skeleton if loading 1`] = `"<div class="space-y-4"><div data-slot="skeleton" class="bg-gray-200 animate-pulse rounded-md h-8 w-50"></div><dl class="grid grid-cols-[auto_1fr] gap-x-10 gap-y-2"><dt class="font-bold">dt</dt><dd class="tabular-nums"><div data-slot="skeleton" class="bg-gray-200 animate-pulse rounded-md h-4 w-30"></div></dd></dl></div>"`;
+exports[`KeyValueList snapshot > shows skeleton if loading 1`] = `"<div class="space-y-4"><div data-slot="skeleton" class="bg-gray-200 animate-pulse rounded-md h-8 w-50"></div><dl class="grid gap-x-10 gap-y-2 grid-cols-[auto_1fr]"><dt class="font-bold">dt</dt><dd class="tabular-nums"><div data-slot="skeleton" class="bg-gray-200 animate-pulse rounded-md h-4 w-30"></div></dd></dl></div>"`;

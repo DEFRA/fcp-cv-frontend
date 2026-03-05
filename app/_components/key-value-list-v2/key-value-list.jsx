@@ -14,9 +14,17 @@ export function KeyValueListTitle({ children, loading }) {
   )
 }
 
-export function KeyValueListContent({ children }) {
+export function KeyValueListContent({ children, columns = 1 }) {
   return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-10 gap-y-2">{children}</dl>
+    <dl
+      className={cn(
+        'grid gap-x-10 gap-y-2',
+        columns === 1 && 'grid-cols-[auto_1fr]',
+        columns === 2 && 'grid-cols-[auto_1fr_auto_1fr]'
+      )}
+    >
+      {children}
+    </dl>
   )
 }
 
