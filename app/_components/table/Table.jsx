@@ -184,12 +184,19 @@ function TableInner({
   onClearClick,
   selectedRow,
   selectedRowAccessorKey,
-  columnVisibility
+  columnVisibility,
+  defaultSortDirection = 'asc',
+  noResultsMessage = 'No results found'
 }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState(() => {
     if (enableSorting) {
-      return [{ id: defaultSortColumn, desc: false }]
+      return [
+        {
+          id: defaultSortColumn,
+          desc: defaultSortDirection === 'desc' ? true : false
+        }
+      ]
     }
     return []
   })
@@ -242,7 +249,7 @@ function TableInner({
                   colSpan={Math.max(1, table.getAllLeafColumns().length)}
                   className="px-6 py-6 text-lg text-gray-950"
                 >
-                  No results found
+                  {noResultsMessage}
                 </td>
               </tr>
             ) : (

@@ -12,6 +12,7 @@ tsconfig.tsbuildinfo
 !.env.test
 test-output
 test.out
+__screenshots__
 
 # next.js
 /.next/
