@@ -4,18 +4,21 @@ import {
   Sections
 } from '@/components/sections/sections'
 
+import { BusinessMessagesDetails } from './business-messages-details'
+import { BusinessMessagesList } from './business-messages-list'
+
 export const metadata = {
-  title: 'Business Messages'
+  title: 'Consolidated View | Business Messages'
 }
 
 export default function BusinessMessagesPage() {
   return (
-    <Sections srTitle={metadata.title}>
+    <Sections srTitle="Business Messages">
       <LeftSection srTitle="Message list">
-        <div>Message List</div>
+        <BusinessMessagesList />
       </LeftSection>
       <RightSection srTitle="Selected message">
-        <div>Selected Message</div>
+        <BusinessMessagesDetails />
       </RightSection>
     </Sections>
   )

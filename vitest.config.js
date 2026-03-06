@@ -27,7 +27,8 @@ export default defineConfig({
         'app/county-parish-holdings',
         'app/applications',
         'app/linked-businesses',
-        'app/authenticate'
+        'app/authenticate',
+        'app/business-messages'
       ],
       include: 'app/**/*.{js,jsx}',
       provider: 'v8',
