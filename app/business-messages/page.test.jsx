@@ -61,17 +61,14 @@ describe('Business Messages page tests', () => {
         .element(getByRole('heading', { name: 'Business Messages' }))
         .toBeInTheDocument()
 
-      // Filter controls are present
       await expect.element(getByLabelText('Contact')).toBeInTheDocument()
       await expect.element(getByLabelText('Date Range')).toBeInTheDocument()
       await expect
         .element(getByLabelText('Show Read/Unread'))
         .toBeInTheDocument()
 
-      // Select a contact to reveal the messages table
       await userEvent.selectOptions(getByLabelText('Contact'), '111111111')
 
-      // Table appears with correct columns
       await expect.element(getByRole('table')).toBeInTheDocument()
       await expect
         .element(getByRole('cell', { name: 'Status', exact: true }))
@@ -83,7 +80,6 @@ describe('Business Messages page tests', () => {
         .element(getByRole('cell', { name: 'Subject', exact: true }))
         .toBeInTheDocument()
 
-      // Both messages are listed
       await expect
         .element(getByText('First Message Subject'))
         .toBeInTheDocument()
@@ -91,7 +87,6 @@ describe('Business Messages page tests', () => {
         .element(getByText('Second Message Subject'))
         .toBeInTheDocument()
 
-      // Click msg1 (read=true, deleted=false, has body) — view details
       await getByRole('cell', { name: 'First Message Subject' }).click()
       await expect
         .element(getByRole('heading', { name: 'First Message Subject' }))
@@ -100,23 +95,22 @@ describe('Business Messages page tests', () => {
         .element(getByText('First message body content'))
         .toBeInTheDocument()
 
-      // Click msg2 (read=false, deleted=true, no body) — covers those branches
       await getByRole('cell', { name: 'Second Message Subject' }).click()
       await expect
         .element(getByRole('heading', { name: 'Second Message Subject' }))
         .toBeInTheDocument()
       await expect.element(getByText('No message content')).toBeInTheDocument()
 
-      // Change date range to 'All' — triggers computeFromDate(NaN) → '' in both components
       await userEvent.selectOptions(getByLabelText('Date Range'), 'all')
 
-      // Filter by Read — only msg1 (read=true) should remain in the table
       await userEvent.selectOptions(getByLabelText('Show Read/Unread'), 'read')
       await expect
         .element(getByRole('cell', { name: 'First Message Subject' }))
         .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'Second Message Subject' }))
+        .not.toBeInTheDocument()
 
-      // Filter by Unread — only msg2 (read=false) should remain in the table
       await userEvent.selectOptions(
         getByLabelText('Show Read/Unread'),
         'unread'
@@ -124,6 +118,9 @@ describe('Business Messages page tests', () => {
       await expect
         .element(getByRole('cell', { name: 'Second Message Subject' }))
         .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: 'First Message Subject' }))
+        .not.toBeInTheDocument()
     }
   )
 
@@ -146,7 +143,6 @@ describe('Business Messages page tests', () => {
         )
       )
 
-      // Pre-set a messageId that won't match any message
       window.history.pushState(
         null,
         '',
@@ -159,12 +155,10 @@ describe('Business Messages page tests', () => {
         </AuthProvider>
       )
 
-      // Page still renders correctly
       await expect
         .element(getByRole('heading', { name: 'Business Messages' }))
         .toBeInTheDocument()
 
-      // Details panel returns null — no message heading visible
       await expect
         .element(getByRole('heading', { name: 'First Message Subject' }))
         .not.toBeInTheDocument()
