@@ -27,11 +27,11 @@ vi.mock('@/config', () => ({
     get: vi.fn((key) => {
       const values = {
         'dal.url': 'http://dal/graphql',
-        'dal.tokenGenerationScope': 'test.scope',
-        'dal.tokenGenerationClientId': 'client-id',
-        'dal.tokenGenerationAuthority': 'authority',
-        'dal.tokenGenerationClientSecret': 'secret',
-        'dal.tokenGenerationDisabled': false
+        'dal.tokenGeneration.scope': 'test.scope',
+        'dal.tokenGeneration.clientId': 'client-id',
+        'dal.tokenGeneration.authority': 'authority',
+        'dal.tokenGeneration.clientSecret': 'secret',
+        'dal.tokenGeneration.disabled': false
       }
       return values[key]
     })
@@ -92,7 +92,7 @@ describe('dalRequest', () => {
   test('does not generate token when disabled', async () => {
     const { config } = await import('@/config')
     config.get.mockImplementation((key) => {
-      if (key === 'dal.tokenGenerationDisabled') return true
+      if (key === 'dal.tokenGeneration.disabled') return true
       const values = { 'dal.url': 'http://dal/graphql' }
       return values[key]
     })

@@ -8,9 +8,9 @@ function getClient() {
   if (!client) {
     client = new ConfidentialClientApplication({
       auth: {
-        clientId: config.get('dal.tokenGenerationClientId'),
-        authority: config.get('dal.tokenGenerationAuthority'),
-        clientSecret: config.get('dal.tokenGenerationClientSecret')
+        clientId: config.get('dal.tokenGeneration.clientId'),
+        authority: config.get('dal.tokenGeneration.authority'),
+        clientSecret: config.get('dal.tokenGeneration.clientSecret')
       }
     })
   }
@@ -19,7 +19,7 @@ function getClient() {
 
 async function getAccessToken() {
   const response = await getClient().acquireTokenByClientCredential({
-    scopes: [config.get('dal.tokenGenerationScope')]
+    scopes: [config.get('dal.tokenGeneration.scope')]
   })
 
   return response.accessToken
@@ -31,7 +31,7 @@ export async function dalRequest({ query, variables }) {
     headers: {
       'content-type': 'application/json',
       email: await getEmailFromToken(await headers()),
-      authorization: config.get('dal.tokenGenerationDisabled')
+      authorization: config.get('dal.tokenGeneration.disabled')
         ? ''
         : `Bearer ${await getAccessToken()}`
     },
