@@ -25,7 +25,7 @@ export function AgreementsDetails() {
 
   const contractId = searchParams.get('contractId')
 
-  const { data = { details: {} }, isLoading } = useDal([
+  const { data = { details: {} }, dalLoading } = useDal([
     'agreements',
     searchParams.get('sbi')
   ])
@@ -47,19 +47,19 @@ export function AgreementsDetails() {
       </button>
 
       <KeyValueList>
-        <KeyValueListTitle loading={isLoading}>
+        <KeyValueListTitle loading={dalLoading}>
           {data.details[contractId]?.name}
         </KeyValueListTitle>
         <KeyValueListContent columns={2}>
           {summary.map((item) => (
-            <KeyValueListItem key={item.dt} {...item} loading={isLoading} />
+            <KeyValueListItem key={item.dt} {...item} loading={dalLoading} />
           ))}
         </KeyValueListContent>
       </KeyValueList>
 
       <Table
-        loading={isLoading}
-        data={data.details[contractId]?.paymentSchedules || Array(10).fill({})}
+        loading={dalLoading}
+        data={data.details[contractId]?.paymentSchedules || []}
         columns={[
           { header: 'Sheet', accessorKey: 'sheetName' },
           { header: 'Parcel', accessorKey: 'parcelName' },

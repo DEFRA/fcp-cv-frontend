@@ -22,13 +22,13 @@ export function AuthenticateQuestions() {
   const { searchParams } = useSearchParams()
   const crn = searchParams.get('crn')
 
-  const { data, isLoading } = useDal(['authenticate', crn])
+  const { data, dalLoading } = useDal(['authenticate', crn])
 
   return (
     <KeyValueList>
       <KeyValueListContent>
         {(data || defaultItems).map((item) => (
-          <KeyValueListItem key={item.dt} loading={isLoading} {...item} />
+          <KeyValueListItem key={item.dt} loading={dalLoading} {...item} />
         ))}
       </KeyValueListContent>
     </KeyValueList>

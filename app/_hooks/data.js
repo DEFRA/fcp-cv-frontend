@@ -47,7 +47,8 @@ function useData(urlParts, runWhenTruthy) {
 
   return {
     ...swr,
-    isLoading: inProgress !== 'none' || swr.isLoading
+    isLoading: undefined,
+    dalLoading: inProgress !== 'none' || swr.isLoading
   }
 }
 

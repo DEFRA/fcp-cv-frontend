@@ -6,17 +6,19 @@ import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 
 export function CountyParishHoldingsList() {
-  useDataverseAccountIDToSBI()
+  const { dataverseLoading } = useDataverseAccountIDToSBI()
 
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = { list: Array(15).fill({}), details: {} }, isLoading } =
-    useDal(['county-parish-holdings', searchParams.get('sbi')])
+  const { data = { list: [], details: {} }, dalLoading } = useDal([
+    'county-parish-holdings',
+    searchParams.get('sbi')
+  ])
 
   return (
     <Table
       data={data.list}
-      loading={isLoading}
+      loading={dataverseLoading || dalLoading}
       columns={[
         {
           header: 'CPH Number',
