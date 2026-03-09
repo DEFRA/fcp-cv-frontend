@@ -26,7 +26,12 @@ export function LinkedBusinessesDetails() {
   const sbi = searchParams.get('sbi')
   const crn = searchParams.get('crn')
 
-  const { data, isLoading } = useDal(['linked-businesses', 'details', crn, sbi])
+  const { data, dalLoading } = useDal([
+    'linked-businesses',
+    'details',
+    crn,
+    sbi
+  ])
 
   if (!sbi) {
     return (
@@ -39,10 +44,10 @@ export function LinkedBusinessesDetails() {
   return (
     <div className="space-y-6">
       <KeyValueList>
-        <KeyValueListTitle loading={isLoading}>{data?.name}</KeyValueListTitle>
+        <KeyValueListTitle loading={dalLoading}>{data?.name}</KeyValueListTitle>
         <KeyValueListContent>
           {(data?.details || defaultDetails).map((item) => (
-            <KeyValueListItem loading={isLoading} key={item.dt} {...item} />
+            <KeyValueListItem loading={dalLoading} key={item.dt} {...item} />
           ))}
         </KeyValueListContent>
       </KeyValueList>
@@ -53,7 +58,7 @@ export function LinkedBusinessesDetails() {
           {(data?.permissions || defaultPermissions).map(
             ({ dt, dd, expand = [] }) => (
               <KeyValueListItem
-                loading={isLoading}
+                loading={dalLoading}
                 key={`${sbi}_${dt}`}
                 dt={dt}
                 dd={dd}

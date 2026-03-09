@@ -33,7 +33,7 @@ export function BusinessMessagesDetails() {
     ? `${contact}?fromDate=${fromDate}`
     : contact
 
-  const { data: messages = [], isLoading } = useDal(
+  const { data: messages = [], dalLoading } = useDal(
     ['business-messages', 'messages', sbi, messagesUrlSuffix],
     [contact]
   )
@@ -62,7 +62,7 @@ export function BusinessMessagesDetails() {
   return (
     <div className="grid gap-6">
       <KeyValueList
-        loading={isLoading}
+        loading={dalLoading}
         title={message?.subject}
         items={items}
         contentClassName="w-50"

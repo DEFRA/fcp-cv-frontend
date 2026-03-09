@@ -21,7 +21,7 @@ export function LinkedContactsAuthenticateQuestions() {
   const { searchParams } = useSearchParams()
   const [isOpen, setIsOpen] = useState(false)
 
-  const { data, isLoading } = useDal(
+  const { data, dalLoading } = useDal(
     ['linked-contacts', 'authenticate-questions', searchParams.get('crn')],
     [isOpen]
   )
@@ -45,7 +45,7 @@ export function LinkedContactsAuthenticateQuestions() {
                 {(data?.items || defaultItems).map((item) => (
                   <KeyValueListItem
                     key={item.dt}
-                    loading={isLoading}
+                    loading={dalLoading}
                     {...item}
                   />
                 ))}

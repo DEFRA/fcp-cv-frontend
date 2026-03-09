@@ -6,11 +6,11 @@ import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 
 export function LinkedContactsList() {
-  useDataverseAccountIDToSBI()
+  const { dataverseLoading } = useDataverseAccountIDToSBI()
 
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = [] } = useDal([
+  const { data = [], dalLoading } = useDal([
     'linked-contacts',
     'list',
     searchParams.get('sbi')
@@ -18,6 +18,7 @@ export function LinkedContactsList() {
 
   return (
     <Table
+      loading={dataverseLoading || dalLoading}
       data={data}
       columns={[
         {
