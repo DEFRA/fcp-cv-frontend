@@ -23,7 +23,7 @@ export function CountyParishHoldingsDetails() {
 
   const cphNumber = searchParams.get('cphNumber')
 
-  const { data = [], dalLoading } = useDal([
+  const { data = [], isLoading } = useDal([
     'county-parish-holdings',
     searchParams.get('sbi')
   ])
@@ -42,7 +42,7 @@ export function CountyParishHoldingsDetails() {
         <KeyValueListTitle>CPH Number: {cphNumber}</KeyValueListTitle>
         <KeyValueListContent>
           {(data?.details?.[cphNumber] || defaultItems).map((item) => (
-            <KeyValueListItem key={item.dt} {...item} loading={dalLoading} />
+            <KeyValueListItem key={item.dt} {...item} loading={isLoading} />
           ))}
         </KeyValueListContent>
       </KeyValueList>

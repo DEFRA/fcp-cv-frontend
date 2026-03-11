@@ -7,10 +7,11 @@ import { useEffect } from 'react'
 function useDataverseIDToParam(entity, key) {
   const { searchParams, setSearchParam } = useSearchParams()
 
+  const typename = searchParams.get('typename')
   const id = searchParams.get('id')
   const currentValue = searchParams.get(key)
 
-  const { data, isLoading } = useDataverse([entity, id], [!currentValue])
+  const { data } = useDataverse([entity, id], [!currentValue])
 
   useEffect(() => {
     const value = data?.[key]
@@ -18,14 +19,12 @@ function useDataverseIDToParam(entity, key) {
       setSearchParam(key, value)
     }
   }, [data, key, setSearchParam])
-
-  return { dataverseLoading: isLoading }
 }
 
 export function useDataverseAccountIDToSBI() {
-  return useDataverseIDToParam('account', 'sbi')
+  useDataverseIDToParam('account', 'sbi')
 }
 
 export function useDataverseContactIDToCRN() {
-  return useDataverseIDToParam('contact', 'crn')
+  useDataverseIDToParam('contact', 'crn')
 }

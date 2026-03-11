@@ -6,10 +6,10 @@ import { useDataverseContactIDToCRN } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 
 export function LinkedBusinessesList() {
-  const { dataverseLoading } = useDataverseContactIDToCRN()
+  useDataverseContactIDToCRN()
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = [], dalLoading } = useDal([
+  const { data = [], isLoading } = useDal([
     'linked-businesses',
     'list',
     searchParams.get('crn')
@@ -17,8 +17,8 @@ export function LinkedBusinessesList() {
 
   return (
     <Table
-      loading={dataverseLoading || dalLoading}
-      data={data}
+      loading={data.length === 0 || isLoading}
+      data={data.length === 0 || isLoading ? Array(10).fill({}) : data}
       columns={[
         {
           header: 'SBI',
