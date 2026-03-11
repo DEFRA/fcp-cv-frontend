@@ -6,19 +6,17 @@ import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 
 export function AgreementsList() {
-  const { dataverseLoading } = useDataverseAccountIDToSBI()
+  useDataverseAccountIDToSBI()
 
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = { list: [], details: {} }, dalLoading } = useDal([
-    'agreements',
-    searchParams.get('sbi')
-  ])
+  const { data = { list: Array(10).fill({}), details: {} }, isLoading } =
+    useDal(['agreements', searchParams.get('sbi')])
 
   return (
     <Table
-      loading={dataverseLoading || dalLoading}
-      data={data.list}
+      loading={isLoading}
+      data={data?.list}
       columns={[
         {
           header: 'Reference',

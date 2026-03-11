@@ -28,7 +28,7 @@ export function LinkedContactsDetails() {
 
   const crn = searchParams.get('crn')
 
-  const { data, dalLoading } = useDal(
+  const { data, isLoading } = useDal(
     ['linked-contacts', 'details', searchParams.get('sbi'), crn],
     []
   )
@@ -46,16 +46,12 @@ export function LinkedContactsDetails() {
       <div className="flex items-start justify-between gap-6">
         <div className="space-y-4">
           <KeyValueList>
-            <KeyValueListTitle loading={dalLoading}>
+            <KeyValueListTitle loading={isLoading}>
               {data?.displayName}
             </KeyValueListTitle>
             <KeyValueListContent>
               {(data?.details || defaultDetails).map((item) => (
-                <KeyValueListItem
-                  loading={dalLoading}
-                  key={item.dt}
-                  {...item}
-                />
+                <KeyValueListItem loading={isLoading} key={item.dt} {...item} />
               ))}
             </KeyValueListContent>
           </KeyValueList>
@@ -72,7 +68,7 @@ export function LinkedContactsDetails() {
           {(data?.permissions || defaultPermissions).map(
             ({ dt, dd, expand = [] }) => (
               <KeyValueListItem
-                loading={dalLoading}
+                loading={isLoading}
                 key={`${crn}_${dt}`}
                 dt={dt}
                 dd={dd}

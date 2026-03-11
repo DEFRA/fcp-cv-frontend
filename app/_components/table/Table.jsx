@@ -1,6 +1,5 @@
 'use client'
 
-import { Skeleton } from '@/components/skeleton/skeleton'
 import { cn } from '@/lib/utils'
 import { Transition } from '@headlessui/react'
 import {
@@ -138,7 +137,7 @@ function Header({ headerGroup }) {
   return <tr>{rows}</tr>
 }
 
-function Row({ row, onRowClick, showSkeleton }) {
+function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
   const isRowClickable = typeof onRowClick === 'function'
 
   const handleRowClick = () => {
@@ -156,18 +155,6 @@ function Row({ row, onRowClick, showSkeleton }) {
   if (isRowClickable) {
     rowClassName =
       'cursor-pointer transition-colors hover:bg-green-100/70 focus-visible:outline-none focus-visible:ring-green-500'
-  }
-
-  if (showSkeleton) {
-    return (
-      <tr>
-        {row.getVisibleCells().map((cell) => (
-          <td key={cell.id} className="px-1 py-2">
-            <Skeleton loading className="h-6 w-20" />
-          </td>
-        ))}
-      </tr>
-    )
   }
 
   return (
@@ -199,8 +186,7 @@ function TableInner({
   selectedRowAccessorKey,
   columnVisibility,
   defaultSortDirection = 'asc',
-  noResultsMessage = 'No results found',
-  loading
+  noResultsMessage = 'No results found'
 }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState(() => {
@@ -224,7 +210,7 @@ function TableInner({
   }
 
   const table = useReactTable({
-    data: loading ? Array(10).fill({}) : data,
+    data,
     columns,
     onGlobalFilterChange: enableSearching ? setGlobalFilter : undefined,
     globalFilterFn: 'includesString',
@@ -276,7 +262,6 @@ function TableInner({
                     onRowClick={onRowClick}
                     selectedRow={selectedRow}
                     selectedRowAccessorKey={selectedRowAccessorKey}
-                    showSkeleton={loading}
                   />
                 ))
             )}

@@ -27,7 +27,7 @@ export function ApplicationsDetails() {
 
   const applicationId = searchParams.get('applicationId')
 
-  const { data = [], dalLoading } = useDal([
+  const { data = [], isLoading } = useDal([
     'applications',
     searchParams.get('sbi')
   ])
@@ -43,14 +43,14 @@ export function ApplicationsDetails() {
   return (
     <div className="space-y-6">
       <KeyValueList>
-        <KeyValueListTitle loading={dalLoading}>
+        <KeyValueListTitle loading={isLoading}>
           {data?.details?.[applicationId]?.name}
         </KeyValueListTitle>
         <KeyValueListContent>
           {(
             data?.details?.[applicationId]?.summary || defaultApplicationSummary
           ).map((item) => (
-            <KeyValueListItem key={item.dt} {...item} loading={dalLoading} />
+            <KeyValueListItem key={item.dt} {...item} loading={isLoading} />
           ))}
         </KeyValueListContent>
       </KeyValueList>
