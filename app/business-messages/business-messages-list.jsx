@@ -100,7 +100,7 @@ function FilterControls({
 export function BusinessMessagesList() {
   useDataverseAccountIDToSBI()
 
-  const { searchParams, setSearchParam } = useSearchParams()
+  const { searchParams, setSearchParams } = useSearchParams()
   const [readFilter, setReadFilter] = useState('')
 
   const sbi = searchParams.get('sbi')
@@ -145,9 +145,9 @@ export function BusinessMessagesList() {
       <FilterControls
         contacts={contacts}
         contact={contact || ''}
-        onContactChange={(value) => setSearchParam('contact', value)}
+        onContactChange={(value) => setSearchParams({ contact: value })}
         dateRange={dateRange}
-        onDateRangeChange={(value) => setSearchParam('dateRange', value)}
+        onDateRangeChange={(value) => setSearchParams({ dateRange: value })}
         readFilter={readFilter}
         onReadFilterChange={setReadFilter}
       />
@@ -156,7 +156,7 @@ export function BusinessMessagesList() {
           data={filteredMessages}
           columns={columns}
           onRowClick={(row) => {
-            setSearchParam('messageId', row.id)
+            setSearchParams({ messageId: row.id })
           }}
           defaultSortColumn="date"
           defaultSortDirection="desc"

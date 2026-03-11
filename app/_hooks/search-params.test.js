@@ -12,7 +12,7 @@ describe('Search Params Hook Test', () => {
 
   it('renders the RootLayout component with children', async () => {
     const { result } = await renderHook(useSearchParams)
-    result.current.setSearchParam('crn', 'crn')
+    result.current.setSearchParams({ crn: 'crn' })
     expect(window.location.search).toBe('?crn=crn')
   })
 

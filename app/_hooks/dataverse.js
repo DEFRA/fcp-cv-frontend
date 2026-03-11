@@ -5,7 +5,7 @@ import { useSearchParams } from '@/hooks/search-params'
 import { useEffect } from 'react'
 
 function useDataverseIDToParam(entity, key) {
-  const { searchParams, setSearchParam } = useSearchParams()
+  const { searchParams, setSearchParams } = useSearchParams()
 
   const typename = searchParams.get('typename')
   const id = searchParams.get('id')
@@ -16,9 +16,9 @@ function useDataverseIDToParam(entity, key) {
   useEffect(() => {
     const value = data?.[key]
     if (value) {
-      setSearchParam(key, value)
+      setSearchParams({ [key]: value })
     }
-  }, [data, key, setSearchParam])
+  }, [data, key, setSearchParams])
 }
 
 export function useDataverseAccountIDToSBI() {

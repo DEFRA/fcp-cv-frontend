@@ -7,7 +7,7 @@ import { useSearchParams } from '@/hooks/search-params'
 
 export function LinkedBusinessesList() {
   useDataverseContactIDToCRN()
-  const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
+  const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
 
   const { data } = useDal([
     'linked-businesses',
@@ -29,7 +29,7 @@ export function LinkedBusinessesList() {
         { header: 'Name', accessorKey: 'name' }
       ]}
       onRowClick={(row) => {
-        setSearchParam('sbi', row.sbi)
+        setSearchParams({ sbi: row.sbi })
       }}
       onClearClick={() => {
         unsetSearchParam('sbi')
