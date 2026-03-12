@@ -10,11 +10,7 @@ export function LinkedContactsList() {
 
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = [] } = useDal([
-    'linked-contacts',
-    'list',
-    searchParams.get('sbi')
-  ])
+  const { data } = useDal(['linked-contacts', 'list', searchParams.get('sbi')])
 
   return (
     <Table

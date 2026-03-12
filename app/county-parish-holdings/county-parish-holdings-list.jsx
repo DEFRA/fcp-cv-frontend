@@ -10,13 +10,11 @@ export function CountyParishHoldingsList() {
 
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = { list: Array(15).fill({}), details: {} }, isLoading } =
-    useDal(['county-parish-holdings', searchParams.get('sbi')])
+  const { data } = useDal(['county-parish-holdings', searchParams.get('sbi')])
 
   return (
     <Table
-      data={data.list}
-      loading={isLoading}
+      data={data?.list}
       columns={[
         {
           header: 'CPH Number',

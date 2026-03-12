@@ -10,12 +10,10 @@ export function AgreementsList() {
 
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = { list: Array(10).fill({}), details: {} }, isLoading } =
-    useDal(['agreements', searchParams.get('sbi')])
+  const { data } = useDal(['agreements', searchParams.get('sbi')])
 
   return (
     <Table
-      loading={isLoading}
       data={data?.list}
       columns={[
         {

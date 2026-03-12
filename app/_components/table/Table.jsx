@@ -1,5 +1,6 @@
 'use client'
 
+import { Skeleton } from '@/components/skeleton/skeleton'
 import { cn } from '@/lib/utils'
 import { Transition } from '@headlessui/react'
 import {
@@ -9,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { Suspense, useId, useState } from 'react'
+import { useId, useState } from 'react'
 
 function SortArrow({ direction }) {
   const isAsc = direction === 'asc'
@@ -166,15 +167,22 @@ function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
     >
       {row.getVisibleCells().map((cell) => (
         <td key={cell.id} className="px-1 py-2  text-gray-950">
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          <Skeleton
+            loading={cell.getValue() === undefined}
+            className="h-6 w-30"
+          >
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </Skeleton>
         </td>
       ))}
     </tr>
   )
 }
 
-function TableInner({
-  data = [],
+const skeletonData = Array(10).fill({})
+
+export default function Table({
+  data,
   columns = [],
   enableSearching = true,
   enableSorting = true,
@@ -210,7 +218,7 @@ function TableInner({
   }
 
   const table = useReactTable({
-    data,
+    data: data || skeletonData,
     columns,
     onGlobalFilterChange: enableSearching ? setGlobalFilter : undefined,
     globalFilterFn: 'includesString',
@@ -269,13 +277,5 @@ function TableInner({
         </table>
       </div>
     </div>
-  )
-}
-
-export default function Table(props) {
-  return (
-    <Suspense fallback={<div>Loading table…</div>}>
-      <TableInner {...props} />
-    </Suspense>
   )
 }
