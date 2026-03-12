@@ -95,6 +95,10 @@ function SearchBar({
   )
 }
 
+function getFixedWidthStyle({ fixedWidth }) {
+  return fixedWidth !== undefined ? { width: `${fixedWidth}px` } : undefined
+}
+
 function Header({ headerGroup }) {
   const sortableButton = (header) => (
     <button
@@ -121,7 +125,8 @@ function Header({ headerGroup }) {
     const props = {
       className:
         'border-r border-white p-2 text-left font-bold text-white last:border-r-0',
-      ...(sortable ? { 'aria-sort': ariaSort } : {})
+      ...(sortable ? { 'aria-sort': ariaSort } : {}),
+      style: getFixedWidthStyle(header.column.columnDef)
     }
 
     const content = sortable
@@ -152,10 +157,15 @@ function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
     }
   }
 
-  let rowClassName = ''
+  const isSelected =
+    selectedRow !== undefined &&
+    selectedRowAccessorKey &&
+    row.original[selectedRowAccessorKey] === selectedRow
+
+  let rowClassName = isSelected ? 'bg-green-100/70' : ''
   if (isRowClickable) {
-    rowClassName =
-      'cursor-pointer transition-colors hover:bg-green-100/70 focus-visible:outline-none focus-visible:ring-green-500'
+    rowClassName +=
+      ' cursor-pointer transition-colors hover:bg-green-100/70 focus-visible:outline-none focus-visible:ring-green-500'
   }
 
   return (
@@ -166,7 +176,11 @@ function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
       tabIndex={isRowClickable ? 0 : undefined}
     >
       {row.getVisibleCells().map((cell) => (
-        <td key={cell.id} className="px-1 py-2  text-gray-950">
+        <td
+          key={cell.id}
+          className="px-1 py-2  text-gray-950"
+          style={getFixedWidthStyle(cell.column.columnDef)}
+        >
           <Skeleton
             loading={cell.getValue() === undefined}
             className="h-6 w-30"

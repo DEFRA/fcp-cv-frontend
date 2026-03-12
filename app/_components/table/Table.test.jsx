@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 
@@ -212,6 +213,58 @@ describe('Table component tests', () => {
       await expect.element(rowLocators.nth(2)).toHaveTextContent(alanRowText)
       await expect.element(rowLocators.last()).toHaveTextContent(graceRowText)
     })
+  })
+
+  it('highlights the matching row when selectedRow and selectedRowAccessorKey are provided', async () => {
+    const { getByRole } = await render(
+      <Table
+        data={defaultData}
+        columns={defaultColumns}
+        onRowClick={() => {}}
+        selectedRow="Ada"
+        selectedRowAccessorKey="firstName"
+      />
+    )
+
+    await expect
+      .element(getByRole('row', { name: adaRowName }))
+      .toHaveClass('bg-green-100/70')
+    await expect
+      .element(getByRole('row', { name: graceRowName }))
+      .not.toHaveClass('bg-green-100/70')
+  })
+
+  it('triggers onRowClick when Space is pressed on a focusable row', async () => {
+    const onRowClick = vi.fn()
+    const { getByRole } = await render(
+      <Table
+        data={defaultData}
+        columns={defaultColumns}
+        onRowClick={onRowClick}
+      />
+    )
+
+    const adaRow = getByRole('row', { name: adaRowName })
+    await adaRow.focus()
+    await userEvent.keyboard(' ')
+    expect(onRowClick).toHaveBeenCalledWith(defaultData[0])
+  })
+
+  it('hides columns specified by columnVisibility', async () => {
+    const { getByRole } = await render(
+      <Table
+        data={defaultData}
+        columns={defaultColumns}
+        columnVisibility={{ lastName: false }}
+      />
+    )
+
+    await expect
+      .element(getByRole('cell', { name: lastNameHeading }))
+      .not.toBeInTheDocument()
+    await expect
+      .element(getByRole('cell', { name: firstNameHeading }))
+      .toBeInTheDocument()
   })
 
   it('handles various user interactions', async () => {

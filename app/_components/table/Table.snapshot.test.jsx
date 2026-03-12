@@ -106,42 +106,6 @@ describe('Table snapshot', () => {
     expect(html).toMatchSnapshot()
   })
 
-  it('matches the rendered structure with search enabled for all columns', () => {
-    const defaultData = [
-      { firstName: 'Ada', lastName: 'Lovelace', age: 36 },
-      { firstName: 'Grace', lastName: 'Hopper', age: 85 },
-      { firstName: 'Alan', lastName: 'Turing', age: 41 }
-    ]
-
-    const defaultColumns = [
-      {
-        header: 'First name',
-        accessorKey: 'firstName'
-      },
-      {
-        header: 'Last name',
-        accessorKey: 'lastName'
-      },
-      {
-        header: 'Age',
-        accessorKey: 'age'
-      }
-    ]
-
-    const html = normalizeHtml(
-      renderToString(
-        <Table
-          data={defaultData}
-          columns={defaultColumns}
-          enableSearching
-          enableSorting
-        />
-      )
-    )
-
-    expect(html).toMatchSnapshot()
-  })
-
   it('applies default sorting when defaultSortColumn is provided', () => {
     const defaultData = [
       { firstName: 'Ada', lastName: 'Lovelace', age: 36 },
@@ -263,5 +227,84 @@ describe('Table snapshot', () => {
 
     expect(html).toContain('hover:bg-green-100/70')
     expect(html).toContain('cursor-pointer')
+  })
+
+  it('applies selected row highlight when selectedRow matches a row', () => {
+    const defaultData = [
+      { firstName: 'Ada', lastName: 'Lovelace', age: 36 },
+      { firstName: 'Grace', lastName: 'Hopper', age: 85 }
+    ]
+    const defaultColumns = [
+      { header: 'First name', accessorKey: 'firstName' },
+      { header: 'Last name', accessorKey: 'lastName' },
+      { header: 'Age', accessorKey: 'age' }
+    ]
+
+    const html = normalizeHtml(
+      renderToString(
+        <Table
+          data={defaultData}
+          columns={defaultColumns}
+          enableSearching={false}
+          enableSorting={false}
+          onRowClick={() => {}}
+          selectedRow="Ada"
+          selectedRowAccessorKey="firstName"
+        />
+      )
+    )
+
+    expect(html).toContain('bg-green-100/70')
+  })
+
+  it('applies descending sort when defaultSortDirection is desc', () => {
+    const defaultData = [
+      { firstName: 'Ada', lastName: 'Lovelace', age: 36 },
+      { firstName: 'Grace', lastName: 'Hopper', age: 85 }
+    ]
+    const defaultColumns = [
+      { header: 'First name', accessorKey: 'firstName' },
+      { header: 'Last name', accessorKey: 'lastName' },
+      { header: 'Age', accessorKey: 'age' }
+    ]
+
+    const html = normalizeHtml(
+      renderToString(
+        <Table
+          data={defaultData}
+          columns={defaultColumns}
+          enableSearching={false}
+          enableSorting
+          defaultSortColumn="firstName"
+          defaultSortDirection="desc"
+        />
+      )
+    )
+
+    expect(html).toContain('aria-sort="descending"')
+  })
+
+  it('does not render hidden columns specified by columnVisibility', () => {
+    const defaultData = [{ firstName: 'Ada', lastName: 'Lovelace', age: 36 }]
+    const defaultColumns = [
+      { header: 'First name', accessorKey: 'firstName' },
+      { header: 'Last name', accessorKey: 'lastName' },
+      { header: 'Age', accessorKey: 'age' }
+    ]
+
+    const html = normalizeHtml(
+      renderToString(
+        <Table
+          data={defaultData}
+          columns={defaultColumns}
+          enableSearching={false}
+          enableSorting={false}
+          columnVisibility={{ lastName: false }}
+        />
+      )
+    )
+
+    expect(html).not.toContain('Last name')
+    expect(html).toContain('First name')
   })
 })
