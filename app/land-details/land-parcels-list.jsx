@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
@@ -31,7 +31,7 @@ export function LandParcelsList() {
     [sbi]
   )
 
-  const parcels = data?.parcels || []
+  const parcels = useMemo(() => data?.parcels || [], [data?.parcels])
 
   useEffect(() => {
     const firstParcel = parcels[0]
