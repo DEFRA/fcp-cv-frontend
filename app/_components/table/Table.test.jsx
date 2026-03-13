@@ -245,7 +245,7 @@ describe('Table component tests', () => {
     )
 
     const adaRow = getByRole('row', { name: adaRowName })
-    await adaRow.focus()
+    await adaRow.element().focus()
     await userEvent.keyboard(' ')
     expect(onRowClick).toHaveBeenCalledWith(defaultData[0])
   })
