@@ -558,6 +558,10 @@ describe('LandDetailsPage tests', () => {
         .element(getByRole('heading', { name: 'SS6 836' }))
         .toBeInTheDocument()
 
+      await expect
+        .element(getByRole('cell', { name: '0.8699' }))
+        .toBeInTheDocument()
+
       const landDetailsAfterLoad = landDetailsCount
       const landParcelAfterLoad = landParcelCount
 
