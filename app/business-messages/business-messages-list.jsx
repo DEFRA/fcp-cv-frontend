@@ -114,7 +114,7 @@ export function BusinessMessagesList() {
     ? `${contact}?fromDate=${fromDate}`
     : contact
 
-  const { data: messages = [] } = useDal(
+  const { data: messages } = useDal(
     ['business-messages', 'messages', sbi, messagesUrlSuffix],
     [contact]
   )

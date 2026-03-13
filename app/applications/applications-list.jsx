@@ -10,13 +10,10 @@ export function ApplicationsList() {
 
   const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
 
-  const { data = { list: Array(20).fill({}), detail: {} }, isLoading } = useDal(
-    ['applications', searchParams.get('sbi')]
-  )
+  const { data } = useDal(['applications', searchParams.get('sbi')])
 
   return (
     <Table
-      loading={isLoading}
       data={data?.list}
       columns={[
         {
