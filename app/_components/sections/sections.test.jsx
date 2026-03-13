@@ -54,4 +54,16 @@ describe('Sections component tests', () => {
       .element(getByRole('heading', { name: 'Right Section' }))
       .toBeInTheDocument()
   })
+
+  it('does not render header if none are provided', async () => {
+    const { getByRole } = await render(
+      <Sections>
+        <FullWidthSection>Full Width Content</FullWidthSection>
+        <LeftSection>Left Content</LeftSection>
+        <RightSection>Right Content</RightSection>
+      </Sections>
+    )
+
+    await expect.element(getByRole('heading')).not.toBeInTheDocument()
+  })
 })

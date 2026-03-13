@@ -28,4 +28,13 @@ describe('ErrorBoundary component tests', () => {
     await expect.element(refreshButton).toBeInTheDocument()
     // await refreshButton.click() // NOTE: do not try this!! 💥
   })
+
+  it('renders normal child elements when no error is thrown', async () => {
+    const { getByRole, getByText } = await render(
+      <ErrorBoundary>
+        <div>Normal content</div>
+      </ErrorBoundary>
+    )
+    await expect.element(getByText('Normal content')).toBeInTheDocument()
+  })
 })
