@@ -8,7 +8,7 @@ import { useSearchParams } from '@/hooks/search-params'
 export function CountyParishHoldingsList() {
   useDataverseAccountIDToSBI()
 
-  const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
+  const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
 
   const { data } = useDal(['county-parish-holdings', searchParams.get('sbi')])
 
@@ -46,7 +46,7 @@ export function CountyParishHoldingsList() {
         address: false
       }}
       onRowClick={(row) => {
-        setSearchParam('cphNumber', row.cphNumber)
+        setSearchParams({ cphNumber: row.cphNumber })
       }}
       onClearClick={() => {
         unsetSearchParam('cphNumber')

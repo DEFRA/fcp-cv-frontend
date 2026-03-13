@@ -7,9 +7,11 @@ export function useSearchParams() {
 
   return {
     searchParams,
-    setSearchParam(key, value) {
+    setSearchParams(entries) {
       const params = new URLSearchParams(searchParams.toString())
-      params.set(key, value)
+      for (const [key, value] of Object.entries(entries)) {
+        params.set(key, value)
+      }
       window.history.pushState(null, '', `?${params.toString()}`)
     },
     unsetSearchParam(key) {

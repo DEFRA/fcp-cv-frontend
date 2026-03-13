@@ -8,7 +8,7 @@ import { useSearchParams } from '@/hooks/search-params'
 export function ApplicationsList() {
   useDataverseAccountIDToSBI()
 
-  const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
+  const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
 
   const { data } = useDal(['applications', searchParams.get('sbi')])
 
@@ -34,7 +34,7 @@ export function ApplicationsList() {
         }
       ]}
       onRowClick={(row) => {
-        setSearchParam('applicationId', row.id)
+        setSearchParams({ applicationId: row.id })
       }}
       onClearClick={() => {
         unsetSearchParam('applicationId')

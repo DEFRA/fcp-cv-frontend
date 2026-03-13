@@ -23,6 +23,7 @@ export default defineConfig({
         'app/_components/iframe-messenger/IframeMessenger.jsx',
         'app/_hooks',
         'app/agreements',
+        'app/land-details',
         'app/linked-contacts',
         'app/county-parish-holdings',
         'app/applications',
