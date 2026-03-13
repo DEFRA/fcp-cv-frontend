@@ -559,7 +559,7 @@ describe('LandDetailsPage tests', () => {
         .toBeInTheDocument()
 
       await expect
-        .element(getByRole('cell', { name: '0.8699' }))
+        .element(getByRole('cell', { name: '0.8699' }).first())
         .toBeInTheDocument()
 
       const landDetailsAfterLoad = landDetailsCount
