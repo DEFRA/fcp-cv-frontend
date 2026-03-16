@@ -36,7 +36,7 @@ export function LandParcelDetails() {
   const sheetId = searchParams.get('sheetId')
   const parcelId = searchParams.get('parcelId')
 
-  const { data, dalLoading } = useDal(
+  const { data, isLoading } = useDal(
     [
       'land-parcel',
       `${sbi}?date=${date}&sheetId=${sheetId}&parcelId=${parcelId}`
@@ -49,8 +49,6 @@ export function LandParcelDetails() {
   }
 
   const parcel = data?.parcel || {}
-  const parcelCovers = data?.parcelCovers || []
-  const parcelLandUses = data?.parcelLandUses || []
 
   const pendingLabel =
     parcel.pendingDigitisation != null
@@ -62,44 +60,44 @@ export function LandParcelDetails() {
   return (
     <div className="mt-4 ml-4 mr-4 space-y-6">
       <KeyValueList>
-        <KeyValueListTitle loading={dalLoading}>
+        <KeyValueListTitle loading={isLoading}>
           {sheetId} {parcelId}
         </KeyValueListTitle>
         <KeyValueListContent>
           <KeyValueListItem
             dt="Area (ha)"
             dd={parcel.area ?? ''}
-            loading={dalLoading}
+            loading={isLoading}
           />
           <KeyValueListItem
             dt="Pending Customer Notified Land Change?"
             dd={pendingLabel}
-            loading={dalLoading}
+            loading={isLoading}
           />
           <KeyValueListItem
             dt="Effective Date From"
             dd={parcel.effectiveFromDate ?? ''}
-            loading={dalLoading}
+            loading={isLoading}
           />
           <KeyValueListItem
             dt="Effective Date To"
             dd={parcel.effectiveToDate ?? ''}
-            loading={dalLoading}
+            loading={isLoading}
           />
         </KeyValueListContent>
       </KeyValueList>
       <Table
-        data={parcelCovers}
+        data={data?.parcelCovers}
         columns={coversColumns}
-        loading={dalLoading}
+        skeletonRows={2}
         enableSearching={false}
         noResultsMessage="No land covers found"
         enableSorting={false}
       />
       <Table
-        data={parcelLandUses}
+        data={data?.parcelLandUses}
         columns={landUsesColumns}
-        loading={dalLoading}
+        skeletonRows={2}
         enableSearching={false}
         noResultsMessage="No land uses found"
         enableSorting={false}

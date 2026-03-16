@@ -6,7 +6,7 @@ export function useSearchParams() {
   const searchParams = nextUseSearchParams()
 
   return {
-    searchParams,
+    searchParams: searchParams || new URLSearchParams(),
     setSearchParams(entries) {
       const params = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(entries)) {

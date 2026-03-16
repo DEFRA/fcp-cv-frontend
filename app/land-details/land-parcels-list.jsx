@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
@@ -26,31 +26,24 @@ export function LandParcelsList() {
   const sbi = searchParams.get('sbi')
   const date = searchParams.get('date') || todayISO()
 
-  const { data, dalLoading } = useDal(
-    ['land-details', `${sbi}?date=${date}`],
-    [sbi]
-  )
-
-  const parcels = useMemo(() => data?.parcels || [], [data?.parcels])
+  const { data } = useDal(['land-details', `${sbi}?date=${date}`], [sbi])
 
   useEffect(() => {
-    const firstParcel = parcels[0]
+    const firstParcel = Array.isArray(data?.parcels) && data.parcels[0]
     if (!firstParcel) return
-    const current = new URLSearchParams(window.location.search)
-    if (!current.get('sheetId') && !current.get('parcelId')) {
+    if (!searchParams.get('sheetId') && !searchParams.get('parcelId')) {
       setSearchParams({
         sheetId: firstParcel.sheetId,
         parcelId: firstParcel.parcelId
       })
     }
-  }, [parcels, setSearchParams])
+  }, [data, searchParams, setSearchParams])
 
   return (
     <div className="mt-4 ml-4">
       <Table
-        data={parcels}
+        data={data?.parcels}
         columns={columns}
-        loading={dalLoading}
         onRowClick={(row) => {
           setSearchParams({ sheetId: row.sheetId, parcelId: row.parcelId })
         }}

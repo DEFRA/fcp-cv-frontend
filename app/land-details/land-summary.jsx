@@ -29,13 +29,12 @@ export function LandSummary() {
   const sbi = searchParams.get('sbi')
   const date = searchParams.get('date') || todayISO()
 
-  const { data, dalLoading } = useDal(
+  const { data, isLoading } = useDal(
     ['land-details', `${sbi}?date=${date}`],
     [sbi]
   )
 
   const summary = data?.summary || {}
-  const landCovers = data?.landCovers || []
 
   return (
     <div className="p-4 space-y-4">
@@ -46,31 +45,28 @@ export function LandSummary() {
 
       <div className="grid grid-cols-2 gap-8">
         <KeyValueList>
-          <KeyValueListTitle loading={dalLoading}>
-            Land Summary
-          </KeyValueListTitle>
+          <KeyValueListTitle>Land Summary</KeyValueListTitle>
           <KeyValueListContent>
             <KeyValueListItem
               dt="Total Number of Parcels"
               dd={summary.totalParcels ?? ''}
-              loading={dalLoading}
+              loading={isLoading}
             />
             <KeyValueListItem
               dt="Total Area (ha)"
               dd={summary.totalArea ?? ''}
-              loading={dalLoading}
+              loading={isLoading}
             />
             <KeyValueListItem
               dt="Total Parcels With Pending Customer Notified Land Changes"
               dd={summary.pendingParcels ?? ''}
-              loading={dalLoading}
+              loading={isLoading}
             />
           </KeyValueListContent>
         </KeyValueList>
         <Table
-          data={landCovers}
+          data={data?.landCovers}
           columns={landCoverColumns}
-          loading={dalLoading}
           enableSearching={false}
           enableSorting={false}
           noResultsMessage="No land cover data"

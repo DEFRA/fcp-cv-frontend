@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { useId, useState } from 'react'
+import { useId, useMemo, useState } from 'react'
 
 function SortArrow({ direction }) {
   const isAsc = direction === 'asc'
@@ -193,11 +193,10 @@ function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
   )
 }
 
-const skeletonData = Array(10).fill({})
-
 export default function Table({
   data,
   columns = [],
+  skeletonRows = 10,
   enableSearching = true,
   enableSorting = true,
   defaultSortColumn = columns[0]?.accessorKey,
@@ -222,6 +221,11 @@ export default function Table({
     }
     return []
   })
+
+  const skeletonData = useMemo(
+    () => Array(skeletonRows).fill({}),
+    [skeletonRows]
+  )
 
   const state = {}
   if (enableSearching) {
