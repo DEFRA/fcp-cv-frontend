@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DatePicker snapshot > renders with all custom props 1`] = `"<div class="grid grid-cols-[auto_1fr] items-center gap-x-4 w-fit"><label class="font-bold" for="_R_0_">Birth Date</label><input id="_R_0_" type="date" class="border-2 border-green-700 p-2 focus:outline-none focus:ring-green-700" min="1900-01-01" max="2021-11-15" value="2021-08-15"/></div>"`;
+
+exports[`DatePicker snapshot > renders with custom label 1`] = `"<div class="grid grid-cols-[auto_1fr] items-center gap-x-4 w-fit"><label class="font-bold" for="_R_0_">Select date</label><input id="_R_0_" type="date" class="border-2 border-green-700 p-2 focus:outline-none focus:ring-green-700" min="2015-01-01" max="2021-11-15" value="2021-06-01"/></div>"`;
+
+exports[`DatePicker snapshot > renders with custom min date 1`] = `"<div class="grid grid-cols-[auto_1fr] items-center gap-x-4 w-fit"><label class="font-bold" for="_R_0_">Date</label><input id="_R_0_" type="date" class="border-2 border-green-700 p-2 focus:outline-none focus:ring-green-700" min="2020-01-01" max="2021-11-15" value="2021-06-01"/></div>"`;
+
+exports[`DatePicker snapshot > renders with default props 1`] = `"<div class="grid grid-cols-[auto_1fr] items-center gap-x-4 w-fit"><label class="font-bold" for="_R_0_">Date</label><input id="_R_0_" type="date" class="border-2 border-green-700 p-2 focus:outline-none focus:ring-green-700" min="2015-01-01" max="2021-11-15" value="2021-06-01"/></div>"`;
+
+exports[`DatePicker snapshot > renders with empty value 1`] = `"<div class="grid grid-cols-[auto_1fr] items-center gap-x-4 w-fit"><label class="font-bold" for="_R_0_">Date</label><input id="_R_0_" type="date" class="border-2 border-green-700 p-2 focus:outline-none focus:ring-green-700" min="2015-01-01" max="2021-11-15" value=""/></div>"`;

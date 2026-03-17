@@ -8,7 +8,7 @@ import { useSearchParams } from '@/hooks/search-params'
 export function AgreementsList() {
   useDataverseAccountIDToSBI()
 
-  const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
+  const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
 
   const { data } = useDal(['agreements', searchParams.get('sbi')])
 
@@ -31,7 +31,7 @@ export function AgreementsList() {
         { header: 'Status', accessorKey: 'status' }
       ]}
       onRowClick={(row) => {
-        setSearchParam('contractId', row.contractId)
+        setSearchParams({ contractId: row.contractId })
       }}
       onClearClick={() => {
         unsetSearchParam('contractId')

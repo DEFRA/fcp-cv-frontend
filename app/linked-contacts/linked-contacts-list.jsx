@@ -8,7 +8,7 @@ import { useSearchParams } from '@/hooks/search-params'
 export function LinkedContactsList() {
   useDataverseAccountIDToSBI()
 
-  const { searchParams, setSearchParam, unsetSearchParam } = useSearchParams()
+  const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
 
   const { data } = useDal(['linked-contacts', 'list', searchParams.get('sbi')])
 
@@ -28,7 +28,7 @@ export function LinkedContactsList() {
         { header: 'Role', accessorKey: 'role' }
       ]}
       onRowClick={(row) => {
-        setSearchParam('crn', row.crn)
+        setSearchParams({ crn: row.crn })
       }}
       onClearClick={() => {
         unsetSearchParam('crn')
