@@ -14,20 +14,20 @@ C4Context
   title Consolidated View architecture overview
 
   Boundary(vpn, "DEFRA VPC ☁️", "X-Scaler VPN") {
-    Boundary(ms, "Microsoft cloud ☁️", "VPC & services") {
-      System_Boundary(d365, "Microsoft Dynamics ⚙️") {
-        System_Ext(crm, "FCP CRM 📑", "Custom CRM UI built from Power Apps & Flows")
-      }
-
-      System_Ext(entra, "Entra ID 🛃", "Handles system authentication")
-      System_Ext(online, "Microsoft login 🛃", "Handles user authentication")
-    }
-
-    Boundary(cdp, "Core Development Platform (CDP) ☁️", "AWS DEFRA VPC") {
       Person(user, "CV User", "Accesses the CV apps
         <br />
         (delivered via an iframe in the CRM)")
 
+    Boundary(ms, "Microsoft cloud ☁️", "VPC & services") {
+      System_Boundary(d365, "Microsoft Dynamics ⚙️") {
+        System_Ext(crm, "FCP CRM 📑", "Custom CRM UI built from Power Apps & Flows")
+        System_Ext(dataverse, "Dataverse records ℹ️", "CV translates CRM object IDs into DEFRA IDs")
+      }
+
+      System_Ext(online, "login.microsoftonline.com 🛃", "Microsoft OAuth handles user & system authentication")
+    }
+
+    Boundary(cdp, "Core Development Platform (CDP) ☁️", "AWS DEFRA VPC") {
       System(cv, "FCP-CV-Frontend 📊", "Next.js backend serving React UI micro apps
         <br />
         displaying FCP data about businesses and people")
@@ -37,14 +37,15 @@ C4Context
     }
   }
 
-  Rel(user, crm, "Access")
-  Rel(user, online, "Login 🔑")
+  Rel(user, crm, "")
+  Rel(user, online, "User login 🔑")
   Rel(user, cv, "View 💻")
   Rel(crm, cv, "Load (iframe)")
-  Rel(cv, online, "Verify user (JWT) 🔐")
+  Rel(crm, dataverse, "")
+  Rel(cv, online, "Verify user (JWT) 🔐 & Service login 🔑")
   Rel(cv, dal, "Query (GraphQL) 💬")
-  Rel(cv, entra, "Service login 🔑")
-  Rel(dal, entra, "Verify service (JWT) 🔐")
+  Rel(cv, dataverse, "Lookup (IDs)")
+  Rel(dal, online, "Verify service (JWT) 🔐")
 ```
 
 ## Requirements
@@ -61,11 +62,30 @@ cd fcp-cv-frontend
 nvm use
 ```
 
+### FCP-DAL
+
+CV requires a connection to an instance of the <abbr title="Data Access Layer">DAL</abbr> API which is the primary datasource.
+The DAL can be setup to create a mock service suitable for local testing and development by running the following commands:
+
+```bash
+curl https://raw.githubusercontent.com/DEFRA/fcp-dal-api/refs/heads/main/compose.yml -o dal-api-compose.yml
+docker compose -f dal-api-compose.yml up --pull always --quiet-pull fcp-dal-api
+```
+
+More details about the DAL can be found at the [project README](https://github.com/DEFRA/fcp-dal-api?tab=readme-ov-file#fcp-dal-api), or its [documentation home](https://defra.github.io/fcp-dal-api/homepage).
+
+Once the DAL has been started, a local CV environment can then easily be completed by running the following command:
+
+```bash
+docker compose up --build fcp-cv-frontend
+```
+
 ## Proxy
 
 We are using forward-proxy which is set up by default on CDP.
 No special effort is required to configure or use the out-bound proxy, it works automatically.
-By default, access to `login.microsoftonline.com` is allowed, as well as to other CDP services, i.e. the DAL (as such no further proxy config should be necessary).
+By default, access to `login.microsoftonline.com` is allowed, as well as to other CDP services, i.e. the DAL.
+The only other service required by the app is the Dataverse for the associated CRM instance that provides CV, which has already been configured for each environment (as such, no further proxy config should be necessary).
 
 ## Local Development
 

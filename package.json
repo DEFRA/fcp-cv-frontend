@@ -8,7 +8,7 @@
   },
   "scripts": {
     "preup": "curl https://raw.githubusercontent.com/DEFRA/fcp-dal-api/refs/heads/main/compose.yml -o dal-api-compose.yml",
-    "up": "docker compose build && docker compose -f dal-api-compose.yml -f compose.yml up --pull always --quiet-pull --no-attach mongodb",
+    "up": "docker compose build && docker compose -f dal-api-compose.yml -f compose.yml -p fcp-cv up --pull always --quiet-pull --no-attach mongodb",
     "build": "next build",
     "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
@@ -19,9 +19,10 @@
     "posttest": "vitest --config=vitest.merge.config.js --mergeReports coverage/merge --coverage run",
     "test:server": "vitest --coverage --coverage.reporter=text",
     "test:browser": "vitest --config=vitest.browser.config.js --coverage --coverage.reporter=text --coverage.reporter=html",
-    "test:accessibility": "axe ${TEST_ENVIRONMENT_ROOT_URL:-http://localhost:3001}",
-    "test:accessibility:docker": "docker compose -f compose.yml -f compose.accessibility.yaml -p fcp-cv-frontend-accessibility-test run --quiet-pull --pull always --build --rm accessibility",
-    "posttest:accessibility:docker": "docker compose -p fcp-cv-frontend-accessibility-test down -v --remove-orphans"
+    "test:accessibility": "axe ${CV_URL:-http://localhost:3000}",
+    "pretest:accessibility:docker": "npm run up -- -d",
+    "test:accessibility:docker": "docker compose -f compose.accessibility.yaml -p fcp-cv run --quiet-pull --pull always --rm accessibility",
+    "posttest:accessibility:docker": "docker compose -p fcp-cv down -v --remove-orphans"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
@@ -63,7 +64,7 @@
     "vitest-browser-react": "^2.0.2"
   },
   "overrides": {
-    "uuid": "^14.0.0",
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.12",
+    "uuid": "^14.0.0"
   }
 }
