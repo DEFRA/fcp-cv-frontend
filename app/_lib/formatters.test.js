@@ -1,7 +1,11 @@
 import { TZDate } from '@date-fns/tz'
 import { describe, expect, it } from 'vitest'
 
-import { formatDate, uppercaseSnakeToTitleCase } from '@/lib/formatters'
+import {
+  formatCurrency,
+  formatDate,
+  uppercaseSnakeToTitleCase
+} from '@/lib/formatters'
 
 describe('screamingSnakeToTitleCase', () => {
   it('converts standard SCREAMING_SNAKE_CASE → Title Case', () => {
@@ -104,5 +108,29 @@ describe('formatDate', () => {
     expect(() => formatDate('invalid-date')).toThrow()
     expect(() => formatDate('2025-13-01')).toThrow() // invalid month
     expect(() => formatDate(NaN)).toThrow()
+  })
+})
+
+describe('formatCurrency', () => {
+  it('formats whole numbers with two decimal places and GBP suffix', () => {
+    expect(formatCurrency(1000)).toBe('1,000.00 GBP')
+    expect(formatCurrency(0)).toBe('0.00 GBP')
+    expect(formatCurrency(1)).toBe('1.00 GBP')
+  })
+
+  it('formats decimal amounts to exactly two decimal places', () => {
+    expect(formatCurrency(750.5)).toBe('750.50 GBP')
+    expect(formatCurrency(1234.99)).toBe('1,234.99 GBP')
+    expect(formatCurrency(0.1)).toBe('0.10 GBP')
+  })
+
+  it('uses thousands separators for large amounts', () => {
+    expect(formatCurrency(1000000)).toBe('1,000,000.00 GBP')
+    expect(formatCurrency(12345678.9)).toBe('12,345,678.90 GBP')
+  })
+
+  it('formats negative amounts', () => {
+    expect(formatCurrency(-500)).toBe('-500.00 GBP')
+    expect(formatCurrency(-1234.56)).toBe('-1,234.56 GBP')
   })
 })

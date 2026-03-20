@@ -24,6 +24,10 @@ const businessLinks = [
   {
     name: 'Linked Contacts',
     href: '/linked-contacts'
+  },
+  {
+    name: 'Payments',
+    href: '/payments'
   }
 ]
 

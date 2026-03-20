@@ -25,3 +25,12 @@ export function uppercaseSnakeToTitleCase(input) {
 export function formatDate(input) {
   return format(new TZDate(new Date(input), 'Europe/London'), 'dd/MM/yyyy')
 }
+
+export function formatCurrency(amount) {
+  return (
+    new Intl.NumberFormat('en-GB', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount) + ' GBP'
+  )
+}
