@@ -42,7 +42,7 @@ export function PaymentsList() {
   const sortedPayments = useMemo(() => {
     if (!data?.payments) return undefined
     return [...data.payments].sort((a, b) => a.date.localeCompare(b.date))
-  }, [data?.payments])
+  }, [data])
 
   const filteredPayments = useMemo(() => {
     if (!sortedPayments) return undefined
