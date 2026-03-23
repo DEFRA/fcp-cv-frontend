@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
+import { useSelectOnlyTableRowByCRN } from '@/hooks/select-only-table-row'
 
 const columns = [
   { header: 'Sheet', accessorKey: 'sheetId' },
@@ -27,6 +28,8 @@ export function LandParcelsList() {
   const date = searchParams.get('date') || todayISO()
 
   const { data } = useDal(['land-details', `${sbi}?date=${date}`], [sbi])
+
+  useSelectOnlyTableRowByCRN(data)
 
   useEffect(() => {
     const firstParcel = Array.isArray(data?.parcels) && data.parcels[0]
