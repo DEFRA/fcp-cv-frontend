@@ -17,6 +17,7 @@ export function ApplicationsList() {
 
   return (
     <Table
+      skeletonRows={5}
       data={data?.list}
       columns={[
         {

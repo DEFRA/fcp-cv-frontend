@@ -57,8 +57,9 @@ export function ApplicationsDetails() {
 
       <h2 className="text-xl font-bold">Movement History</h2>
       <Table
+        skeletonRows={5}
         enableSearching={false}
-        data={data?.details?.[applicationId]?.movementHistory || []}
+        data={data?.details?.[applicationId]?.movementHistory}
         columns={[
           {
             header: 'Date/Time',

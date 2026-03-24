@@ -17,6 +17,7 @@ export function AgreementsList() {
 
   return (
     <Table
+      skeletonRows={5}
       data={data?.list}
       columns={[
         {

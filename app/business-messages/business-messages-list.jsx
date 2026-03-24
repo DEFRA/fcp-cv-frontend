@@ -156,6 +156,7 @@ export function BusinessMessagesList() {
       />
       {contact && (
         <Table
+          skeletonRows={5}
           data={filteredMessages}
           columns={columns}
           onRowClick={(row) => {
