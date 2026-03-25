@@ -1,3 +1,8 @@
+import { ecsFormat } from '@elastic/ecs-pino-format'
+import pino from 'pino'
+
+const logger = pino({ ...ecsFormat() })
+
 const payments = [
   {
     reference: '1234567890',
@@ -95,6 +100,8 @@ const payments = [
 
 const onHold = true
 
-export async function GET() {
+export async function GET(_request, ctx) {
+  const { sbi } = await ctx.params
+  logger.info(`GET /api/dal/payments/${sbi}`)
   return Response.json({ payments, onHold })
 }

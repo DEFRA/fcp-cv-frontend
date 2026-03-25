@@ -1,8 +1,15 @@
+import { NextRequest } from 'next/server.js'
+
 import { GET } from './route'
+
+const makeRequest = (sbi = '123456789') => [
+  new NextRequest('http://localhost'),
+  { params: Promise.resolve({ sbi }) }
+]
 
 describe('Payments API route', () => {
   test('returns 200 with payments array and onHold field', async () => {
-    const response = await GET()
+    const response = await GET(...makeRequest())
     const body = await response.json()
 
     expect(response.status).toBe(200)
@@ -11,7 +18,7 @@ describe('Payments API route', () => {
   })
 
   test('payments have reference, date, amount and line_items', async () => {
-    const response = await GET()
+    const response = await GET(...makeRequest())
     const body = await response.json()
 
     expect(body.payments.length).toBeGreaterThan(0)
@@ -25,7 +32,7 @@ describe('Payments API route', () => {
   })
 
   test('line items have expected fields', async () => {
-    const response = await GET()
+    const response = await GET(...makeRequest())
     const body = await response.json()
 
     for (const payment of body.payments) {

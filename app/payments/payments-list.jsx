@@ -6,7 +6,7 @@ import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { formatCurrency, formatDate } from '@/lib/formatters'
 import { Transition } from '@headlessui/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 const columns = [
   {
@@ -32,6 +32,11 @@ export function PaymentsList() {
   useDataverseAccountIDToSBI()
 
   const { searchParams, setSearchParams } = useSearchParams()
+  const setSearchParamsRef = useRef(setSearchParams)
+  useLayoutEffect(() => {
+    setSearchParamsRef.current = setSearchParams
+  })
+
   const sbi = searchParams.get('sbi')
   const selectedReference = searchParams.get('paymentRef')
 
@@ -55,7 +60,7 @@ export function PaymentsList() {
 
   useEffect(() => {
     if (!filteredPayments?.length) return
-    setSearchParams({ paymentRef: filteredPayments[0].reference })
+    setSearchParamsRef.current({ paymentRef: filteredPayments[0].reference })
   }, [filteredPayments])
 
   return (
