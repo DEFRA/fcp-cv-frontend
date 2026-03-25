@@ -4,6 +4,7 @@ import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
+import { useSelectOnlyTableRowByCRN } from '@/hooks/select-only-table-row'
 
 export function AgreementsList() {
   useDataverseAccountIDToSBI()
@@ -12,8 +13,11 @@ export function AgreementsList() {
 
   const { data } = useDal(['agreements', searchParams.get('sbi')])
 
+  useSelectOnlyTableRowByCRN(data)
+
   return (
     <Table
+      skeletonRows={5}
       data={data?.list}
       columns={[
         {

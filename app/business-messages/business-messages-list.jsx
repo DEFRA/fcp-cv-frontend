@@ -6,6 +6,7 @@ import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
+import { useSelectOnlyTableRowByMessageId } from '@/hooks/select-only-table-row'
 import { formatDate } from '@/lib/formatters'
 
 const dateRangeOptions = [
@@ -119,6 +120,8 @@ export function BusinessMessagesList() {
     [contact]
   )
 
+  useSelectOnlyTableRowByMessageId(messages)
+
   const filteredMessages = useMemo(() => {
     if (!readFilter) return messages
     return messages.filter((msg) =>
@@ -153,6 +156,7 @@ export function BusinessMessagesList() {
       />
       {contact && (
         <Table
+          skeletonRows={5}
           data={filteredMessages}
           columns={columns}
           onRowClick={(row) => {

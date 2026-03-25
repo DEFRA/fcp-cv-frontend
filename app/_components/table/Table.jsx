@@ -196,7 +196,7 @@ function Row({ row, onRowClick, selectedRow, selectedRowAccessorKey }) {
 export default function Table({
   data,
   columns = [],
-  skeletonRows = 10,
+  skeletonRows = 3,
   enableSearching = true,
   enableSorting = true,
   defaultSortColumn = columns[0]?.accessorKey,

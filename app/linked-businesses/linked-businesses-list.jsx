@@ -4,6 +4,7 @@ import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useDataverseContactIDToCRN } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
+import { useSelectOnlyTableRowBySBI } from '@/hooks/select-only-table-row'
 
 export function LinkedBusinessesList() {
   useDataverseContactIDToCRN()
@@ -14,6 +15,8 @@ export function LinkedBusinessesList() {
     'list',
     searchParams.get('crn')
   ])
+
+  useSelectOnlyTableRowBySBI(data)
 
   return (
     <Table

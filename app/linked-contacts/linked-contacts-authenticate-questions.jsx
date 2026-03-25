@@ -14,7 +14,7 @@ const defaultItems = [
   { dt: 'Memorable Date' },
   { dt: 'Memorable Location' },
   { dt: 'Memorable Event' },
-  { dt: 'Updated at' }
+  { dt: 'Updated At' }
 ]
 
 export function LinkedContactsAuthenticateQuestions() {
