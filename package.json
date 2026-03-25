@@ -9,6 +9,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:pretty": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
+    "dev:custom-server": "node server.js |  jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --log-level warn --write .",
     "start": "node server.js",

@@ -5,17 +5,15 @@
  * The default Next.js server does not output logs in a way that can be ingested by CDP.
  * This custom server implements HTTP logging using the require ECS format.
  * See: https://portal.cdp-int.defra.cloud/documentation/how-to/logging.md
+ *
+ * Additionally standard Next.js logging via console.xxx and direct stdout/stderr writes
+ * are handled in instrumentation.js
  */
 
-import { ecsFormat } from '@elastic/ecs-pino-format'
 import { createServer } from 'http'
 import next from 'next'
-import pino from 'pino'
 import { pinoHttp } from 'pino-http'
-
-const logger = pino({
-  ...ecsFormat()
-})
+import logger from './app/_lib/logger.js'
 
 const httpLogger = pinoHttp({
   logger,
