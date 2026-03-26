@@ -29,7 +29,8 @@ export default defineConfig({
         'app/applications',
         'app/linked-businesses',
         'app/authenticate',
-        'app/business-messages'
+        'app/business-messages',
+        'app/payments'
       ],
       include: 'app/**/*.{js,jsx}',
       provider: 'v8',

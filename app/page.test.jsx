@@ -13,6 +13,6 @@ describe('CVPage tests', () => {
     await expect
       .element(getByRole('heading', { name: 'Consolidated View' }))
       .toBeInTheDocument()
-    await expect(getByRole('link').length).toBe(8)
+    await expect(getByRole('link').length).toBe(9)
   })
 })
