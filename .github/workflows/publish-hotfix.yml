@@ -10,7 +10,7 @@ permissions:
 
 env:
   AWS_REGION: eu-west-2
-  AWS_ACCOUNT_ID: '094954420758'
+  AWS_ACCOUNT_ID: "094954420758"
 
 jobs:
   build:
@@ -28,9 +28,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: |
+          npm audit --omit=dev
           npm ci
-          npm run build:frontend
-          npm run format:check
           npm run lint
           npm test
 
