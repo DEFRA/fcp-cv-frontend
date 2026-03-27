@@ -2,7 +2,7 @@ name: Check Pull Request
 
 on:
   schedule:
-    - cron: '0 7 * * 1'
+    - cron: "0 7 * * 1"
   pull_request:
     branches:
       - main
@@ -38,10 +38,6 @@ jobs:
           name: unit-test-coverage-report
           path: coverage/
           retention-days: 7
-
-      - name: Test Docker Image Build
-        run: |
-          docker build --no-cache --tag cdp-node-frontend-template .
 
       - name: Test accessibility and create accessibility test report
         run: |

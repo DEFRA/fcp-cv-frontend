@@ -19,6 +19,7 @@
     "autoprefixer",
     "booleanise",
     "callto",
+    "chromedriver",
     "dataverse",
     "defra",
     "defradigital",

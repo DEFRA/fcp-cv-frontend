@@ -1,6 +1,7 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose'
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from 'jose'
 
 import { config } from '@/config'
+import { logger } from '@/lib/logger'
 
 export const clientAuthConfig = {
   disabled: config.get('userAuth.disabled'),
@@ -27,22 +28,45 @@ export async function getEmailFromToken(headers) {
 
   const token = headers.get('x-msal-id-token')
 
-  if (!token) throw new Error('no id token')
+  if (!token) throw new Error('Authorisation failure: no jwt token provided')
 
   let email
 
   try {
-    const { payload } = await jwtVerify(token, getRemoteJWKSet(), {
+    const jkws = await getRemoteJWKSet()
+    const { payload } = await jwtVerify(token, jkws, {
       issuer: ISSUER,
       audience: AUDIENCE
     })
 
-    email = payload.email || payload.preferred_username
-  } catch {
-    throw new Error('token verification failed')
+    email =
+      payload?.email ??
+      payload?.preferred_username ??
+      payload?.verified_primary_email?.[0]
+  } catch (error) {
+    const jwtInfo = decodeJwt(token)
+    logger.warn({
+      message: 'token verification failed',
+      error,
+      tenant: {
+        message: JSON.stringify({
+          aud: jwtInfo.aud,
+          oid: jwtInfo.oid,
+          sid: jwtInfo.sid,
+          tid: jwtInfo.tid,
+          exp: jwtInfo.exp,
+          iat: jwtInfo.iat,
+          nbf: jwtInfo.nbf,
+          email: jwtInfo.email?.split('@')[1],
+          preferred_username: jwtInfo.preferred_username?.split('@')[1],
+          ipaddr: jwtInfo.ipaddr
+        })
+      }
+    })
+    throw new Error('Authorisation failure: token verification failed')
   }
 
-  if (!email) throw new Error('no email in token')
+  if (!email) throw new Error('Authorisation failure: no email in token')
 
   return email
 }

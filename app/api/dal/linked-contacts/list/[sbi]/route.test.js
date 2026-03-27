@@ -20,6 +20,7 @@ describe('Linked Contacts List API route', () => {
   })
 
   test('should make dal request with sbi param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({ data: {} })
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: 'sbiParam' })
     })

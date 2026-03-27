@@ -26,6 +26,7 @@ vi.mock('@/config', () => ({
   config: {
     get: vi.fn((key) => {
       const values = {
+        logLevel: 'info',
         'dal.url': 'http://dal/graphql',
         'dal.tokenGeneration.scope': 'test.scope',
         'dal.tokenGeneration.clientId': 'client-id',
@@ -98,7 +99,8 @@ describe('dalRequest', () => {
     })
 
     const request = { query: '', variables: {} }
-    await dalRequest(request)
+    const dal = await import('@/lib/dal?rand=1')
+    await dal.dalRequest(request)
 
     expect(acquireTokenByClientCredential).not.toHaveBeenCalled()
     expect(fetch).toHaveBeenCalledWith('http://dal/graphql', {

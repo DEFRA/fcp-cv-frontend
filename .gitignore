@@ -13,6 +13,7 @@ tsconfig.tsbuildinfo
 test-output
 test.out
 __screenshots__
+dal-api-compose.yml
 
 # next.js
 /.next/

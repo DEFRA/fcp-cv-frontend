@@ -1,7 +1,10 @@
 import { config } from '@/config'
 import { getEmailFromToken } from '@/lib/auth'
+import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
+
+const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
 
 let client = null
 function getClient() {
@@ -18,28 +21,35 @@ function getClient() {
 }
 
 async function getAccessToken() {
-  const response = await getClient().acquireTokenByClientCredential({
-    scopes: [config.get('dal.tokenGeneration.scope')]
-  })
+  try {
+    const response = await getClient().acquireTokenByClientCredential({
+      scopes: [config.get('dal.tokenGeneration.scope')]
+    })
 
-  return response.accessToken
+    return `Bearer ${response.accessToken}`
+  } catch (error) {
+    logger.warn({ error }, 'DAL token retrieval failed')
+
+    const cleanError = new Error('DAL token retrieval failed')
+    cleanError.status = 401
+    cleanError.statusText = 'Unauthorized'
+
+    throw cleanError
+  }
 }
 
 export async function dalRequest({ query, variables }) {
+  const email = await getEmailFromToken(await headers())
+  const authorization = DAL_AUTH_DISABLED ? '' : await getAccessToken()
   const response = await fetch(config.get('dal.url'), {
     method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      email: await getEmailFromToken(await headers()),
-      authorization: config.get('dal.tokenGeneration.disabled')
-        ? ''
-        : `Bearer ${await getAccessToken()}`
-    },
-    body: JSON.stringify({
-      query,
-      variables
-    })
+    headers: { 'content-type': 'application/json', email, authorization },
+    body: JSON.stringify({ query, variables })
   })
+
+  if (!response.ok) {
+    logger.warn('DAL request unsuccessful', { res: response })
+  }
 
   return response.json()
 }

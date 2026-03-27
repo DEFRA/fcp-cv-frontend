@@ -59,7 +59,8 @@ describe('Linked Businesses List API route', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(await response.json()).toStrictEqual([
+    const data = await response.json()
+    expect(data).toStrictEqual([
       { sbi: '1111111111', name: 'Maggio, Murray and Dicki' },
       { sbi: '2222222222', name: "O'Keefe, Prosacco and Friesen" }
     ])

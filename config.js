@@ -1,6 +1,24 @@
 import convict from 'convict'
 
 export const config = convict({
+  logLevel: {
+    doc: 'Logging level',
+    format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
+    default: 'info',
+    env: 'LOG_LEVEL'
+  },
+  serviceVersion: {
+    doc: 'The service version, this variable is injected into your docker container in CDP environments',
+    format: String,
+    nullable: true,
+    default: null,
+    env: 'SERVICE_VERSION'
+  },
+  serviceName: {
+    doc: 'Api Service Name',
+    format: String,
+    default: 'fcp-cv-frontend'
+  },
   userAuth: {
     disabled: {
       doc: 'Option to disable user authentication for local dev/testing',
