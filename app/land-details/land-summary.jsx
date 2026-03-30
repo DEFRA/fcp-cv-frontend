@@ -1,16 +1,18 @@
 'use client'
 
+import { DatePicker } from '@/components/date-picker/date-picker'
 import {
   KeyValueList,
   KeyValueListContent,
   KeyValueListItem,
   KeyValueListTitle
 } from '@/components/key-value-list-v2/key-value-list'
+import { notification } from '@/components/notification/Notifications'
 import Table from '@/components/table/Table'
-import { DatePicker } from '@/components/date-picker/date-picker'
 import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
+import { formatDate } from '@/lib/formatters'
 
 const landCoverColumns = [
   { header: 'Code', accessorKey: 'code', fixedWidth: 50 },
@@ -41,6 +43,12 @@ export function LandSummary() {
       <DatePicker
         value={date}
         onChange={(newDate) => setSearchParams({ date: newDate })}
+        onInvalidDate={(reason, boundaryDate) => {
+          const label = reason === 'below' ? 'minimum' : 'maximum'
+          notification.warning(
+            `Date is before the ${label} allowed date. It has been reset to the ${label} date: ${formatDate(boundaryDate)}.`
+          )
+        }}
       />
 
       <div className="grid grid-cols-2 gap-8">
