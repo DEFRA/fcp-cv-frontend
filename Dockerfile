@@ -20,9 +20,9 @@ COPY --chown=node:node package*.json ./
 RUN npm ci
 
 COPY --chown=node:node \
-    config.js \ 
+    config.js \
     instrumentation.js \
-    jsconfig.json \ 
+    jsconfig.json \
     next.config.js \
     postcss.config.js \
     server.js \
@@ -55,6 +55,11 @@ COPY --from=development \
     /home/node/package*.json \
     /home/node/server.js \
     ./
+
+# When accessed from custom-server.js, the @lib/logger alias is unavailable, so logger is accessed
+# via a relative path.  This file needs to be available in that relative location of the production
+# docker image
+COPY --from=development /home/node/app/_lib/logger.js ./app/_lib/logger.js
 
 RUN npm ci --omit=dev
 

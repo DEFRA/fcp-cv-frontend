@@ -105,6 +105,21 @@ To run the application in `development` mode run:
 npm run dev
 ```
 
+This displays each JSON formatted log messages on a single line. If you prefer the
+JSON to be pretty-printed, then run:
+
+```bash
+npm run dev:pretty
+```
+
+In order to see full logging of individual http requests (using pino-http), a custom server is needed.
+This removes a lot of nice features of the standard dev server, such as Turbopack. To run in development with the
+custom server (should you need to see the enhanced per-request logging), you can run:
+
+```bash
+npm run dev:custom-server
+```
+
 ### Production
 
 To mimic the application running in `production` mode locally run:
