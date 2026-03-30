@@ -97,6 +97,22 @@ describe('Table component tests', () => {
         .not.toBeInTheDocument()
     })
 
+    it('all rows are shown after search term is removed', async () => {
+      const { getByPlaceholder, getByRole } = await render(
+        <Table data={defaultData} columns={defaultColumns} />
+      )
+
+      const rowLocators = getByRole('row')
+      expect(rowLocators).toHaveLength(4) // 3 data rows + 1 header row
+
+      // table data filters as search term changes...
+      await userEvent.type(getByPlaceholder(searchPlaceholder), 'grace')
+      expect(rowLocators).toHaveLength(2) // 2 data row + 1 header row
+
+      await userEvent.fill(getByPlaceholder(searchPlaceholder), '')
+      expect(rowLocators).toHaveLength(4) // 3 data row + 1 header row
+    })
+
     it('shows a message when no data matches search term', async () => {
       const { getByPlaceholder, getByRole, getByText } = await render(
         <Table data={[defaultData[0]]} columns={defaultColumns} />
