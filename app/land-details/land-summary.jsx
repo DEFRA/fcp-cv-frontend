@@ -44,10 +44,14 @@ export function LandSummary() {
         value={date}
         onChange={(newDate) => setSearchParams({ date: newDate })}
         onInvalidDate={(reason, boundaryDate) => {
-          const label = reason === 'below' ? 'minimum' : 'maximum'
-          notification.warning(
-            `Date is before the ${label} allowed date. It has been reset to the ${label} date: ${formatDate(boundaryDate)}.`
-          )
+          if (reason === 'above') {
+            return notification.warning(`Date cannot be in the future.`)
+          } else if (reason === 'below') {
+            return notification.warning(
+              `Date cannot be before ${formatDate(boundaryDate)}.`
+            )
+          }
+          return notification.warning(`Date is invalid.`)
         }}
       />
 

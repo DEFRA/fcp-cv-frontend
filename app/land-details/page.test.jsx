@@ -621,11 +621,7 @@ describe('LandDetailsPage tests', () => {
       await userEvent.keyboard('{Enter}')
 
       await expect
-        .element(
-          getByText(
-            'Date is before the minimum allowed date. It has been reset to the minimum date: 01/01/2015.'
-          )
-        )
+        .element(getByText('Date cannot be before 01/01/2015.'))
         .toBeInTheDocument()
     }
   )
@@ -652,10 +648,6 @@ describe('LandDetailsPage tests', () => {
         `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
       )
 
-      const today = new Date().toISOString().split('T')[0]
-      const [year, month, day] = today.split('-')
-      const formattedToday = `${day}/${month}/${year}`
-
       const { getByLabelText, getByText } = await render(
         <SWRConfig value={{ provider: () => new Map() }}>
           <AuthProvider config={{ disabled: true }}>
@@ -669,11 +661,7 @@ describe('LandDetailsPage tests', () => {
       await userEvent.keyboard('{Enter}')
 
       await expect
-        .element(
-          getByText(
-            `Date is before the maximum allowed date. It has been reset to the maximum date: ${formattedToday}.`
-          )
-        )
+        .element(getByText(`Date cannot be in the future.`))
         .toBeInTheDocument()
     }
   )
