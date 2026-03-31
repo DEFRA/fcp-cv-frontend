@@ -130,4 +130,11 @@ describe('dalRequest', () => {
     const result = await dalRequest({ query: '', variables: {} })
     expect(result).toEqual({ message: 'Test response' })
   })
+
+  test('handles errors during token retrieval', async () => {
+    acquireTokenByClientCredential.mockRejectedValue(new Error('Token error'))
+    expect(() => dalRequest({ query: '', variables: {} })).rejects.toThrow(
+      'DAL token retrieval failed'
+    )
+  })
 })

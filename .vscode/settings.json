@@ -2,11 +2,11 @@
   "files.autoSave": "onFocusChange",
   "editor.codeActions.triggerOnFocusChange": true,
   "editor.codeActionsOnSave": {
-    "source.addMissingImports.ts": "explicit",
-    "source.organizeImports": "explicit",
-    "source.removeUnusedImports": "explicit",
-    "source.fixAll.eslint": "always",
-    "source.sortImports": "explicit"
+    // "source.addMissingImports.ts": "explicit",
+    // "source.organizeImports": "explicit",
+    // "source.removeUnusedImports": "explicit",
+    "source.fixAll.eslint": "always"
+    // "source.sortImports": "explicit"
   },
   "prettier.enable": true,
   "prettier.configPath": ".prettierrc.js",
@@ -29,6 +29,7 @@
     "nodemon",
     "nvmrc",
     "pino",
+    "sbinumber",
     "sbis",
     "sitiagri",
     "sonarcloud",
@@ -47,8 +48,8 @@
     ".next"
   ],
   "cSpell.language": "en,en-GB",
-  "javascript.preferences.importModuleSpecifier": "non-relative",
-  "javascript.preferences.importModuleSpecifierEnding": "minimal",
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.preferences.importModuleSpecifierEnding": "minimal",
   "sonarlint.connectedMode.project": {
     "connectionId": "defra",
     "projectKey": "DEFRA_fcp-cv-frontend"

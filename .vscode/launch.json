@@ -23,7 +23,13 @@
       "request": "launch",
       "name": "Vitest: Run browser test",
       "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
-      "args": ["run", "--config=vitest.browser.config.js", "${file}"],
+      "args": [
+        "run",
+        "--inspect",
+        "--no-file-parallelism",
+        "--config=vitest.browser.config.js",
+        "${file}"
+      ],
       "env": {
         "HEADLESS": true
       },

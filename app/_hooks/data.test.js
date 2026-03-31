@@ -6,6 +6,9 @@ import { useDal, useDataverse } from '@/hooks/data'
 
 describe('useDal and useDataverse Hooks', () => {
   beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: (key) => 'error' } // quiet logs in test
+    }))
     vi.mock('@azure/msal-react', async () => ({
       useMsal: () => ({
         accounts: [{ username: 'test@user.com' }],

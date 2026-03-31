@@ -123,6 +123,12 @@ const mockParcelDetail856 = {
 }
 
 describe('LandDetailsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: (key) => 'error' } // quiet logs in test
+    }))
+  })
+
   beforeEach(() => {
     window.history.pushState(null, '', '/')
   })

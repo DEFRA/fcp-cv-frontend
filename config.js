@@ -1,10 +1,16 @@
 import convict from 'convict'
 
 export const config = convict({
+  env: {
+    doc: 'The runtime environment',
+    format: ['development', 'test', 'production'],
+    default: 'development',
+    env: 'NODE_ENV'
+  },
   logLevel: {
     doc: 'Logging level',
     format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
-    default: 'info',
+    default: process.env.NODE_ENV === 'test' ? 'error' : 'info',
     env: 'LOG_LEVEL'
   },
   serviceVersion: {

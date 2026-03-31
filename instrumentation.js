@@ -11,9 +11,10 @@ export async function register() {
       const { ecsFormat } = await import('@elastic/ecs-pino-format')
       const pino = await import('pino')
 
-      pino({ ...ecsFormat() }).error(
-        `Startup failed. Invalid configuration: ${error.message}`
-      )
+      pino({
+        ...ecsFormat(),
+        level: process.env.NODE_ENV === 'test' ? 'error' : 'info'
+      }).error(`Startup failed. Invalid configuration: ${error.message}`)
 
       process.exit(1)
     }

@@ -53,9 +53,6 @@ describe('IframeMessenger', () => {
 
   beforeAll(() => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = true
-  })
-
-  afterAll(() => {
     globalThis.IS_REACT_ACT_ENVIRONMENT = originalIsReactActEnvironment
   })
 

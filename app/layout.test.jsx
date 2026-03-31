@@ -14,7 +14,7 @@ describe('RootLayout component tests', () => {
         get: (key) => {
           switch (key) {
             case 'LOG_LEVEL':
-              return 'debug'
+              return 'error'
             case 'DAL_URL':
               return 'http://localhost:3000'
           }

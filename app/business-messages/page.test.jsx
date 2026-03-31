@@ -25,6 +25,12 @@ const mockMessages = [
 ]
 
 describe('Business Messages page tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: (key) => 'error' } // quiet logs in test
+    }))
+  })
+
   testWithWorker(
     'renders the page with content and supports full interaction',
     async ({ worker }) => {

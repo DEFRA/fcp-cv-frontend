@@ -1,5 +1,5 @@
 import { config } from '@/config'
-import { handleApiError, notFound } from '@/lib/api'
+import { handleApiError, notFound, unauthorised } from '@/lib/api'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 

@@ -26,7 +26,7 @@ export async function GET(req, { params }) {
         req,
         errors,
         `Problem retrieving businesses for customer with CRN: ${crn}`,
-        data
+        businesses
       )
     }
 

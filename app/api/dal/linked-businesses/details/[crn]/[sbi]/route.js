@@ -44,7 +44,8 @@ export async function GET(req, { params }) {
       return partialResponse(
         req,
         errors,
-        `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`
+        `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`,
+        details
       )
     }
 

@@ -50,6 +50,12 @@ const applicationDetails = {
 }
 
 describe('ApplicationsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: (key) => 'error' } // quiet logs in test
+    }))
+  })
+
   testWithWorker(
     'renders the page component with content',
     async ({ worker }) => {
