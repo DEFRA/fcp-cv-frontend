@@ -63,7 +63,7 @@ export function ApplicationsDetails() {
         columns={[
           {
             header: 'Date/Time',
-            accessorKey: 'id',
+            accessorKey: 'formattedDate',
             cell: (props) => (
               <span className="tabular-nums">{props.getValue()}</span>
             )
