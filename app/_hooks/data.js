@@ -44,7 +44,7 @@ function useData(urlParts, runWhenTruthy) {
         console.error('Data fetching error:', error)
       },
       onSuccess: (data) => {
-        console.log('Data fetched successfully:', data)
+        console.debug('Data fetched successfully:', data)
       },
       revalidateIfStale: false,
       revalidateOnFocus: false

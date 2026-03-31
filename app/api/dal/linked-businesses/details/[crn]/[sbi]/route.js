@@ -1,6 +1,6 @@
+import { handleApiError, partialResponse } from '@/lib/api'
 import { dalRequest } from '@/lib/dal'
 import { uppercaseSnakeToTitleCase } from '@/lib/formatters'
-import { logger } from '@/lib/logger'
 
 const query = `#graphql
   query CVLinkedBusinessesDetails($sbi: ID!, $crn: ID!) {
@@ -26,24 +26,8 @@ export async function GET(req, { params }) {
     const response = await dalRequest({ query, variables: { crn, sbi } })
 
     const { data, errors } = response
-    if (errors?.length) {
-      const error = errors.map((er) => er.stack).join('\n')
-      logger.warn(
-        { error, req },
-        `Problem retrieving business for customer with SBI: ${sbi}`
-      )
-      return Response.error(
-        {
-          message: 'Error fetching business and permissions for customer',
-          error
-        },
-        { status: 500 }
-      )
-    }
-
     const business = data?.customer?.business
-
-    return Response.json({
+    const details = {
       name: business?.name,
       details: [
         { dt: 'SBI', dd: business?.sbi },
@@ -54,22 +38,22 @@ export async function GET(req, { params }) {
         dd: uppercaseSnakeToTitleCase(item.level),
         expand: item.functions
       }))
-    })
+    }
+
+    if (errors?.length) {
+      return partialResponse(
+        req,
+        errors,
+        `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`
+      )
+    }
+
+    return Response.json(details)
   } catch (error) {
-    logger.warn(
-      { error, req },
-      `Problem retrieving customers for business with SBI: ${sbi}`
-    )
-    return Response.error(
-      {
-        message: 'Error fetching business and permissions for customer',
-        error,
-        req
-      },
-      {
-        status: error.status ?? 500,
-        statusText: error.statusText ?? 'ServerError'
-      }
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`
     )
   }
 }

@@ -41,6 +41,7 @@ async function getAccessToken() {
 export async function dalRequest({ query, variables }) {
   const email = await getEmailFromToken(await headers())
   const authorization = DAL_AUTH_DISABLED ? '' : await getAccessToken()
+
   const response = await fetch(config.get('dal.url'), {
     method: 'POST',
     headers: { 'content-type': 'application/json', email, authorization },

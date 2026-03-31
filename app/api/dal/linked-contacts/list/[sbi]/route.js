@@ -1,5 +1,6 @@
+import { handleApiError, partialResponse } from '@/lib/api'
 import { dalRequest } from '@/lib/dal'
-import { logger } from '@/lib/logger'
+import { NextResponse } from 'next/server'
 
 const query = `#graphql
   query CVLinkedContactsList($sbi: ID!) {
@@ -20,26 +21,9 @@ export async function GET(req, { params }) {
   const { sbi } = await params
 
   try {
-    const response = await dalRequest({
-      query,
-      variables: {
-        sbi
-      }
-    })
+    const response = await dalRequest({ query, variables: { sbi } })
 
     const { data, errors } = response
-    if (errors?.length) {
-      const error = errors.map((er) => er.stack).join('\n')
-      logger.warn(
-        { error, req },
-        `Problem retrieving customers for business with SBI: ${sbi}`
-      )
-      return Response.error(
-        { message: 'Error fetching customers', error },
-        { status: 500 }
-      )
-    }
-
     const customers = data?.business?.customers ?? []
 
     // Sort by firstName → lastName (case-insensitive)
@@ -59,18 +43,21 @@ export async function GET(req, { params }) {
       return lastA.localeCompare(lastB)
     })
 
-    return Response.json(customers)
+    if (errors?.length) {
+      return partialResponse(
+        req,
+        errors,
+        `Problem retrieving customers for business with SBI: ${sbi}`,
+        customers
+      )
+    }
+
+    return NextResponse.json(customers)
   } catch (error) {
-    logger.warn(
-      { error, req },
+    return handleApiError(
+      req,
+      error,
       `Problem retrieving customers for business with SBI: ${sbi}`
-    )
-    return Response.error(
-      { message: 'Error fetching customers', error },
-      {
-        status: error.status ?? 500,
-        statusText: error.statusText ?? 'ServerError'
-      }
     )
   }
 }
