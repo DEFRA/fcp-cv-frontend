@@ -36,7 +36,7 @@ export async function GET(_, { params }) {
       dd: authenticationQuestions?.memorableEvent || '(Not set)'
     },
     {
-      dt: 'Updated at',
+      dt: 'Updated At',
       dd: authenticationQuestions?.updatedAt
         ? formatDate(authenticationQuestions?.updatedAt)
         : '(Not set)'

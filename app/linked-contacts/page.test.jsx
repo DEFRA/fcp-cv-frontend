@@ -56,7 +56,7 @@ describe('Linked Contacts page tests', () => {
                 { dt: 'Memorable Date', dd: '11/19/2024' },
                 { dt: 'Memorable Location', dd: 'memorableLocation' },
                 { dt: 'Memorable Event', dd: 'memorableEvent' },
-                { dt: 'Updated at', dd: '31/12/2024' }
+                { dt: 'Updated At', dd: '31/12/2024' }
               ]
             })
         ),
@@ -114,7 +114,7 @@ describe('Linked Contacts page tests', () => {
         getByText('Memorable Location' + 'memorableLocation')
       )
       await expect.element(getByText('Memorable Event' + 'memorableEvent'))
-      await expect.element(getByText('Updated at' + '31/12/2024'))
+      await expect.element(getByText('Updated At' + '31/12/2024'))
 
       // Search for an item
       await userEvent.type(getByPlaceholder('Enter search term'), '222222222')

@@ -29,7 +29,7 @@ describe('Authenticate page tests', () => {
             },
             {
               dd: '02/02/2000',
-              dt: 'Updated at'
+              dt: 'Updated At'
             }
           ])
         )
@@ -70,7 +70,7 @@ describe('Authenticate page tests', () => {
         .toBeInTheDocument()
 
       await expect
-        .element(getByText('Updated at' + '02/02/2000'))
+        .element(getByText('Updated At' + '02/02/2000'))
         .toBeInTheDocument()
     }
   )

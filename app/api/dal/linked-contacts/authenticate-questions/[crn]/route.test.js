@@ -64,7 +64,7 @@ describe('Linked Contacts Authenticate Questions API route', () => {
         { dt: 'Memorable Date', dd: '11/19/2024' },
         { dt: 'Memorable Location', dd: 'memorableLocation' },
         { dt: 'Memorable Event', dd: 'memorableEvent' },
-        { dt: 'Updated at', dd: '31/12/2024' }
+        { dt: 'Updated At', dd: '31/12/2024' }
       ]
     })
   })

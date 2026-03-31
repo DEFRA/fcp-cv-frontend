@@ -71,7 +71,7 @@ describe('Authenticate API route', () => {
       },
       {
         dd: '31/12/2024',
-        dt: 'Updated at'
+        dt: 'Updated At'
       }
     ])
   })
