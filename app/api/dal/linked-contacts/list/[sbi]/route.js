@@ -16,7 +16,7 @@ const query = `#graphql
 
 export const runtime = 'nodejs'
 
-export async function GET(_, { params }) {
+export async function GET(req, { params }) {
   const { sbi } = await params
 
   try {
@@ -31,10 +31,8 @@ export async function GET(_, { params }) {
     if (errors?.length) {
       const error = errors.map((er) => er.stack).join('\n')
       logger.warn(
-        `problem retrieving customers for business with SBI: ${sbi}`,
-        {
-          error
-        }
+        { error, req },
+        `Problem retrieving customers for business with SBI: ${sbi}`
       )
       return Response.error(
         { message: 'Error fetching customers', error },
@@ -63,6 +61,10 @@ export async function GET(_, { params }) {
 
     return Response.json(customers)
   } catch (error) {
+    logger.warn(
+      { error, req },
+      `Problem retrieving customers for business with SBI: ${sbi}`
+    )
     return Response.error(
       { message: 'Error fetching customers', error },
       {

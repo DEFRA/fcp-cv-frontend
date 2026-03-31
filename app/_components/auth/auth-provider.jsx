@@ -18,7 +18,7 @@ export function AuthProvider({ children, config }) {
             redirectUri: config.redirectUri
           },
           cache: {
-            cacheLocation: 'memoryStorage'
+            cacheLocation: 'localStorage'
           }
         })
   )
