@@ -5,6 +5,12 @@ import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
 describe('Authenticate page tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: () => 'error' } // quiet logs in test
+    }))
+  })
+
   testWithWorker(
     'renders the page component with content',
     async ({ worker }) => {
@@ -42,7 +48,7 @@ describe('Authenticate page tests', () => {
         `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=contact`
       )
 
-      const { getByRole, getByText, getByPlaceholder } = await render(
+      const { getByRole, getByText } = await render(
         <AuthProvider config={{ disabled: true }}>
           <Page />
         </AuthProvider>

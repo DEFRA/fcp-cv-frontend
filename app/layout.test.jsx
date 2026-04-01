@@ -1,18 +1,26 @@
-import { vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { notification } from '@/components/notification/Notifications'
 import RootLayout from './layout.jsx'
 
+vi.mock('@defra/hapi-tracing', () => ({
+  getTraceId: () => 'some-long-uuid-string'
+}))
+
 describe('RootLayout component tests', () => {
   beforeAll(() => {
-    vi.mock('@/config', () => {
-      return {
-        config: {
-          get: () => 'http://localhost:3000'
+    vi.mock('@/config', () => ({
+      config: {
+        get: (key) => {
+          switch (key) {
+            case 'LOG_LEVEL':
+              return 'error'
+            case 'DAL_URL':
+              return 'http://localhost:3000'
+          }
         }
       }
-    })
+    }))
   })
 
   it('renders the RootLayout component with children', async () => {

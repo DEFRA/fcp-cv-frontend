@@ -6,6 +6,12 @@ import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
 describe('Linked Businesses page tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: () => 'error' } // quiet logs in test
+    }))
+  })
+
   testWithWorker(
     'renders the page component with content',
     async ({ worker }) => {
