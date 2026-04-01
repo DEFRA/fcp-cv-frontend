@@ -44,6 +44,12 @@ export async function GET(request, ctx) {
 
   const response = await dalRequest({ query, variables })
 
+  if (response.status && !response.ok) {
+    // If status code is already set, dalRequest has already determined that an error has occurred
+    // that should be returned to the consumer
+    return response
+  }
+
   const land = response?.data?.business?.land || {}
   const parcels = (land.parcels || []).map((parcel) => ({
     ...parcel,
@@ -60,8 +66,8 @@ export async function GET(request, ctx) {
   }))
 
   return Response.json({
-    parcels,
-    summary: { ...summary, pendingParcels },
-    landCovers
+      parcels,
+      summary: { ...summary, pendingParcels },
+      landCovers
   })
 }

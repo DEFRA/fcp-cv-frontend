@@ -1,6 +1,7 @@
 import { dalRequest } from '@/lib/dal'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import logger from '@/lib/logger.js'
 
 const acquireTokenByClientCredential = vi.fn()
 
@@ -38,6 +39,13 @@ vi.mock('@/config', () => ({
   }
 }))
 
+vi.mock('@/lib/logger.js', () => ({
+  default: {
+    error: vi.fn(),
+    warn: vi.fn()
+  }
+}))
+
 beforeEach(() => {
   vi.clearAllMocks()
 
@@ -45,6 +53,8 @@ beforeEach(() => {
     'fetch',
     vi.fn().mockResolvedValue({
       status: 200,
+      ok: true,
+      body: new Blob(['Not actually read, but needs to exist']).stream(),
       json: async () => ({
         message: 'Test response'
       })
@@ -127,5 +137,99 @@ describe('dalRequest', () => {
   test('returns parsed JSON response', async () => {
     const result = await dalRequest({ query: '', variables: {} })
     expect(result).toEqual({ message: 'Test response' })
+  })
+
+  test('returns a generic error when response status is 500 and logs at error level', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        status: 500,
+        statusText: 'Some internal error occurred',
+        ok: false,
+        body: new Blob(['Not actually read, but needs to exist']).stream(),
+        json: async () => ({
+          message: 'Test response'
+        })
+      })
+    )
+
+    const result = await dalRequest({ query: '', variables: {} })
+
+    console.log(result.status)
+    expect(result).toMatchObject({
+      status: 500,
+      statusText: 'Some internal error occurred'
+    })
+    expect(await result.json()).toMatchObject({
+      error: 'There was a problem retrieving DAL data'
+    })
+    expect(logger.error).toHaveBeenCalledWith(
+      'DAL request has failed <%d> %s',
+      500,
+      JSON.stringify({
+        message: 'Test response'
+      })
+    )
+  })
+
+  test('returns a generic error when response status is 400 and logs at warn level', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        status: 400,
+        statusText: 'Some internal error occurred',
+        ok: false,
+        body: new Blob(['Not actually read, but needs to exist']).stream(),
+        json: async () => ({
+          message: 'Test response'
+        })
+      })
+    )
+
+    const result = await dalRequest({ query: '', variables: {} })
+
+    expect(result).toMatchObject({
+      status: 400,
+      statusText: 'Some internal error occurred'
+    })
+    expect(await result.json()).toMatchObject({
+      error: 'There was a problem retrieving DAL data'
+    })
+    expect(logger.warn).toHaveBeenCalledWith(
+      'DAL request has failed <%d> %s',
+      400,
+      JSON.stringify({
+        message: 'Test response'
+      })
+    )
+  })
+
+  test('add a partialContent field to the DAL response when DAL request was successful, but errors are present', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        status: 200,
+        statusText: 'OK',
+        ok: true,
+        body: new Blob(['Not actually read, but needs to exist']).stream(),
+        json: async () => ({
+          message: 'Test response',
+          errors: [{ message: 'Some partial retrieval error' }]
+        })
+      })
+    )
+
+    const result = await dalRequest({ query: '', variables: {} })
+
+    expect(result).toMatchObject({
+      message: 'Test response',
+      errors: [{ message: 'Some partial retrieval error' }],
+      partialContent: true
+    })
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Partial failure of DAL request: %s',
+      JSON.stringify([{ message: 'Some partial retrieval error' }])
+    )
   })
 })

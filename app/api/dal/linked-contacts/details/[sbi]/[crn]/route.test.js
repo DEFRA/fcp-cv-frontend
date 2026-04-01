@@ -20,6 +20,7 @@ describe('Linked Contacts Details API route', () => {
   })
 
   test('should make dal request with sbi and crn param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: 'sbiParam', crn: 'crnParam' })
     })
@@ -85,6 +86,30 @@ describe('Linked Contacts Details API route', () => {
           expand: ['Function 1', 'Function 2']
         }
       ]
+    })
+  })
+
+  test('should fail fast when DAL response code indicates an error has occurred', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      status: 400,
+      statusText: 'Invalid request',
+      json: async () => {
+        return { error: 'Some error occurred' }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: new Promise((resolve) =>
+        resolve({ sbi: 'sbiParam', crn: 'crnParam' })
+      )
+    })
+
+    expect(response).toMatchObject({
+      status: 400,
+      statusText: 'Invalid request'
+    })
+    expect(await response.json()).toMatchObject({
+      error: 'Some error occurred'
     })
   })
 })

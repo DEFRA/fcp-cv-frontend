@@ -20,6 +20,7 @@ describe('Linked Contacts Authenticate Questions API route', () => {
   })
 
   test('should make dal request with sbi and crn param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ crn: 'crnParam' })
     })
@@ -66,6 +67,28 @@ describe('Linked Contacts Authenticate Questions API route', () => {
         { dt: 'Memorable Event', dd: 'memorableEvent' },
         { dt: 'Updated at', dd: '31/12/2024' }
       ]
+    })
+  })
+
+  test('should fail fast when DAL response code indicates an error has occurred', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      status: 400,
+      statusText: 'Invalid request',
+      json: async () => {
+        return { error: 'Some error occurred' }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam' })
+    })
+
+    expect(response).toMatchObject({
+      status: 400,
+      statusText: 'Invalid request'
+    })
+    expect(await response.json()).toMatchObject({
+      error: 'Some error occurred'
     })
   })
 })

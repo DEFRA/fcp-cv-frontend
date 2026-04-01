@@ -20,6 +20,7 @@ describe('Authenticate API route', () => {
   })
 
   test('should make dal request with crn param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ crn: 'crnParam' })
     })
@@ -74,5 +75,27 @@ describe('Authenticate API route', () => {
         dt: 'Updated at'
       }
     ])
+  })
+
+  test('should fail fast when DAL response code indicates an error has occurred', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      status: 400,
+      statusText: 'Invalid request',
+      json: async () => {
+        return { error: 'Some error occurred' }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam' })
+    })
+
+    expect(response).toMatchObject({
+      status: 400,
+      statusText: 'Invalid request'
+    })
+    expect(await response.json()).toMatchObject({
+      error: 'Some error occurred'
+    })
   })
 })

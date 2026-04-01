@@ -103,28 +103,34 @@ function toPaymentScheduleRow(ps) {
 }
 
 export async function GET(_, { params }) {
-  const response = await dalRequest({ query, variables: await params })
+    const response = await dalRequest({ query, variables: await params })
 
-  const agreements = (response?.data?.business?.agreements || []).sort((a, b) =>
-    (b.startDate ?? '').localeCompare(a.startDate ?? '')
-  )
+    if (response.status) {
+      // If status code is already set, dalRequest has already determined that an error has occurred
+      // that should be returned to the consumer
+      return response
+    }
+
+    const agreements = (response?.data?.business?.agreements || []).sort(
+      (a, b) => (b.startDate ?? '').localeCompare(a.startDate ?? '')
+    )
 
   return Response.json(
-    agreements.reduce(
-      ({ list, details }, agreement) => ({
-        list: [...list, toListItem(agreement)],
-        details: {
-          ...details,
-          [agreement.contractId]: {
-            name: agreement.name,
-            summary: toSummary(agreement),
-            paymentSchedules: (agreement.paymentSchedules || [])
-              .sort(sortPaymentSchedules)
-              .map(toPaymentScheduleRow)
+      agreements.reduce(
+        ({ list, details }, agreement) => ({
+          list: [...list, toListItem(agreement)],
+          details: {
+            ...details,
+            [agreement.contractId]: {
+              name: agreement.name,
+              summary: toSummary(agreement),
+              paymentSchedules: (agreement.paymentSchedules || [])
+                .sort(sortPaymentSchedules)
+                .map(toPaymentScheduleRow)
+            }
           }
-        }
-      }),
-      { list: [], details: {} }
+        }),
+        { list: [], details: {} }
     )
-  )
+    )
 }

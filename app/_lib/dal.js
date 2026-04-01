@@ -2,6 +2,7 @@ import { config } from '@/config'
 import { getEmailFromToken } from '@/lib/auth'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
+import logger from '@/lib/logger.js'
 
 let client = null
 function getClient() {
@@ -25,6 +26,42 @@ async function getAccessToken() {
   return response.accessToken
 }
 
+async function handleResponse(response) {
+  const responseBody = response.body ? await response.json() : null
+
+  if (!response.ok) {
+
+    if (response.status >= 500) {
+      logger.error(
+        `DAL request has failed <%d> %s`,
+        response.status,
+        JSON.stringify(responseBody)
+      )
+    } else {
+      logger.warn(
+        `DAL request has failed <%d> %s`,
+        response.status,
+        JSON.stringify(responseBody)
+      )
+    }
+
+    return Response.json(
+      { error: 'There was a problem retrieving DAL data' },
+      { status: response.status, statusText: response.statusText }
+    )
+  } else {
+    if (responseBody.errors && responseBody.errors.length > 0) {
+      logger.warn(
+        `Partial failure of DAL request: %s`,
+        JSON.stringify(responseBody.errors)
+      )
+
+      return { ...responseBody, partialContent: true }
+    }
+  }
+  return responseBody
+}
+
 export async function dalRequest({ query, variables }) {
   const response = await fetch(config.get('dal.url'), {
     method: 'POST',
@@ -41,5 +78,5 @@ export async function dalRequest({ query, variables }) {
     })
   })
 
-  return response.json()
+  return handleResponse(response)
 }

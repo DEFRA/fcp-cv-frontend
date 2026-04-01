@@ -20,6 +20,7 @@ describe('Land Details API route', () => {
   })
 
   test('makes a dal request with the sbi param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: '123456789' })
     })
@@ -33,6 +34,7 @@ describe('Land Details API route', () => {
   })
 
   test('does not include date in variables when not provided', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: '123456789' })
     })
@@ -45,6 +47,7 @@ describe('Land Details API route', () => {
   })
 
   test('includes date in variables when provided', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     await GET(new NextRequest('http://localhost?date=2021-11-15'), {
       params: Promise.resolve({ sbi: '123456789' })
     })
@@ -236,5 +239,27 @@ describe('Land Details API route', () => {
       { code: '120', name: 'Permanent Grassland', area: 0 },
       { code: '130', name: 'Permanent Crop Land', area: 0 }
     ])
+  })
+
+  test('should fail fast when DAL response code indicates an error has occurred', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      status: 400,
+      statusText: 'Invalid request',
+      json: async () => {
+        return { error: 'Some error occurred' }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: new Promise((resolve) => resolve({ sbi: 'sbiParam' }))
+    })
+
+    expect(response).toMatchObject({
+      status: 400,
+      statusText: 'Invalid request'
+    })
+    expect(await response.json()).toMatchObject({
+      error: 'Some error occurred'
+    })
   })
 })

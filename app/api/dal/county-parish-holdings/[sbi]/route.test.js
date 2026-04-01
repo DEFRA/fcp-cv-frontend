@@ -20,6 +20,8 @@ describe('County Parish Holdings API route', () => {
   })
 
   test('should make dal request with sbi param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
+
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: 'sbiParam' })
     })
@@ -149,6 +151,28 @@ describe('County Parish Holdings API route', () => {
           yCoordinate: 643321
         }
       ]
+    })
+  })
+
+  test('should fail fast when DAL response code indicates an error has occurred', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      status: 400,
+      statusText: 'Invalid request',
+      json: async () => {
+        return { error: 'Some error occurred' }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: new Promise((resolve) => resolve({ sbi: 'sbiParam' }))
+    })
+
+    expect(response).toMatchObject({
+      status: 400,
+      statusText: 'Invalid request'
+    })
+    expect(await response.json()).toMatchObject({
+      error: 'Some error occurred'
     })
   })
 })

@@ -53,6 +53,7 @@ describe('Land Parcel API route', () => {
   })
 
   test('makes a dal request with sbi, sheetId and parcelId params', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(
       new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
       { params: Promise.resolve({ sbi: '123456789' }) }
@@ -71,6 +72,7 @@ describe('Land Parcel API route', () => {
   })
 
   test('does not include date in variables when not provided', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     await GET(
       new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
       { params: Promise.resolve({ sbi: '123456789' }) }
@@ -84,6 +86,7 @@ describe('Land Parcel API route', () => {
   })
 
   test('includes date in variables when provided', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     await GET(
       new NextRequest(
         'http://localhost?sheetId=SS6528&parcelId=8779&date=2021-11-15'
@@ -291,5 +294,27 @@ describe('Land Parcel API route', () => {
     })
     expect(body.parcelCovers).toStrictEqual([])
     expect(body.parcelLandUses).toStrictEqual([])
+  })
+
+  test('should fail fast when DAL response code indicates an error has occurred', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      status: 400,
+      statusText: 'Invalid request',
+      json: async () => {
+        return { error: 'Some error occurred' }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: new Promise((resolve) => resolve({ sbi: 'sbiParam' }))
+    })
+
+    expect(response).toMatchObject({
+      status: 400,
+      statusText: 'Invalid request'
+    })
+    expect(await response.json()).toMatchObject({
+      error: 'Some error occurred'
+    })
   })
 })

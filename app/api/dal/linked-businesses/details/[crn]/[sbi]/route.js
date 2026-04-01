@@ -23,6 +23,12 @@ const query = `#graphql
 export async function GET(_, { params }) {
   const response = await dalRequest({ query, variables: await params })
 
+  if (response.status) {
+    // If status code is already set, dalRequest has already determined that an error has occurred
+    // that should be returned to the consumer
+    return response
+  }
+
   const business = response?.data?.customer?.business
 
   return NextResponse.json({
