@@ -2,19 +2,6 @@ import { useMsal } from '@azure/msal-react'
 import useSWR from 'swr'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { config } from '@/config'
-
-const defaults =
-  config.get('env') === 'development'
-    ? {
-        onError: (error) => {
-          console.error('Data fetching error:', error)
-        },
-        onSuccess: (data) => {
-          console.debug('Data fetched successfully:', data)
-        }
-      }
-    : {} // quiet logs in test and production
 
 async function fetcher(url, headers = {}) {
   const response = await fetch(url, { headers })
@@ -53,7 +40,13 @@ function useData(urlParts, runWhenTruthy) {
           })
         },
     {
-      ...defaults,
+      // Uncomment next lines to log SWR events, useful for browser debugging
+      // onError: (error) => {
+      //   console.error('Data fetching error:', error)
+      // },
+      // onSuccess: (data) => {
+      //   console.debug('Data fetched successfully:', data)
+      // },
       revalidateIfStale: false,
       revalidateOnFocus: false
     }

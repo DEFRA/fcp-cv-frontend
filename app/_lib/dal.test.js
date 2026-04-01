@@ -1,4 +1,5 @@
 import { dalRequest } from '@/lib/dal'
+import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -11,17 +12,18 @@ vi.mock('@azure/msal-node', () => ({
     }
   })
 }))
-
-vi.mock('@/lib/auth', () => ({
-  getEmailFromToken: vi.fn(() => 'test@example.com')
-}))
-
 vi.mock('next/headers', () => ({
   headers: vi.fn(async () => ({
     get: vi.fn(() => 'mocked-token')
   }))
 }))
 
+vi.mock('@/lib/auth', () => ({
+  getEmailFromToken: vi.fn(() => 'test@example.com')
+}))
+vi.mock('@/lib/logger', () => ({
+  logger: { warn: vi.fn() }
+}))
 vi.mock('@/config', () => ({
   config: {
     get: vi.fn((key) => {
@@ -133,8 +135,30 @@ describe('dalRequest', () => {
 
   test('handles errors during token retrieval', async () => {
     acquireTokenByClientCredential.mockRejectedValue(new Error('Token error'))
-    expect(() => dalRequest({ query: '', variables: {} })).rejects.toThrow(
-      'DAL token retrieval failed'
+    await expect(() =>
+      dalRequest({ query: '', variables: {} })
+    ).rejects.toThrow('DAL token retrieval failed')
+  })
+
+  test('logs warning on unsuccessful response', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: async () => ({})
+    })
+
+    await dalRequest({ query: '', variables: {} })
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      'DAL request unsuccessful',
+      expect.objectContaining({
+        res: expect.objectContaining({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error'
+        })
+      })
     )
   })
 })
