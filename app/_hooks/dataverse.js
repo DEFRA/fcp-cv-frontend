@@ -7,7 +7,6 @@ import { useEffect } from 'react'
 function useDataverseIDToParam(entity, key) {
   const { searchParams, setSearchParams } = useSearchParams()
 
-  const typename = searchParams.get('typename')
   const id = searchParams.get('id')
   const currentValue = searchParams.get(key)
 

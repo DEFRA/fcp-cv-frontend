@@ -15,6 +15,7 @@ export default defineConfig({
         statements: 95,
         perFile: false
       }
-    }
+    },
+    reporters: ['dot'] // quieten merge run
   }
 })

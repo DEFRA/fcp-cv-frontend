@@ -27,7 +27,7 @@ const httpLogger = pinoHttp({
 const port = parseInt(process.env.PORT || '3000', 10)
 
 const app = next({})
-await app.prepare()
+await app.prepare([])
 
 const handle = app.getRequestHandler()
 
@@ -35,5 +35,5 @@ createServer((req, res) => {
   handle(req, res, URL.parse(req.url))
   httpLogger(req, res)
 }).listen(port, () => {
-  logger.info('Server started successfully')
+  logger.info(`Server started successfully on port: ${port}`)
 })
