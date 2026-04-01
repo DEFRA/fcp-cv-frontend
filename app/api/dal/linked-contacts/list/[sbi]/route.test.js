@@ -20,6 +20,7 @@ describe('Linked Contacts List API route', () => {
   })
 
   test('should make dal request with sbi param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({ data: {} })
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: 'sbiParam' })
     })
@@ -68,5 +69,27 @@ describe('Linked Contacts List API route', () => {
       { firstName: 'B', lastName: 'D' },
       { firstName: 'B', lastName: 'E' }
     ])
+  })
+
+  test('should return partial response with errors if dal request has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(206)
+    expect(await response.json()).toEqual([])
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(500)
   })
 })

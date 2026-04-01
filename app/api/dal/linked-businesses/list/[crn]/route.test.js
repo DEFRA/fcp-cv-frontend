@@ -20,6 +20,7 @@ describe('Linked Businesses List API route', () => {
   })
 
   test('should make dal request with crm param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ crn: 'crnParam' })
     })
@@ -59,9 +60,32 @@ describe('Linked Businesses List API route', () => {
     })
 
     expect(response.status).toBe(200)
-    expect(await response.json()).toStrictEqual([
+    const data = await response.json()
+    expect(data).toStrictEqual([
       { sbi: '1111111111', name: 'Maggio, Murray and Dicki' },
       { sbi: '2222222222', name: "O'Keefe, Prosacco and Friesen" }
     ])
+  })
+
+  test('should return partial response with errors if DAL response has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam' })
+    })
+
+    expect(response.status).toBe(206)
+    expect(await response.json()).toEqual([])
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam' })
+    })
+
+    expect(response.status).toBe(500)
   })
 })
