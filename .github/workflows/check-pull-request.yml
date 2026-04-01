@@ -54,11 +54,7 @@ jobs:
           path: coverage/
           retention-days: 7
 
-      - name: Test Docker Image Build
-        run: |
-          docker build --no-cache --tag cdp-node-frontend-template .
-
-      - name: Test accessibility and create accessibility test report
+      - name: Docker build & test accessibility
         run: |
           npm run test:accessibility:docker
 
