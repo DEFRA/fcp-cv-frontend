@@ -1,4 +1,5 @@
 import { AuthProvider } from '@/components/auth/auth-provider'
+import Notifications from '@/components/notification/Notifications'
 import { http, HttpResponse } from 'msw'
 import { SWRConfig } from 'swr'
 import { render } from 'vitest-browser-react'
@@ -582,6 +583,86 @@ describe('LandDetailsPage tests', () => {
 
       expect(landDetailsCount).toBe(landDetailsAfterLoad)
       expect(landParcelCount).toBe(landParcelAfterLoad + 1)
+    }
+  )
+
+  testWithWorker(
+    'shows a warning notification when a date before the minimum is entered',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ sbi: '123456789' })
+        ),
+        http.get('/api/dal/land-details/123456789', () =>
+          HttpResponse.json(mockLandDetails)
+        ),
+        http.get('/api/dal/land-parcel/123456789', () =>
+          HttpResponse.json(mockParcelDetail836)
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
+
+      const { getByLabelText, getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await userEvent.fill(getByLabelText('Date'), '2014-12-31')
+      await userEvent.keyboard('{Enter}')
+
+      await expect
+        .element(getByText('Date cannot be before 01/01/2015.'))
+        .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'shows a warning notification when a date after the maximum is entered',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ sbi: '123456789' })
+        ),
+        http.get('/api/dal/land-details/123456789', () =>
+          HttpResponse.json(mockLandDetails)
+        ),
+        http.get('/api/dal/land-parcel/123456789', () =>
+          HttpResponse.json(mockParcelDetail836)
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
+
+      const { getByLabelText, getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await userEvent.fill(getByLabelText('Date'), '2099-01-01')
+      await userEvent.keyboard('{Enter}')
+
+      await expect
+        .element(getByText(`Date cannot be in the future.`))
+        .toBeInTheDocument()
     }
   )
 
