@@ -26,6 +26,22 @@ export async function GET(req, { params }) {
     )
     const data = await response.json()
 
+    if (!response.ok) {
+      const error = new Error(
+        `Problem retrieving business SBI for account ID: ${accountId}, caused by: ${
+          data?.error?.message ?? 'unknown'
+        }`
+      )
+      error.id = data?.error?.code
+
+      return handleApiError(
+        req,
+        error,
+        error.message,
+        response.status,
+        response.statusText
+      )
+    }
     if (!data?.rpa_sbinumber) {
       return notFound(
         req,

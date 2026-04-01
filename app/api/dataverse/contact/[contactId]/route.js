@@ -26,6 +26,22 @@ export async function GET(req, { params }) {
     )
     const data = await response.json()
 
+    if (!response.ok) {
+      const error = new Error(
+        `Problem retrieving customer CRN for contact ID: ${contactId}, caused by: ${
+          data?.error?.message ?? 'unknown'
+        }`
+      )
+      error.id = data?.error?.code
+
+      return handleApiError(
+        req,
+        error,
+        error.message,
+        response.status,
+        response.statusText
+      )
+    }
     if (!data?.rpa_capcustomerid) {
       return notFound(
         req,
