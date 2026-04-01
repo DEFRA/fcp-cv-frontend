@@ -105,6 +105,12 @@ function toPaymentScheduleRow(ps) {
 export async function GET(_, { params }) {
   const response = await dalRequest({ query, variables: await params })
 
+  if (response.status) {
+    // If status code is already set, dalRequest has already determined that an error has occurred
+    // that should be returned to the consumer
+    return response
+  }
+
   const agreements = (response?.data?.business?.agreements || []).sort((a, b) =>
     (b.startDate ?? '').localeCompare(a.startDate ?? '')
   )

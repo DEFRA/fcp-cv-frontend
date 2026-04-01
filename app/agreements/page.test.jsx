@@ -5,6 +5,7 @@ import { userEvent } from 'vitest/browser'
 import { AuthProvider } from '@/components/auth/auth-provider'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
+import { ToastContainer } from 'react-toastify'
 
 const mockAgreements = {
   list: [
@@ -332,6 +333,44 @@ describe('AgreementsPage tests', () => {
       )
 
       await expect.element(getByText('Agreement Reference')).toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'shows error toast if DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/agreements/12345678', () =>
+          HttpResponse.json(
+            {},
+            { status: 500, statusText: 'Internal Server Error' }
+          )
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=12345678&contractId=AG00001234')
+
+      const wrapper = ({ children }) => (
+        <>
+          <ToastContainer />
+          {children}
+        </>
+      )
+
+      const { getByText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>,
+        { wrapper }
+      )
+
+      await expect
+        .element(
+          getByText(
+            'An error has occurred. Please report this if it continues to occur.'
+          )
+        )
+        .toBeInTheDocument()
     }
   )
 })

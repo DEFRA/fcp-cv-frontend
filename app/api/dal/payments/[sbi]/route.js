@@ -103,5 +103,8 @@ const onHold = true
 export async function GET(_request, ctx) {
   const { sbi } = await ctx.params
   logger.info(`GET /api/dal/payments/${sbi}`)
+
+  // Make sure status code error handling as added, once implemented
+
   return Response.json({ payments, onHold })
 }
