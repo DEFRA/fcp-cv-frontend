@@ -119,5 +119,19 @@ export const config = convict({
       default: null,
       env: 'DATAVERSE_URL'
     }
+  },
+  crm: {
+    baseUrl: {
+      doc: 'Base URL for CRM instance (e.g., https://example.crm4.dynamics.com/)',
+      format: String,
+      default: null,
+      env: 'CRM_BASE_URL'
+    },
+    appId: {
+      doc: 'CRM app ID (UUID) (e.g., 12345678-1234-1234-1234-123456789abc)',
+      format: String,
+      default: null,
+      env: 'CRM_APP_ID'
+    }
   }
 })

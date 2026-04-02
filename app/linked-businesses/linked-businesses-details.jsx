@@ -6,6 +6,7 @@ import {
   KeyValueListItem,
   KeyValueListTitle
 } from '@/components/key-value-list-v2/key-value-list'
+import { LinkToCRMAccount } from '@/components/link-to-crm/link-to-crm'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
 
@@ -38,14 +39,22 @@ export function LinkedBusinessesDetails() {
 
   return (
     <div className="space-y-6">
-      <KeyValueList>
-        <KeyValueListTitle loading={isLoading}>{data?.name}</KeyValueListTitle>
-        <KeyValueListContent>
-          {(data?.details || defaultDetails).map((item) => (
-            <KeyValueListItem loading={isLoading} key={item.dt} {...item} />
-          ))}
-        </KeyValueListContent>
-      </KeyValueList>
+      <div className="flex items-start justify-between gap-6">
+        <div className="space-y-4">
+          <KeyValueList>
+            <KeyValueListTitle loading={isLoading}>
+              {data?.name}
+            </KeyValueListTitle>
+            <KeyValueListContent>
+              {(data?.details || defaultDetails).map((item) => (
+                <KeyValueListItem loading={isLoading} key={item.dt} {...item} />
+              ))}
+            </KeyValueListContent>
+          </KeyValueList>
+        </div>
+
+        <LinkToCRMAccount sbi={sbi} />
+      </div>
 
       <KeyValueList>
         <KeyValueListTitle>Permissions</KeyValueListTitle>
