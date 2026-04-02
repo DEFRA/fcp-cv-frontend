@@ -20,7 +20,7 @@ async function handleResponse(response) {
     if (response.status === 206) {
       // Although the DAL request has not failed.  Some elements of the requested data have not been retrieved, due to an error
       notification.warn(
-        'There was a problem retrieving some data.  Some information may not be displayed correctly.'
+        'There was a problem retrieving some data. Some information may not be displayed correctly.'
       )
     }
   }

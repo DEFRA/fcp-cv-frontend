@@ -159,7 +159,7 @@ describe('useDal and useDataverse Hooks', () => {
       await renderHook(() => useDal(['linked-contacts']))
 
       expect(notification.warn).toHaveBeenCalledWith(
-        'There was a problem retrieving some data.  Some information may not be displayed correctly.'
+        'There was a problem retrieving some data. Some information may not be displayed correctly.'
       )
     })
 
