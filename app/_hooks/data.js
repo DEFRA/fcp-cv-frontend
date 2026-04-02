@@ -40,6 +40,13 @@ function useData(urlParts, runWhenTruthy) {
           })
         },
     {
+      // Uncomment next lines to log SWR events, useful for browser debugging
+      // onError: (error) => {
+      //   console.error('Data fetching error:', error)
+      // },
+      // onSuccess: (data) => {
+      //   console.debug('Data fetched successfully:', data)
+      // },
       revalidateIfStale: false,
       revalidateOnFocus: false
     }

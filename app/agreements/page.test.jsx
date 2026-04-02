@@ -81,6 +81,12 @@ const defaultWorkerHandlers = (worker) =>
 const defaultUrl = '?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account'
 
 describe('AgreementsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: (key) => 'error' } // quiet logs in test
+    }))
+  })
+
   testWithWorker(
     'renders the agreements list with correct columns',
     async ({ worker }) => {

@@ -3,6 +3,7 @@ import { vi } from 'vitest'
 
 vi.mock('jose', () => ({
   createRemoteJWKSet: vi.fn(),
+  decodeJwt: vi.fn(),
   jwtVerify: vi.fn()
 }))
 
@@ -28,7 +29,9 @@ describe('getEmailFromToken', () => {
 
     const headers = { get: vi.fn(() => null) }
 
-    await expect(getEmailFromToken(headers)).rejects.toThrow('no id token')
+    await expect(getEmailFromToken(headers)).rejects.toThrow(
+      'Authorisation failure: no jwt token provided'
+    )
   })
 
   test('throws if token has no email', async () => {
@@ -73,13 +76,18 @@ describe('getEmailFromToken', () => {
   })
 
   test('throws if jwtVerify rejects', async () => {
+    jose.decodeJwt.mockReturnValue({
+      email: 'censored.name@thing.com',
+      preferred_username: 'censored.name@other.net',
+      ipaddr: '127.0.0.1'
+    })
     const { getEmailFromToken } = await import('./auth')
 
     const token = 'valid.token.here'
     const headers = { get: vi.fn(() => `Bearer ${token}`) }
 
     await expect(getEmailFromToken(headers)).rejects.toThrow(
-      'token verification failed'
+      'Authorisation failure: token verification failed'
     )
   })
 

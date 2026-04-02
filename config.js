@@ -1,6 +1,12 @@
 import convict from 'convict'
 
 export const config = convict({
+  logLevel: {
+    doc: 'Logging level',
+    format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
+    default: process.env.NODE_ENV === 'test' ? 'error' : 'info',
+    env: 'LOG_LEVEL'
+  },
   userAuth: {
     disabled: {
       doc: 'Option to disable user authentication for local dev/testing',
