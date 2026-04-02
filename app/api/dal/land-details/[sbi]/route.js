@@ -25,11 +25,11 @@ const query = `#graphql
 const LAND_COVERS = [
   { code: '110', name: 'Arable Land', areaKey: 'arableLandArea' },
   {
-    code: '120',
+    code: '130',
     name: 'Permanent Grassland',
     areaKey: 'permanentGrasslandArea'
   },
-  { code: '130', name: 'Permanent Crop Land', areaKey: 'permanentCropsArea' }
+  { code: '140', name: 'Permanent Crop Land', areaKey: 'permanentCropsArea' }
 ]
 
 export async function GET(request, ctx) {

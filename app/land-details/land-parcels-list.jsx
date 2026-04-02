@@ -13,8 +13,8 @@ const columns = [
   { header: 'Area (ha)', accessorKey: 'area' },
   {
     header: 'Land Change?',
-    accessorKey: 'pendingDigitisation',
-    cell: ({ getValue }) => (getValue() ? 'Yes' : 'No')
+    id: 'pendingDigitisation',
+    accessorFn: (row) => (row.pendingDigitisation ? 'Yes' : 'No')
   }
 ]
 
@@ -48,7 +48,11 @@ export function LandParcelsList() {
         data={data?.parcels}
         columns={columns}
         onRowClick={(row) => {
-          setSearchParams({ sheetId: row.sheetId, parcelId: row.parcelId })
+          setSearchParams({
+            sheetId: row.sheetId,
+            parcelId: row.parcelId,
+            pendingDigitisation: row.pendingDigitisation ? 'Yes' : 'No'
+          })
         }}
         selectedRow={`${searchParams.get('sheetId')}-${searchParams.get('parcelId')}`}
         selectedRowAccessorKey="id"

@@ -11,6 +11,7 @@ function todayISO() {
 export function DatePicker({
   value = '',
   onChange,
+  onInvalidDate,
   label = 'Date',
   min = MIN_DATE
 }) {
@@ -21,9 +22,10 @@ export function DatePicker({
     setInputValue(value)
   }, [value])
 
+  const max = todayISO()
+
   const isValid = (dateStr) => {
     if (!dateStr) return false
-    const max = todayISO()
     return dateStr >= min && dateStr <= max
   }
 
@@ -32,6 +34,13 @@ export function DatePicker({
       onChange(dateStr)
     } else {
       setInputValue(value)
+      if (dateStr && onInvalidDate) {
+        if (dateStr < min) {
+          onInvalidDate('below', min)
+        } else if (dateStr > max) {
+          onInvalidDate('above', max)
+        }
+      }
     }
   }
 
@@ -46,7 +55,7 @@ export function DatePicker({
         className="border-2 border-green-700 p-2 focus:outline-none focus:ring-green-700"
         value={inputValue}
         min={min}
-        max={todayISO()}
+        max={max}
         onChange={(e) => setInputValue(e.target.value)}
         onBlur={(e) => commit(e.target.value)}
         onKeyDown={(e) => {

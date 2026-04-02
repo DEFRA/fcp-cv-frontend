@@ -1,5 +1,5 @@
 import { AuthProvider } from '@/components/auth/auth-provider'
-import { http, HttpResponse } from 'msw'
+import { delay, http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 import { testWithWorker } from '../../test/test-with-worker'
@@ -121,6 +121,82 @@ describe('Business Messages page tests', () => {
       await expect
         .element(getByRole('cell', { name: 'First Message Subject' }))
         .not.toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'contact dropdown shows "Loading..." while contacts are being fetched',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/aaaaaaaa-0000-0000-0000-000000000001',
+          () => HttpResponse.json({ sbi: '111000001' })
+        ),
+        http.get('/api/dal/business-messages/contacts/111000001', async () => {
+          await delay('infinite')
+        })
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=aaaaaaaa-0000-0000-0000-000000000001&typename=account`
+      )
+
+      const { getByLabelText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      const contactSelect = getByLabelText('Contact')
+      await expect
+        .element(contactSelect.getByRole('option', { name: 'Loading...' }))
+        .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'contact dropdown options are sorted alphabetically by first and last name',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/aaaaaaaa-0000-0000-0000-000000000002',
+          () => HttpResponse.json({ sbi: '111000002' })
+        ),
+        http.get('/api/dal/business-messages/contacts/111000002', () =>
+          HttpResponse.json([
+            { crn: '333333333', firstName: 'Charlie', lastName: 'Brown' },
+            { crn: '111111111', firstName: 'Alice', lastName: 'Smith' },
+            { crn: '222222222', firstName: 'Bob', lastName: 'Jones' }
+          ])
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=aaaaaaaa-0000-0000-0000-000000000002&typename=account`
+      )
+
+      const { getByLabelText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      const contactSelect = getByLabelText('Contact')
+
+      await expect
+        .element(contactSelect.getByRole('option', { name: 'Alice Smith' }))
+        .toBeInTheDocument()
+
+      const options = contactSelect.element().querySelectorAll('option')
+      const names = [...options]
+        .filter((o) => o.value !== '')
+        .map((o) => o.textContent.trim())
+
+      expect(names).toEqual(['Alice Smith', 'Bob Jones', 'Charlie Brown'])
     }
   )
 

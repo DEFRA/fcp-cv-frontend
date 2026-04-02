@@ -1,5 +1,5 @@
 import { dalRequest } from '@/lib/dal'
-import { formatDate } from '@/lib/formatters'
+import { formatDate, formatDateAndTime } from '@/lib/formatters'
 
 const query = `#graphql
   query CVCountyParishHoldings($sbi: ID!) {
@@ -37,7 +37,7 @@ export async function GET(_, { params }) {
   const details = {}
 
   for (const application of applications) {
-    const lastMovement = application.transitionHistory?.at(-1)
+    const lastMovement = application.transitionHistory?.[0]
 
     list.push({
       id: application.id,
@@ -55,14 +55,20 @@ export async function GET(_, { params }) {
         { dt: 'Status', dd: application.status },
         { dt: 'Status (Portal)', dd: application.portalStatus },
         { dt: 'Submitted Date', dd: formatDate(application.submissionDate) },
-        { dt: 'Agreement References', dd: application.agreementReferences },
+        {
+          dt: 'Agreement References',
+          dd: application.agreementReferences.join(', ')
+        },
         { dt: 'Last Movement', dd: lastMovement?.name },
         {
           dt: 'Last Movement Date/Time',
-          dd: formatDate(lastMovement?.timestamp)
+          dd: formatDateAndTime(lastMovement?.timestamp)
         }
       ],
-      movementHistory: application.transitionHistory
+      movementHistory: application.transitionHistory?.map((item) => ({
+        ...item,
+        formattedDate: formatDateAndTime(item.timestamp)
+      }))
     }
   }
 

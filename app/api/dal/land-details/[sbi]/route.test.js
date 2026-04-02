@@ -190,8 +190,8 @@ describe('Land Details API route', () => {
 
     expect(body.landCovers).toStrictEqual([
       { code: '110', name: 'Arable Land', area: 228.2947 },
-      { code: '120', name: 'Permanent Grassland', area: 530.1988 },
-      { code: '130', name: 'Permanent Crop Land', area: 7.3368 }
+      { code: '130', name: 'Permanent Grassland', area: 530.1988 },
+      { code: '140', name: 'Permanent Crop Land', area: 7.3368 }
     ])
   })
 
@@ -215,8 +215,8 @@ describe('Land Details API route', () => {
 
     expect(body.landCovers).toStrictEqual([
       { code: '110', name: 'Arable Land', area: 0 },
-      { code: '120', name: 'Permanent Grassland', area: 0 },
-      { code: '130', name: 'Permanent Crop Land', area: 0 }
+      { code: '130', name: 'Permanent Grassland', area: 0 },
+      { code: '140', name: 'Permanent Crop Land', area: 0 }
     ])
   })
 
@@ -233,8 +233,8 @@ describe('Land Details API route', () => {
     expect(body.summary).toStrictEqual({ pendingParcels: 0 })
     expect(body.landCovers).toStrictEqual([
       { code: '110', name: 'Arable Land', area: 0 },
-      { code: '120', name: 'Permanent Grassland', area: 0 },
-      { code: '130', name: 'Permanent Crop Land', area: 0 }
+      { code: '130', name: 'Permanent Grassland', area: 0 },
+      { code: '140', name: 'Permanent Crop Land', area: 0 }
     ])
   })
 })

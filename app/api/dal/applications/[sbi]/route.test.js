@@ -42,7 +42,6 @@ describe('Applications API route', () => {
         business: {
           applications: [
             {
-              sbi: '1111111111',
               id: '5836775937',
               year: 2022,
               name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
@@ -53,10 +52,8 @@ describe('Applications API route', () => {
               agreementReferences: ['3242226112'],
               transitionHistory: [
                 {
-                  id: '6338450300',
                   name: 'TO PAID',
-                  timestamp: '2022-12-31T06:30:16.953Z',
-                  checkStatus: 'PASSED'
+                  timestamp: '2022-12-31T06:30:16.953Z'
                 }
               ]
             }
@@ -89,20 +86,58 @@ describe('Applications API route', () => {
             { dt: 'Status', dd: 'PAID' },
             { dt: 'Status (Portal)', dd: null },
             { dt: 'Submitted Date', dd: '31/12/2022' },
-            { dt: 'Agreement References', dd: ['3242226112'] },
+            { dt: 'Agreement References', dd: '3242226112' },
             { dt: 'Last Movement', dd: 'TO PAID' },
-            { dt: 'Last Movement Date/Time', dd: '31/12/2022' }
+            { dt: 'Last Movement Date/Time', dd: '31/12/2022 06:30' }
           ],
           movementHistory: [
             {
-              id: '6338450300',
               name: 'TO PAID',
               timestamp: '2022-12-31T06:30:16.953Z',
-              checkStatus: 'PASSED'
+              formattedDate: '31/12/2022 06:30'
             }
           ]
         }
       }
     })
+  })
+
+  test('should join multiple agreement references with comma and space', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          applications: [
+            {
+              id: '5836775937',
+              year: 2022,
+              name: 'TEST APPLICATION',
+              scheme: 'TEST SCHEME',
+              status: 'PAID',
+              submissionDate: '2022-12-31T22:01:36.356Z',
+              portalStatus: null,
+              agreementReferences: ['123', '456'],
+              transitionHistory: [
+                {
+                  name: 'TO PAID',
+                  timestamp: '2022-12-31T06:30:16.953Z'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(200)
+    const result = await response.json()
+    expect(
+      result.details['5836775937'].summary.find(
+        (item) => item.dt === 'Agreement References'
+      ).dd
+    ).toBe('123, 456')
   })
 })
