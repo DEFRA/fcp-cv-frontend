@@ -17,7 +17,7 @@ export function AgreementsList() {
 
   return (
     <Table
-      skeletonRows={5}
+      skeletonRows={10}
       data={data?.list}
       columns={[
         {
@@ -32,7 +32,18 @@ export function AgreementsList() {
         { header: 'Type', accessorKey: 'contractType' },
         { header: 'Start Date', accessorKey: 'startDate' },
         { header: 'End Date', accessorKey: 'endDate' },
-        { header: 'Status', accessorKey: 'status' }
+        { header: 'Status', accessorKey: 'status' },
+        {
+          header: '',
+          accessorKey: 'contractId',
+          id: 'view',
+          enableSorting: false,
+          cell: () => (
+            <span className="text-green-700 underline hover:text-green-900">
+              View
+            </span>
+          )
+        }
       ]}
       onRowClick={(row) => {
         setSearchParams({ contractId: row.contractId })
@@ -40,7 +51,8 @@ export function AgreementsList() {
       onClearClick={() => {
         unsetSearchParam('contractId')
       }}
-      enableSorting={false}
+      defaultSortColumn="schemeYear"
+      defaultSortDirection="desc"
       selectedRow={searchParams.get('contractId')}
       selectedRowAccessorKey="contractId"
       searchBarClassName="ml-0"
