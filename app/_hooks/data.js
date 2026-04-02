@@ -2,15 +2,43 @@ import { useMsal } from '@azure/msal-react'
 import useSWR from 'swr'
 
 import { useAuth } from '@/components/auth/auth-provider'
+import { notification } from '@/components/notification/Notifications.jsx'
+
+async function handleResponse(response) {
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      notification.error('You do not have permissions to view this data.')
+    } else if (response.status === 404) {
+      notification.error('The requested resource was not found')
+    } else {
+      notification.error(
+        'An error has occurred. Please report this if it continues to occur.'
+      )
+    }
+    throw new Error(`Request failed: ${response.status} ${response.statusText}`)
+  } else {
+    if (response.status === 206) {
+      // Although the DAL request has not failed.  Some elements of the requested data have not been retrieved, due to an error
+      notification.warn(
+        'There was a problem retrieving some data.  Some information may not be displayed correctly.'
+      )
+    }
+  }
+  return response.json()
+}
 
 async function fetcher(url, headers = {}) {
-  const response = await fetch(url, { headers })
-
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status} ${response.statusText}`)
+  let response
+  try {
+    response = await fetch(url, { headers })
+  } catch (error) {
+    notification.error(
+      'An error has occurred. Please report this if it continues to occur.'
+    )
+    throw error
   }
 
-  return response.json()
+  return handleResponse(response)
 }
 
 function useData(urlParts, runWhenTruthy) {

@@ -3,6 +3,7 @@ import { renderHook } from 'vitest-browser-react'
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { useDal, useDataverse } from '@/hooks/data'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 describe('useDal and useDataverse Hooks', () => {
   beforeAll(() => {
@@ -32,6 +33,15 @@ describe('useDal and useDataverse Hooks', () => {
       ok: true,
       json: Promise.resolve()
     }))
+
+    vi.mock('@/components/notification/Notifications', () => {
+      return {
+        notification: {
+          error: vi.fn(),
+          warn: vi.fn()
+        }
+      }
+    })
   })
 
   afterEach(() => {
@@ -79,6 +89,14 @@ describe('useDal and useDataverse Hooks', () => {
       })
     })
 
+    it('returns useDal hook', async () => {
+      await renderHook(() => useDal(['linked-contacts']))
+
+      expect(fetchSpy).toHaveBeenCalledWith('/api/dal/linked-contacts', {
+        headers: {}
+      })
+    })
+
     it('renders useDataverse hook', async () => {
       await renderHook(() => useDataverse(['account']))
 
@@ -98,6 +116,50 @@ describe('useDal and useDataverse Hooks', () => {
       const { result } = await renderHook(() => useDal(['linked-contacts']))
       expect(result.current.error).toStrictEqual(
         new Error('Request failed: test error status test error status text')
+      )
+      expect(notification.error).toHaveBeenCalledWith(
+        'An error has occurred. Please report this if it continues to occur.'
+      )
+    })
+
+    it('request error (when fetch throws)', async () => {
+      fetchSpy.mockRejectedValue(new Error('Failure'))
+      const { result } = await renderHook(() => useDal(['linked-contacts']))
+      expect(result.current.error).toStrictEqual(new Error('Failure'))
+      expect(notification.error).toHaveBeenCalledWith(
+        'An error has occurred. Please report this if it continues to occur.'
+      )
+    })
+
+    test.each([401, 403])('DAL auth (%i) error', async (statusCode) => {
+      fetchSpy.mockImplementation(async () => ({
+        ok: false,
+        json: Promise.resolve(),
+        status: statusCode,
+        statusText: 'test error status text'
+      }))
+
+      const { result } = await renderHook(() => useDal(['linked-contacts']))
+      expect(result.current.error).toStrictEqual(
+        new Error(`Request failed: ${statusCode} test error status text`)
+      )
+      expect(notification.error).toHaveBeenCalledWith(
+        'You do not have permissions to view this data.'
+      )
+    })
+
+    it('partial DAL failure(HTTP response 206)', async () => {
+      fetchSpy.mockImplementation(async () => ({
+        ok: true,
+        json: Promise.resolve(),
+        status: 206,
+        statusText: 'partial content'
+      }))
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      expect(notification.warn).toHaveBeenCalledWith(
+        'There was a problem retrieving some data.  Some information may not be displayed correctly.'
       )
     })
 
