@@ -119,6 +119,33 @@ describe('AgreementsPage tests', () => {
       await expect
         .element(getByRole('cell', { name: 'Status' }))
         .toBeInTheDocument()
+
+      await expect
+        .element(getByRole('cell', { name: 'View' }).first())
+        .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'agreements list is sorted by year descending by default',
+    async ({ worker }) => {
+      defaultWorkerHandlers(worker)
+      window.history.pushState(null, '', defaultUrl)
+
+      const { getByRole } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+
+      const rows = document.querySelectorAll('tbody tr')
+      const firstRowYear = rows[0].querySelector('td:nth-child(2)')?.textContent
+      const secondRowYear =
+        rows[1].querySelector('td:nth-child(2)')?.textContent
+
+      expect(Number(firstRowYear)).toBeGreaterThan(Number(secondRowYear))
     }
   )
 
