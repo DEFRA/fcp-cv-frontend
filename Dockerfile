@@ -20,12 +20,11 @@ COPY --chown=node:node package*.json ./
 RUN npm ci
 
 COPY --chown=node:node \
-    config.js \ 
+    config.js \
     instrumentation.js \
-    jsconfig.json \ 
+    jsconfig.json \
     next.config.js \
     postcss.config.js \
-    server.js \
     ./
 COPY --chown=node:node app ./app
 
@@ -53,7 +52,6 @@ COPY --from=development \
     /home/node/instrumentation.js \
     /home/node/next.config.js \
     /home/node/package*.json \
-    /home/node/server.js \
     ./
 
 RUN npm ci --omit=dev
@@ -62,4 +60,4 @@ ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
