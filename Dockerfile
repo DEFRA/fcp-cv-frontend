@@ -20,12 +20,11 @@ COPY --chown=node:node package*.json ./
 RUN npm ci
 
 COPY --chown=node:node \
-    config.js \ 
+    config.js \
     instrumentation.js \
-    jsconfig.json \ 
+    jsconfig.json \
     next.config.js \
     postcss.config.js \
-    server.js \
     ./
 COPY --chown=node:node app ./app
 
@@ -46,20 +45,17 @@ USER root
 RUN apk add --no-cache curl
 
 USER node
-COPY --from=development /home/node/.next ./.next
-
+COPY --from=development /home/node/.next/standalone ./
+COPY --from=development /home/node/.next/static ./.next/static
 COPY --from=development \
     /home/node/config.js \
     /home/node/instrumentation.js \
     /home/node/next.config.js \
     /home/node/package*.json \
-    /home/node/server.js \
     ./
-
-RUN npm ci --omit=dev
 
 ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-CMD ["node", "server.js"]
+CMD ["env", "HOSTNAME=0.0.0.0", "node", "server.js"]
