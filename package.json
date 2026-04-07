@@ -1,6 +1,6 @@
 {
   "name": "fcp-cv-frontend",
-  "version": "0.37.0",
+  "version": "0.38.0",
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {
@@ -8,10 +8,10 @@
   },
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --log-level warn --write .",
-    "start": "node server.js | jq",
+    "start": "next start",
     "pretest": "[ ! ${CI} ] || npx playwright install chromium --with-deps --only-shell",
     "test": "vitest --coverage --reporter=blob --reporter=dot run && HEADLESS=true vitest --config=vitest.browser.config.js --coverage --reporter=blob --reporter=dot run",
     "posttest": "vitest --config=vitest.merge.config.js --mergeReports coverage/merge --coverage run",
