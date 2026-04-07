@@ -70,24 +70,22 @@ const interceptLogStream = (stream, pinoLoggerFunction) => {
 // Ensure that each flavour of logging is converted to ECS JSON format
 const redirectAllLogging = () => {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    console.log('-------- pre redirect')
-    console.log('Logging console.log')
-    console.log('Logging via console.info')
-    console.warn('Logging via console.warn')
-    console.error('Logging via console.error')
-    process.stdout.write('Logging via direct stdout write\n')
-    process.stderr.write('Logging via direct stderr write\n')
-    process.stdout.write('-------- Post redirect ->')
+    console.log('<pre> Logging console.log')
+    console.log('<pre> Logging via console.info')
+    console.warn('<pre> Logging via console.warn')
+    console.error('<pre> Logging via console.error')
+    process.stdout.write('<pre> Logging via direct stdout write\n')
+    process.stderr.write('<pre> Logging via direct stderr write\n')
 
     redefineConsoleLogging()
     interceptLogStream(process.stdout, (msg) => logger.info(msg))
     interceptLogStream(process.stderr, (msg) => logger.error(msg))
 
-    console.log('Logging via console.info')
-    console.warn('Logging via console.warn')
-    console.error('Logging via console.error')
-    process.stdout.write('Logging via direct stdout write\n')
-    process.stderr.write('Logging via direct stderr write\n')
+    console.log('<post> Logging via console.info')
+    console.warn('<post> Logging via console.warn')
+    console.error('<post> Logging via console.error')
+    process.stdout.write('<post> Logging via direct stdout write\n')
+    process.stderr.write('<post> Logging via direct stderr write\n')
   }
 }
 
