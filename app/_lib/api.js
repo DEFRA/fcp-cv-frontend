@@ -26,6 +26,33 @@ export function partialResponse(req, errors, message, data) {
   )
 }
 
+/**
+ * Returns the response payload with a HTTP 200 response, unless the DAL response contains an errors array with at least one error.  If there
+ * is an error then the error is logged and the response payload is still returned, but this time with a HTTP 206 (Partial Content) response code
+ *
+ * @param req the incoming request
+ * @param apiResponse the GraphQL response returned from the DAL (used to check for errors)
+ * @param responsePayload the payload that will be returned to the front end
+ * @param partialErrorMessageCallback if there has been a partial failure (errors array has content), then this callback is invoked to generate an appropriate log message
+ */
+export function dalApiResponse(
+  req,
+  apiResponse,
+  responsePayload,
+  partialErrorMessageCallback
+) {
+  if (apiResponse.errors?.length) {
+    return partialResponse(
+      req,
+      apiResponse.errors,
+      partialErrorMessageCallback(),
+      responsePayload
+    )
+  }
+
+  return Response.json(responsePayload)
+}
+
 export function unauthorised(req, error, message) {
   return handleApiError(req, error, message, 401, 'Unauthorized')
 }

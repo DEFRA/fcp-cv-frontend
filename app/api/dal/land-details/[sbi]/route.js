@@ -1,4 +1,5 @@
 import { dalRequest } from '@/lib/dal'
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
   query BusinessLandParcels($sbi: ID!, $date: Date) {
@@ -42,7 +43,8 @@ export async function GET(request, ctx) {
     variables.date = date
   }
 
-  const response = await dalRequest({ query, variables })
+  try {
+    const response = await dalRequest({ query, variables })
 
   const land = response?.data?.business?.land || {}
   const parcels = (land.parcels || [])
@@ -67,9 +69,23 @@ export async function GET(request, ctx) {
     area: summary[areaKey] ?? 0
   })).sort((a, b) => a.code.localeCompare(b.code))
 
-  return Response.json({
-    parcels,
-    summary: { ...summary, pendingParcels },
-    landCovers
-  })
+    const responsePayload = {
+      parcels,
+      summary: { ...summary, pendingParcels },
+      landCovers
+    }
+
+    return dalApiResponse(
+      request,
+      response,
+      responsePayload,
+      () => `Problem retrieving land details with SBI: ${sbi}`
+    )
+  } catch (error) {
+    return handleApiError(
+      request,
+      error,
+      `Problem retrieving land details with SBI: ${sbi}`
+    )
+  }
 }

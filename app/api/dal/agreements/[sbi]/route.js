@@ -1,6 +1,6 @@
 import { dalRequest } from '@/lib/dal'
 import { formatDate } from '@/lib/formatters'
-import { handleApiError, partialResponse } from '@/lib/api.js'
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
   query CVAgreements($sbi: ID!) {
@@ -107,7 +107,7 @@ export async function GET(req, { params }) {
   const { sbi } = await params
 
   try {
-    const { data, errors } = await dalRequest({ query, variables: { sbi } })
+    const response = await dalRequest({ query, variables: { sbi } })
 
     const agreements = (data?.business?.agreements || []).sort(
       (a, b) => (b.schemeYear ?? 0) - (a.schemeYear ?? 0)
@@ -130,16 +130,12 @@ export async function GET(req, { params }) {
       { list: [], details: {} }
     )
 
-    if (errors?.length) {
-      return partialResponse(
-        req,
-        errors,
-        `Problem retrieving agreements with SBI: ${sbi}`,
-        responsePayload
-      )
-    }
-
-    return Response.json(responsePayload)
+    return dalApiResponse(
+      req,
+      response,
+      responsePayload,
+      () => `Problem retrieving agreements with SBI: ${sbi}`
+    )
   } catch (error) {
     return handleApiError(
       req,
