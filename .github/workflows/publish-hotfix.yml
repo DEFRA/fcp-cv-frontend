@@ -35,6 +35,9 @@ jobs:
 
       - name: Publish Hot Fix
         uses: DEFRA/cdp-build-action/build-hotfix@main
+        env:
+          # Do not merge this
+          CUSTOM_TAG: 0.37.7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
