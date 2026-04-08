@@ -1,6 +1,5 @@
 'use client'
 
-import { LinkButton } from '@/components/button/Button'
 import {
   KeyValueList,
   KeyValueListContent,
@@ -9,6 +8,7 @@ import {
 } from '@/components/key-value-list-v2/key-value-list'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
+import { LinkToCRMContact } from '@/components/link-to-crm/link-to-crm'
 import { LinkedContactsAuthenticateQuestions } from './linked-contacts-authenticate-questions'
 
 const defaultDetails = [{ dt: 'CRN' }, { dt: 'Full Name' }, { dt: 'Role' }]
@@ -57,7 +57,7 @@ export function LinkedContactsDetails() {
           </KeyValueList>
         </div>
 
-        <LinkButton href="/#">View Contact</LinkButton>
+        <LinkToCRMContact crn={crn} />
       </div>
 
       <LinkedContactsAuthenticateQuestions key={crn} />

@@ -1,5 +1,3 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Button snapshot > matches the rendered structure (as a button) 1`] = `"<button class="inline-flex items-center justify-center gap-3 rounded-lg border shadow-sm border-gray-300 bg-white px-6 py-4 font-semibold text-gray-950 active:bg-gray-100 transition-colors cursor-pointer hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">Refresh</button>"`;
-
-exports[`Button snapshot > matches the rendered structure (as an external link) 1`] = `"<a href="/customer" target="_blank" rel="noreferrer noopener" class="inline-flex items-center justify-center gap-3 rounded-lg border shadow-sm border-gray-300 bg-white px-6 py-4 font-semibold text-gray-950 active:bg-gray-100 transition-colors cursor-pointer hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">View customer</a>"`;

@@ -17,6 +17,8 @@ services:
       DAL_URL: ''
       DAL_EMAIL: ''
       DATAVERSE_URL: ''
+      CRM_BASE_URL: ''
+      CRM_APP_ID: ''
 
 ################################################################################
 
