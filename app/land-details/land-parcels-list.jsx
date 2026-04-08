@@ -11,11 +11,7 @@ const columns = [
   { header: 'Sheet', accessorKey: 'sheetId' },
   { header: 'Parcel', accessorKey: 'parcelId' },
   { header: 'Area (ha)', accessorKey: 'area' },
-  {
-    header: 'Land Change?',
-    id: 'pendingDigitisation',
-    accessorFn: (row) => (row.pendingDigitisation ? 'Yes' : 'No')
-  }
+  { header: 'Land Change?', accessorKey: 'pendingDigitisation' }
 ]
 
 function todayISO() {
