@@ -58,6 +58,8 @@ describe('Dataverse Account CRM URL API route', () => {
     )
 
     expect(response.status).toBe(404)
-    expect(await response.json()).toStrictEqual({ error: 'Account not found' })
+    expect(await response.json()).toStrictEqual({
+      error: 'Problem retrieving Account ID with SBI: 123456789'
+    })
   })
 })

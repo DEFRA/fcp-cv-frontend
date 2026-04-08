@@ -58,6 +58,8 @@ describe('Dataverse Contact CRM URL API route', () => {
     )
 
     expect(response.status).toBe(404)
-    expect(await response.json()).toStrictEqual({ error: 'Contact not found' })
+    expect(await response.json()).toStrictEqual({
+      error: 'Problem retrieving Account ID with CRN: 123456789'
+    })
   })
 })
