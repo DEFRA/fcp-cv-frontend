@@ -17,6 +17,10 @@ const query = `#graphql
 
 export const runtime = 'nodejs'
 
+function errorDescription(sbi) {
+  return `Problem retrieving customers for business with SBI: ${sbi}`
+}
+
 export async function GET(req, { params }) {
   const { sbi } = await params
 
@@ -44,20 +48,11 @@ export async function GET(req, { params }) {
     })
 
     if (errors?.length) {
-      return partialResponse(
-        req,
-        errors,
-        `Problem retrieving customers for business with SBI: ${sbi}`,
-        customers
-      )
+      return partialResponse(req, errors, errorDescription(sbi), customers)
     }
 
     return NextResponse.json(customers)
   } catch (error) {
-    return handleApiError(
-      req,
-      error,
-      `Problem retrieving customers for business with SBI: ${sbi}`
-    )
+    return handleApiError(req, error, errorDescription(sbi))
   }
 }
