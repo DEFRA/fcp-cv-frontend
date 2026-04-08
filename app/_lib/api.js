@@ -33,19 +33,19 @@ export function partialResponse(req, errors, message, data) {
  * @param req the incoming request
  * @param apiResponse the GraphQL response returned from the DAL (used to check for errors)
  * @param responsePayload the payload that will be returned to the front end
- * @param partialErrorMessageCallback if there has been a partial failure (errors array has content), then this callback is invoked to generate an appropriate log message
+ * @param partialErrorMessage if there has been a partial failure (errors array has content), then this string will be incorporated into the log message
  */
 export function dalApiResponse(
   req,
   apiResponse,
   responsePayload,
-  partialErrorMessageCallback
+  partialErrorMessage
 ) {
   if (apiResponse.errors?.length) {
     return partialResponse(
       req,
       apiResponse.errors,
-      partialErrorMessageCallback(),
+      partialErrorMessage,
       responsePayload
     )
   }

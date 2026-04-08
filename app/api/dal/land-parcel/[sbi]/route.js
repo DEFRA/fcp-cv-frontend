@@ -34,6 +34,10 @@ const query = `#graphql
   }
 `
 
+function errorDescription(variables) {
+  return `Problem retrieving land parcel with SBI: ${variables.sbi}, sheetId: ${variables.sheetId}, parcelId: ${variables.parcelId}`
+}
+
 export async function GET(request, ctx) {
   const { sbi } = await ctx.params
   const { searchParams } = new URL(request.url)
@@ -94,13 +98,9 @@ export async function GET(request, ctx) {
       request,
       response,
       responsePayload,
-      () => `Problem retrieving land parcel with SBI: ${sbi}`
+      errorDescription(variables)
     )
   } catch (error) {
-    return handleApiError(
-      request,
-      error,
-      `Problem retrieving land parcel with SBI: ${sbi}`
-    )
+    return handleApiError(request, error, errorDescription(variables))
   }
 }

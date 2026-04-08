@@ -12,6 +12,9 @@ const query = `#graphql
     }
   }
 `
+function errorDescription(sbi) {
+  return `Problem retrieving business messages contacts with SBI: ${sbi}`
+}
 
 export async function GET(req, ctx) {
   const { sbi } = await ctx.params
@@ -28,13 +31,9 @@ export async function GET(req, ctx) {
       req,
       response,
       response?.data?.business?.customers || [],
-      () => `Problem retrieving business messages contacts with SBI: ${sbi}`
+      errorDescription(sbi)
     )
   } catch (error) {
-    return handleApiError(
-      req,
-      error,
-      `Problem retrieving business messages contacts with SBI: ${sbi}`
-    )
+    return handleApiError(req, error, errorDescription(sbi))
   }
 }

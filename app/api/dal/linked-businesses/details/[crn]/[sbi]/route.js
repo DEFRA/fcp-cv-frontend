@@ -18,7 +18,9 @@ const query = `#graphql
     }
   }
 `
-
+function errorDescription(crn, sbi) {
+  return `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`
+}
 export async function GET(req, { params }) {
   const { crn, sbi } = await params
 
@@ -41,20 +43,11 @@ export async function GET(req, { params }) {
     }
 
     if (errors?.length) {
-      return partialResponse(
-        req,
-        errors,
-        `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`,
-        details
-      )
+      return partialResponse(req, errors, errorDescription(sbi), details)
     }
 
     return Response.json(details)
   } catch (error) {
-    return handleApiError(
-      req,
-      error,
-      `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`
-    )
+    return handleApiError(req, error, errorDescription(sbi))
   }
 }
