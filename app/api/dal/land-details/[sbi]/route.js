@@ -45,11 +45,16 @@ export async function GET(request, ctx) {
   const response = await dalRequest({ query, variables })
 
   const land = response?.data?.business?.land || {}
-  const parcels = (land.parcels || []).map((parcel) => ({
-    ...parcel,
-    id: `${parcel.sheetId}-${parcel.parcelId}`,
-    pendingDigitisation: parcel.pendingDigitisation ? 'Yes' : 'No'
-  }))
+  const parcels = (land.parcels || [])
+    .sort((a, b) => {
+      if (a.sheetId !== b.sheetId) return a.sheetId.localeCompare(b.sheetId)
+      return a.parcelId.localeCompare(b.parcelId)
+    })
+    .map((parcel) => ({
+      ...parcel,
+      id: `${parcel.sheetId}-${parcel.parcelId}`,
+      pendingDigitisation: parcel.pendingDigitisation ? 'Yes' : 'No'
+    }))
   const summary = land.summary || {}
 
   const pendingParcels = parcels.filter(
@@ -60,7 +65,7 @@ export async function GET(request, ctx) {
     code,
     name,
     area: summary[areaKey] ?? 0
-  }))
+  })).sort((a, b) => a.code.localeCompare(b.code))
 
   return Response.json({
     parcels,
