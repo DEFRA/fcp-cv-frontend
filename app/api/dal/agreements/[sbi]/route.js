@@ -105,8 +105,8 @@ function toPaymentScheduleRow(ps) {
 export async function GET(_, { params }) {
   const response = await dalRequest({ query, variables: await params })
 
-  const agreements = (response?.data?.business?.agreements || []).sort((a, b) =>
-    (b.startDate ?? '').localeCompare(a.startDate ?? '')
+  const agreements = (response?.data?.business?.agreements || []).sort(
+    (a, b) => (b.schemeYear ?? 0) - (a.schemeYear ?? 0)
   )
 
   return Response.json(

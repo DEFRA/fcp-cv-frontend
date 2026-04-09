@@ -47,11 +47,14 @@ export async function GET(request, ctx) {
   const land = response?.data?.business?.land || {}
   const parcels = (land.parcels || []).map((parcel) => ({
     ...parcel,
-    id: `${parcel.sheetId}-${parcel.parcelId}`
+    id: `${parcel.sheetId}-${parcel.parcelId}`,
+    pendingDigitisation: parcel.pendingDigitisation ? 'Yes' : 'No'
   }))
   const summary = land.summary || {}
 
-  const pendingParcels = parcels.filter((p) => p.pendingDigitisation).length
+  const pendingParcels = parcels.filter(
+    (p) => p.pendingDigitisation === 'Yes'
+  ).length
 
   const landCovers = LAND_COVERS.map(({ code, name, areaKey }) => ({
     code,

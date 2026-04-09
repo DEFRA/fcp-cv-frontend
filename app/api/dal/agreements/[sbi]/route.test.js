@@ -101,7 +101,7 @@ describe('Agreements API route', () => {
     })
   })
 
-  test('should sort agreements by startDate descending', async () => {
+  test('should sort agreements by schemeYear descending', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         business: {
@@ -298,7 +298,7 @@ describe('Agreements API route', () => {
     expect(await response.json()).toStrictEqual({ list: [], details: {} })
   })
 
-  test('should sort agreements with null startDate using empty string fallback', async () => {
+  test('should sort agreements by schemeYear descending with null handling', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         business: {
@@ -346,7 +346,7 @@ describe('Agreements API route', () => {
     const { list } = await response.json()
     expect(list).toHaveLength(3)
     expect(list[0].contractId).toBe('AG00000001')
-    expect(list[list.length - 1].contractId).toBe('AG00000002')
+    expect(list[list.length - 1].contractId).toBe('AG00000003')
   })
 
   test('should sort payment schedules with null fields using empty string fallback', async () => {

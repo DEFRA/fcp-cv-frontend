@@ -14,21 +14,21 @@ const mockLandDetails = {
       sheetId: 'SS6',
       parcelId: '836',
       area: 1.6939,
-      pendingDigitisation: false
+      pendingDigitisation: 'No'
     },
     {
       id: 'SS6-856',
       sheetId: 'SS6',
       parcelId: '856',
       area: 4.0797,
-      pendingDigitisation: true
+      pendingDigitisation: 'Yes'
     },
     {
       id: 'SS6-852',
       sheetId: 'SS6',
       parcelId: '852',
       area: 5.893,
-      pendingDigitisation: false
+      pendingDigitisation: 'No'
     }
   ],
   summary: {
@@ -53,7 +53,7 @@ const mockLandDetailsHistorical = {
       sheetId: 'SS6',
       parcelId: '836',
       area: 1.6939,
-      pendingDigitisation: false
+      pendingDigitisation: 'No'
     }
   ],
   summary: {

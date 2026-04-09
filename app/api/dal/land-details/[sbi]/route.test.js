@@ -98,14 +98,14 @@ describe('Land Details API route', () => {
         sheetId: 'SS6528',
         parcelId: '8779',
         area: 5.12,
-        pendingDigitisation: false,
+        pendingDigitisation: 'No',
         id: 'SS6528-8779'
       },
       {
         sheetId: 'SS6528',
         parcelId: '9001',
         area: 2.3,
-        pendingDigitisation: true,
+        pendingDigitisation: 'Yes',
         id: 'SS6528-9001'
       }
     ])

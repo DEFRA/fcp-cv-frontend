@@ -17,7 +17,7 @@ export function AgreementsList() {
 
   return (
     <Table
-      skeletonRows={10}
+      skeletonRows={5}
       data={data?.list}
       columns={[
         {
@@ -37,7 +37,7 @@ export function AgreementsList() {
           header: '',
           accessorKey: 'contractId',
           id: 'view',
-          enableSorting: false,
+
           cell: () => (
             <span className="text-green-700 underline hover:text-green-900">
               View
@@ -51,11 +51,10 @@ export function AgreementsList() {
       onClearClick={() => {
         unsetSearchParam('contractId')
       }}
-      defaultSortColumn="schemeYear"
-      defaultSortDirection="desc"
       selectedRow={searchParams.get('contractId')}
       selectedRowAccessorKey="contractId"
       searchBarClassName="ml-0"
+      enableSorting={false}
     />
   )
 }
