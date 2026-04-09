@@ -60,7 +60,7 @@ export function LandSummary() {
           <KeyValueListTitle>Land Summary</KeyValueListTitle>
           <KeyValueListContent>
             <KeyValueListItem
-              dt="Total Number of Parcels"
+              dt="Total Number Of Parcels"
               dd={summary.totalParcels ?? ''}
               loading={isLoading}
             />
