@@ -49,6 +49,7 @@ export function LeftSection(props) {
     <Section
       data-slot="left"
       className={cn(
+        'overflow-y-scroll',
         'row-start-2 col-start-1 border-primary border-r pr-5',
         'group-has-data-[slot="full"]:border-t',
         'group-has-data-[slot="full"]:pt-5'
@@ -63,6 +64,7 @@ export function RightSection(props) {
     <Section
       data-slot="right"
       className={cn(
+        'overflow-y-scroll',
         'row-start-2 col-start-2 border-primary border-l pl-5',
         'group-has-data-[slot="full"]:border-t',
         'group-has-data-[slot="full"]:pt-5'
