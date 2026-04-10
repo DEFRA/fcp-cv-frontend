@@ -70,7 +70,7 @@ describe('Authenticate API route', () => {
         dt: 'Memorable Event'
       },
       {
-        dd: '31/12/2024',
+        dd: '31/12/2024 14:34',
         dt: 'Updated At'
       }
     ])

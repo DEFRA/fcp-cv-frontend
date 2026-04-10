@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { dalRequest } from '@/lib/dal'
-import { formatDate } from '@/lib/formatters'
+import { formatDateAndTime } from '@/lib/formatters'
 
 const query = `#graphql
   query CVAuthenticate($crn: ID!) {
@@ -38,7 +38,7 @@ export async function GET(_, { params }) {
     {
       dt: 'Updated At',
       dd: authenticationQuestions?.updatedAt
-        ? formatDate(authenticationQuestions?.updatedAt)
+        ? formatDateAndTime(authenticationQuestions?.updatedAt)
         : '(Not set)'
     }
   ])
