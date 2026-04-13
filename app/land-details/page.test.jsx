@@ -135,7 +135,7 @@ describe('LandDetailsPage tests', () => {
   })
 
   testWithWorker(
-    'renders the full page layout with summary, parcel list, and auto-selected first parcel detail',
+    'renders the full page layout with summary, parcel list, and placeholder when no parcel selected',
     async ({ worker }) => {
       worker.use(
         http.get(
@@ -175,7 +175,7 @@ describe('LandDetailsPage tests', () => {
         .toBeInTheDocument()
 
       await expect
-        .element(getByText('Total Number of Parcels'))
+        .element(getByText('Total Number Of Parcels'))
         .toBeInTheDocument()
       await expect.element(getByText('3', { exact: true })).toBeInTheDocument()
 
@@ -216,11 +216,7 @@ describe('LandDetailsPage tests', () => {
         .toBeInTheDocument()
 
       await expect
-        .element(getByRole('heading', { name: 'SS6 836' }))
-        .toBeInTheDocument()
-      await expect.element(getByText('Effective Date From')).toBeInTheDocument()
-      await expect
-        .element(getByText('14/11/2021', { exact: true }))
+        .element(getByText('Select a parcel from the table'))
         .toBeInTheDocument()
     }
   )
@@ -258,6 +254,8 @@ describe('LandDetailsPage tests', () => {
           </AuthProvider>
         </SWRConfig>
       )
+
+      await getByRole('cell', { name: '836' }).click()
 
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))
@@ -309,6 +307,8 @@ describe('LandDetailsPage tests', () => {
           </AuthProvider>
         </SWRConfig>
       )
+
+      await getByRole('cell', { name: '836' }).click()
 
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))
@@ -363,6 +363,8 @@ describe('LandDetailsPage tests', () => {
           </AuthProvider>
         </SWRConfig>
       )
+
+      await getByRole('cell', { name: '836' }).click()
 
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))
@@ -560,6 +562,8 @@ describe('LandDetailsPage tests', () => {
           </AuthProvider>
         </SWRConfig>
       )
+
+      await getByRole('cell', { name: '836' }).click()
 
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))

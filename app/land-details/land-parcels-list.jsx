@@ -1,11 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
-
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
-import { useSelectOnlyTableRowByCRN } from '@/hooks/select-only-table-row'
+import { useSelectOnlyTableRowByParcel } from '@/hooks/select-only-table-row'
 
 const columns = [
   { header: 'Sheet', accessorKey: 'sheetId' },
@@ -25,18 +23,7 @@ export function LandParcelsList() {
 
   const { data } = useDal(['land-details', `${sbi}?date=${date}`], [sbi])
 
-  useSelectOnlyTableRowByCRN(data)
-
-  useEffect(() => {
-    const firstParcel = Array.isArray(data?.parcels) && data.parcels[0]
-    if (!firstParcel) return
-    if (!searchParams.get('sheetId') && !searchParams.get('parcelId')) {
-      setSearchParams({
-        sheetId: firstParcel.sheetId,
-        parcelId: firstParcel.parcelId
-      })
-    }
-  }, [data, searchParams, setSearchParams])
+  useSelectOnlyTableRowByParcel(data?.parcels)
 
   return (
     <div className="mt-4 ml-4">

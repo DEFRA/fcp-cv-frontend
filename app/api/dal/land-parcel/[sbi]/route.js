@@ -49,8 +49,16 @@ export async function GET(request, ctx) {
 
   const land = response?.data?.business?.land || {}
   const parcel = land.parcel || {}
-  const parcelCovers = land.parcelCovers || []
-  const parcelLandUses = land.parcelLandUses || []
+  const parcelCovers = (land.parcelCovers || []).sort((a, b) =>
+    a.code.localeCompare(b.code)
+  )
+  const parcelLandUses = (land.parcelLandUses || []).sort((a, b) => {
+    const dateA = new Date(a.startDate)
+    const dateB = new Date(b.startDate)
+    if (dateA.getTime() !== dateB.getTime())
+      return dateB.getTime() - dateA.getTime() // desc
+    return a.code.localeCompare(b.code) // asc
+  })
 
   return Response.json({
     parcel: {
@@ -63,12 +71,20 @@ export async function GET(request, ctx) {
         : ''
     },
     parcelCovers,
-    parcelLandUses: parcelLandUses.map((use) => ({
-      ...use,
-      startDate: use.startDate ? formatDate(use.startDate) : '',
-      endDate: use.endDate ? formatDate(use.endDate) : '',
-      insertDate: use.insertDate ? formatDate(use.insertDate) : '',
-      deleteDate: use.deleteDate ? formatDate(use.deleteDate) : ''
-    }))
+    parcelLandUses: parcelLandUses.map((use) => {
+      const formatDateIfValid = (dateStr) => {
+        if (!dateStr) return ''
+        const date = new Date(dateStr)
+        return isNaN(date.getTime()) ? '' : formatDate(dateStr)
+      }
+
+      return {
+        ...use,
+        startDate: formatDateIfValid(use.startDate),
+        endDate: formatDateIfValid(use.endDate),
+        insertDate: formatDateIfValid(use.insertDate),
+        deleteDate: formatDateIfValid(use.deleteDate)
+      }
+    })
   })
 }

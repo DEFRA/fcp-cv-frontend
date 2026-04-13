@@ -45,7 +45,11 @@ export function LandParcelDetails() {
   )
 
   if (!sheetId || !parcelId) {
-    return null
+    return (
+      <div className="mt-4 ml-4 mr-4 text-2xl font-semibold text-center text-gray-500">
+        Select a parcel from the table
+      </div>
+    )
   }
 
   const parcel = data?.parcel || {}
