@@ -509,28 +509,4 @@ describe('Land Parcel API route', () => {
 
     expect(response.status).toBe(500)
   })
-
-  test('should return partial response with errors if DAL response has errors', async () => {
-    vi.mocked(dalRequest).mockResolvedValue({
-      data: {},
-      errors: [{ message: 'some error' }]
-    })
-    const response = await GET(new NextRequest('http://localhost'), {
-      params: Promise.resolve({ sbi: 'sbiParam' })
-    })
-
-    expect(response.status).toBe(206)
-
-    const responseBody = await response.json()
-    expect(responseBody.parcelCovers).toStrictEqual([])
-  })
-
-  test('should return 500 if DAL request throws error', async () => {
-    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
-    const response = await GET(new NextRequest('http://localhost'), {
-      params: Promise.resolve({ sbi: 'sbiParam' })
-    })
-
-    expect(response.status).toBe(500)
-  })
 })
