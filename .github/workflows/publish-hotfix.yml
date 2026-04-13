@@ -37,7 +37,6 @@ jobs:
         uses: DEFRA/cdp-build-action/build-hotfix@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: 0.37.7
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v7
