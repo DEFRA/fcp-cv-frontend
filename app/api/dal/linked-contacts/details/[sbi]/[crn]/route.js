@@ -30,10 +30,6 @@ const query = `#graphql
   }
 `
 
-function errorDescription(sbi, crn) {
-  return `Problem retrieving customer details with SBI: ${sbi}, CRN: ${crn}`
-}
-
 export async function GET(req, { params }) {
   const { sbi, crn } = await params
 
@@ -61,11 +57,20 @@ export async function GET(req, { params }) {
     }
 
     if (errors?.length) {
-      return partialResponse(req, errors, errorDescription(sbi, crn), details)
+      return partialResponse(
+        req,
+        errors,
+        `Problem retrieving customer details with SBI: ${sbi}, CRN: ${crn}`,
+        details
+      )
     }
 
     return NextResponse.json(details)
   } catch (error) {
-    return handleApiError(req, error, errorDescription(sbi, crn))
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving customer details with SBI: ${sbi}, CRN: ${crn}`
+    )
   }
 }
