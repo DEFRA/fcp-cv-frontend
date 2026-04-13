@@ -18,10 +18,6 @@ const query = `#graphql
   }
 `
 
-function errorDescription(variables) {
-  return `Problem retrieving business messages with CRN: ${variables.crn}, SBI: ${variables.sbi}, fromDate: ${variables.fromDate}`
-}
-
 export async function GET(request, ctx) {
   const { sbi, crn } = await ctx.params
   const { searchParams } = new URL(request.url)
@@ -42,9 +38,13 @@ export async function GET(request, ctx) {
       request,
       response,
       response?.data?.customer?.business?.messages || [],
-      errorDescription(variables)
+      `Problem retrieving business messages with CRN: ${variables.crn}, SBI: ${variables.sbi}, fromDate: ${variables.fromDate}`
     )
   } catch (error) {
-    return handleApiError(request, error, errorDescription(variables))
+    return handleApiError(
+      request,
+      error,
+      `Problem retrieving business messages with CRN: ${variables.crn}, SBI: ${variables.sbi}, fromDate: ${variables.fromDate}`
+    )
   }
 }

@@ -33,10 +33,6 @@ const LAND_COVERS = [
   { code: '140', name: 'Permanent Crop Land', areaKey: 'permanentCropsArea' }
 ]
 
-function errorDescription(variables) {
-  return `Problem retrieving land details with SBI: ${variables.sbi}, date: ${variables.date}`
-}
-
 export async function GET(request, ctx) {
   const { sbi } = await ctx.params
   const { searchParams } = new URL(request.url)
@@ -50,28 +46,28 @@ export async function GET(request, ctx) {
   try {
     const response = await dalRequest({ query, variables })
 
-  const land = response?.data?.business?.land || {}
-  const parcels = (land.parcels || [])
-    .sort((a, b) => {
-      if (a.sheetId !== b.sheetId) return a.sheetId.localeCompare(b.sheetId)
-      return a.parcelId.localeCompare(b.parcelId)
-    })
-    .map((parcel) => ({
-      ...parcel,
-      id: `${parcel.sheetId}-${parcel.parcelId}`,
-      pendingDigitisation: parcel.pendingDigitisation ? 'Yes' : 'No'
-    }))
-  const summary = land.summary || {}
+    const land = response?.data?.business?.land || {}
+    const parcels = (land.parcels || [])
+      .sort((a, b) => {
+        if (a.sheetId !== b.sheetId) return a.sheetId.localeCompare(b.sheetId)
+        return a.parcelId.localeCompare(b.parcelId)
+      })
+      .map((parcel) => ({
+        ...parcel,
+        id: `${parcel.sheetId}-${parcel.parcelId}`,
+        pendingDigitisation: parcel.pendingDigitisation ? 'Yes' : 'No'
+      }))
+    const summary = land.summary || {}
 
-  const pendingParcels = parcels.filter(
-    (p) => p.pendingDigitisation === 'Yes'
-  ).length
+    const pendingParcels = parcels.filter(
+      (p) => p.pendingDigitisation === 'Yes'
+    ).length
 
-  const landCovers = LAND_COVERS.map(({ code, name, areaKey }) => ({
-    code,
-    name,
-    area: summary[areaKey] ?? 0
-  })).sort((a, b) => a.code.localeCompare(b.code))
+    const landCovers = LAND_COVERS.map(({ code, name, areaKey }) => ({
+      code,
+      name,
+      area: summary[areaKey] ?? 0
+    })).sort((a, b) => a.code.localeCompare(b.code))
 
     const responsePayload = {
       parcels,
@@ -83,9 +79,13 @@ export async function GET(request, ctx) {
       request,
       response,
       responsePayload,
-      errorDescription(variables)
+      `Problem retrieving land details with SBI: ${variables.sbi}, date: ${variables.date}`
     )
   } catch (error) {
-    return handleApiError(request, error, errorDescription(variables))
+    return handleApiError(
+      request,
+      error,
+      `Problem retrieving land details with SBI: ${variables.sbi}, date: ${variables.date}`
+    )
   }
 }

@@ -11,11 +11,6 @@ const query = `#graphql
     }
   }
 `
-
-function errorDescription(crn) {
-  return `Problem retrieving businesses for customer with CRN: ${crn}`
-}
-
 export async function GET(req, { params }) {
   const { crn } = await params
 
@@ -26,11 +21,20 @@ export async function GET(req, { params }) {
     const businesses = data?.customer?.businesses ?? []
 
     if (errors?.length) {
-      return partialResponse(req, errors, errorDescription(crn), businesses)
+      return partialResponse(
+        req,
+        errors,
+        `Problem retrieving businesses for customer with CRN: ${crn}`,
+        businesses
+      )
     }
 
     return Response.json(businesses)
   } catch (error) {
-    return handleApiError(req, error, errorDescription(crn))
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving businesses for customer with CRN: ${crn}`
+    )
   }
 }

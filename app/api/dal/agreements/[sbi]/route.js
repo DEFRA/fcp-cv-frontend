@@ -103,17 +103,13 @@ function toPaymentScheduleRow(ps) {
   }
 }
 
-function errorDescription(sbi) {
-  return `Problem retrieving agreements with SBI: ${sbi}`
-}
-
 export async function GET(req, { params }) {
   const { sbi } = await params
 
   try {
     const response = await dalRequest({ query, variables: { sbi } })
 
-    const agreements = (data?.business?.agreements || []).sort(
+    const agreements = (response.data?.business?.agreements || []).sort(
       (a, b) => (b.schemeYear ?? 0) - (a.schemeYear ?? 0)
     )
 
@@ -134,8 +130,17 @@ export async function GET(req, { params }) {
       { list: [], details: {} }
     )
 
-    return dalApiResponse(req, response, responsePayload, errorDescription(sbi))
+    return dalApiResponse(
+      req,
+      response,
+      responsePayload,
+      `Problem retrieving agreements with SBI: ${sbi}`
+    )
   } catch (error) {
-    return handleApiError(req, error, errorDescription(sbi))
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving agreements with SBI: ${sbi}`
+    )
   }
 }
