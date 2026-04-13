@@ -20,6 +20,7 @@ describe('Land Details API route', () => {
   })
 
   test('makes a dal request with the sbi param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: '123456789' })
     })
@@ -236,5 +237,28 @@ describe('Land Details API route', () => {
       { code: '130', name: 'Permanent Grassland', area: 0 },
       { code: '140', name: 'Permanent Crop Land', area: 0 }
     ])
+  })
+
+  test('should return partial response with errors if DAL response has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(206)
+    const body = await response.json()
+    expect(body.parcels).toStrictEqual([])
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(500)
   })
 })

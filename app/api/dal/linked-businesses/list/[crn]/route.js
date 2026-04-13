@@ -11,7 +11,6 @@ const query = `#graphql
     }
   }
 `
-
 export async function GET(req, { params }) {
   const { crn } = await params
 
