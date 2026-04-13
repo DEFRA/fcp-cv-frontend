@@ -72,6 +72,8 @@ const redirectAllLogging = () => {
     interceptLogStream(process.stdout, (msg) => logger.info(msg))
     interceptLogStream(process.stderr, (msg) => logger.error(msg))
   }
+  console.info('This is an info level message')
+  process.stdout.write('This is a stdout write')
 }
 
 export async function register() {
