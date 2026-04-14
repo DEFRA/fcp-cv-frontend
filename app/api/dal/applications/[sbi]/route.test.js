@@ -73,7 +73,9 @@ describe('Applications API route', () => {
           id: '5836775937',
           year: 2022,
           name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-          status: 'PAID'
+          status: 'PAID',
+          scheme: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO',
+          agreementReferences: '3242226112'
         }
       ],
       details: {

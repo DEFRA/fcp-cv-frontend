@@ -11,13 +11,17 @@ const applications = [
     id: '5836775937',
     year: 2022,
     name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-    status: 'PAID'
+    status: 'PAID',
+    scheme: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO',
+    agreementReferences: '3242226112'
   },
   {
     id: '5836775938',
     year: 2022,
     name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-    status: 'PAID'
+    status: 'PAID',
+    scheme: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO',
+    agreementReferences: '3242226112'
   }
 ]
 
@@ -34,7 +38,7 @@ const applicationDetails = {
       { dt: 'Status', dd: 'PAID' },
       { dt: 'Status (Portal)', dd: null },
       { dt: 'Submitted Date', dd: '31/12/2022' },
-      { dt: 'Agreement References', dd: ['3242226112'] },
+      { dt: 'Agreement References', dd: '3242226112' },
       { dt: 'Last Movement', dd: 'TO PAID' },
       { dt: 'Last Movement Date/Time', dd: '31/12/2022' }
     ],

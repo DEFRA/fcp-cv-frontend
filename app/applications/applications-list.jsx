@@ -35,8 +35,15 @@ export function ApplicationsList() {
         {
           header: 'Status',
           accessorKey: 'status'
+        },
+        {
+          accessorKey: 'scheme'
+        },
+        {
+          accessorKey: 'agreementReferences'
         }
       ]}
+      columnVisibility={{ scheme: false, agreementReferences: false }}
       onRowClick={(row) => {
         setSearchParams({ applicationId: row.id })
       }}
