@@ -163,6 +163,46 @@ describe('Business Messages page tests', () => {
   )
 
   testWithWorker(
+    'table shows 5 skeleton rows while messages are loading',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/aaaaaaaa-0000-0000-0000-000000000003',
+          () => HttpResponse.json({ sbi: '111000003' })
+        ),
+        http.get('/api/dal/business-messages/contacts/111000003', () =>
+          HttpResponse.json([
+            { crn: '999999999', firstName: 'Test', lastName: 'User' }
+          ])
+        ),
+        http.get(
+          '/api/dal/business-messages/messages/111000003/999999999*',
+          async () => {
+            await delay('infinite')
+          }
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=aaaaaaaa-0000-0000-0000-000000000003&typename=account&sbi=111000003&contact=999999999`
+      )
+
+      const { getByRole } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+
+      const rows = getByRole('row')
+      expect(rows).toHaveLength(6) // 1 header row & 5 skeleton rows
+    }
+  )
+
+  testWithWorker(
     'contact dropdown options are sorted alphabetically by first and last name',
     async ({ worker }) => {
       worker.use(

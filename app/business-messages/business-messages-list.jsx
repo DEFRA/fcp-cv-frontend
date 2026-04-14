@@ -128,7 +128,7 @@ export function BusinessMessagesList() {
     ? `${contact}?fromDate=${fromDate}`
     : contact
 
-  const { data: messages = [] } = useDal(
+  const { data: messages = [], isLoading: messagesLoading } = useDal(
     ['business-messages', 'messages', sbi, messagesUrlSuffix],
     [contact]
   )
@@ -174,7 +174,7 @@ export function BusinessMessagesList() {
       {contact && (
         <Table
           skeletonRows={5}
-          data={filteredMessages}
+          data={messagesLoading ? undefined : filteredMessages}
           columns={columns}
           onRowClick={(row) => {
             setSearchParams({ messageId: row.id })
