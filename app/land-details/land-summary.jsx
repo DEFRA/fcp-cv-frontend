@@ -13,6 +13,7 @@ import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { formatDate } from '@/lib/formatters'
+import { useEffect } from 'react'
 
 const landCoverColumns = [
   { header: 'Code', accessorKey: 'code', fixedWidth: 50 },
@@ -35,6 +36,15 @@ export function LandSummary() {
     ['land-details', `${sbi}?date=${date}`],
     [sbi]
   )
+
+  console.log(isLoading)
+  console.log(data)
+
+  useEffect(() => {
+    if (!isLoading && !data) {
+      notification.error(`No land details found for business with SBI ${sbi}.`)
+    }
+  }, [data, isLoading, sbi])
 
   const summary = data?.summary || {}
 

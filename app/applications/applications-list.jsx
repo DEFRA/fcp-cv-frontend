@@ -5,15 +5,24 @@ import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { useSelectOnlyTableRowByCRN } from '@/hooks/select-only-table-row'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 export function ApplicationsList() {
   useDataverseAccountIDToSBI()
 
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
+  const sbi = searchParams.get('sbi')
 
-  const { data } = useDal(['applications', searchParams.get('sbi')])
+  const { data, isLoading } = useDal(['applications', sbi])
 
   useSelectOnlyTableRowByCRN(data)
+
+  useEffect(() => {
+    if (!isLoading && sbi && Object.keys(data?.details ?? {}).length === 0) {
+      notification.error(`No applications found for business with SBI ${sbi}.`)
+    }
+  }, [data, isLoading, sbi])
 
   return (
     <Table

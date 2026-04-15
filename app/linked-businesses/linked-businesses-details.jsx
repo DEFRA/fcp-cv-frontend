@@ -9,6 +9,8 @@ import {
 import { LinkToCRMAccount } from '@/components/link-to-crm/link-to-crm'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultDetails = [{ dt: 'SBI' }, { dt: 'Role' }]
 
@@ -28,6 +30,14 @@ export function LinkedBusinessesDetails() {
   const crn = searchParams.get('crn')
 
   const { data, isLoading } = useDal(['linked-businesses', 'details', crn, sbi])
+
+  useEffect(() => {
+    if (!isLoading && sbi && !data?.name) {
+      notification.error(
+        `No linked business details found for CRN ${crn} and SBI ${sbi}.`
+      )
+    }
+  }, [data, isLoading, crn, sbi])
 
   if (!sbi) {
     return (

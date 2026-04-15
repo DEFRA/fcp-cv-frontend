@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
@@ -85,6 +86,16 @@ describe('AgreementsPage tests', () => {
     vi.mock('@/config', () => ({
       config: { get: (key) => 'error' } // quiet logs in test
     }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   testWithWorker(
@@ -365,6 +376,75 @@ describe('AgreementsPage tests', () => {
       )
 
       await expect.element(getByText('Agreement Reference')).toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'agreements details shows error notification when business data is not found',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/agreements/10000002', () =>
+          HttpResponse.json({ list: [], details: {} })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=10000002&contractId=AG00001234')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Business with SBI 10000002 not found.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'agreements details shows error notification when contract ID is not found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/agreements/12345678', () =>
+          HttpResponse.json({
+            list: [
+              {
+                contractId: 'AG00001234',
+                schemeYear: 2023,
+                name: 'Countryside Stewardship Higher Tier',
+                contractType: 'Higher Tier',
+                startDate: '01/01/2023',
+                endDate: '31/12/2027',
+                status: 'Active'
+              }
+            ],
+            details: {
+              AG00001234: {
+                name: 'Countryside Stewardship Higher Tier',
+                summary: [],
+                paymentSchedules: []
+              }
+            }
+          })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=12345678&contractId=AG99999999')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No agreements found for SBI 12345678 and Contract ID AG99999999.'
+        )
+      })
     }
   )
 })

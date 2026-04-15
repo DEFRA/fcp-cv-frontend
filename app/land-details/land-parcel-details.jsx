@@ -9,6 +9,8 @@ import {
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const coversColumns = [
   { header: 'Code', accessorKey: 'code', fixedWidth: 50 },
@@ -43,6 +45,13 @@ export function LandParcelDetails() {
     ],
     [sbi, sheetId, parcelId]
   )
+  useEffect(() => {
+    if (!isLoading && sbi && sheetId && parcelId && !data) {
+      notification.error(
+        `No land parcel found for business with SBI ${sbi} Sheet ID ${sheetId} and Parcel ID ${parcelId}.`
+      )
+    }
+  }, [data, isLoading, sbi, sheetId, parcelId])
 
   if (!sheetId || !parcelId) {
     return (

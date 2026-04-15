@@ -5,13 +5,27 @@ import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { useSelectOnlyTableRowByCRN } from '@/hooks/select-only-table-row'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 export function CountyParishHoldingsList() {
   useDataverseAccountIDToSBI()
 
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
+  const sbi = searchParams.get('sbi')
+  const { data, isLoading } = useDal(['county-parish-holdings', sbi])
 
-  const { data } = useDal(['county-parish-holdings', searchParams.get('sbi')])
+  // TODO
+  console.log('LIST: ' + JSON.stringify(data))
+  console.log('LIST: ' + isLoading)
+
+  useEffect(() => {
+    if (!isLoading && sbi && Object.keys(data?.list ?? {}).length === 0) {
+      notification.error(
+        `No county parish holdings found for business with SBI ${sbi}.`
+      )
+    }
+  }, [data, isLoading, sbi])
 
   useSelectOnlyTableRowByCRN(data)
 

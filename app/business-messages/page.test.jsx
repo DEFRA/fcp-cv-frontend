@@ -2,6 +2,7 @@ import { AuthProvider } from '@/components/auth/auth-provider'
 import { delay, http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
@@ -29,6 +30,16 @@ describe('Business Messages page tests', () => {
     vi.mock('@/config', () => ({
       config: { get: () => 'error' } // quiet logs in test
     }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   testWithWorker(
@@ -243,6 +254,66 @@ describe('Business Messages page tests', () => {
         .map((o) => o.textContent.trim())
 
       expect(names).toEqual(['Alice Smith', 'Bob Jones', 'Charlie Brown'])
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no contacts are found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/business-messages/contacts/20000001', () =>
+          HttpResponse.json([])
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=20000001')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No contacts found for business with SBI 20000001.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when the message ID is not found in the loaded messages',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/business-messages/contacts/20000002', () =>
+          HttpResponse.json([
+            { crn: '333333333', firstName: 'Test', lastName: 'User' }
+          ])
+        ),
+        http.get(
+          '/api/dal/business-messages/messages/20000002/333333333*',
+          () => HttpResponse.json(mockMessages)
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        '?sbi=20000002&contact=333333333&messageId=nonexistent-msg&dateRange=all'
+      )
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No message found for business with SBI 20000002, Contact ID 333333333 and Message ID nonexistent-msg.'
+        )
+      })
     }
   )
 

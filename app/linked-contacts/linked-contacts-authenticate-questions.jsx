@@ -7,7 +7,8 @@ import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
 import { ButtonLink } from '@/components/button-link/ButtonLink'
 import { Transition } from '@headlessui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultItems = [
   { dt: 'Date of Birth' },
@@ -20,11 +21,20 @@ const defaultItems = [
 export function LinkedContactsAuthenticateQuestions() {
   const { searchParams } = useSearchParams()
   const [isOpen, setIsOpen] = useState(false)
+  const crn = searchParams.get('crn')
 
   const { data, isLoading } = useDal(
-    ['linked-contacts', 'authenticate-questions', searchParams.get('crn')],
+    ['linked-contacts', 'authenticate-questions', crn],
     [isOpen]
   )
+
+  useEffect(() => {
+    if (!isLoading && isOpen && !data) {
+      notification.error(
+        `No linked contact authentication questions found for CRN ${crn}.`
+      )
+    }
+  }, [data, isLoading, isOpen, crn])
 
   return (
     <div className="space-y-4">

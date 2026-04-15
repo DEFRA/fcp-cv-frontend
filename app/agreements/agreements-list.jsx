@@ -5,13 +5,22 @@ import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { useSelectOnlyTableRowByCRN } from '@/hooks/select-only-table-row'
+import { notification } from '@/components/notification/Notifications.jsx'
+import { useEffect } from 'react'
 
 export function AgreementsList() {
   useDataverseAccountIDToSBI()
 
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
+  const sbi = searchParams.get('sbi')
 
-  const { data } = useDal(['agreements', searchParams.get('sbi')])
+  const { data, isLoading } = useDal(['agreements', sbi])
+
+  useEffect(() => {
+    if (isLoading === false && !data) {
+      notification.error(`Business with SBI ${sbi} not found.`)
+    }
+  }, [data, isLoading, sbi])
 
   useSelectOnlyTableRowByCRN(data)
 

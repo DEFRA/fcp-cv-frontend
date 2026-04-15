@@ -676,6 +676,79 @@ describe('LandDetailsPage tests', () => {
     }
   )
 
+  testWithWorker(
+    'shows error notification when land details data is not found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ sbi: '123456789' })
+        ),
+        http.get('/api/dal/land-details/123456789*', () =>
+          HttpResponse.json(null)
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
+
+      const { getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await expect
+        .element(
+          getByText('No land details found for business with SBI 123456789.')
+        )
+        .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when land parcel data is not found',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/land-details/123456789*', () =>
+          HttpResponse.json(mockLandDetails)
+        ),
+        http.get('/api/dal/land-parcel/123456789*', () =>
+          HttpResponse.json(null)
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?sbi=123456789&sheetId=SS6&parcelId=836`
+      )
+
+      const { getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await expect
+        .element(
+          getByText(
+            'No land parcel found for business with SBI 123456789 Sheet ID SS6 and Parcel ID 836.'
+          )
+        )
+        .toBeInTheDocument()
+    }
+  )
+
   it('renders the page component with content', async () => {
     const { getByRole } = await render(<Page />)
 

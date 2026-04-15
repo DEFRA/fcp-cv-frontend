@@ -2,6 +2,7 @@ import { AuthProvider } from '@/components/auth/auth-provider'
 import { http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
@@ -10,6 +11,16 @@ describe('Linked Contacts page tests', () => {
     vi.mock('@/config', () => ({
       config: { get: () => 'error' } // quiet logs in test
     }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   testWithWorker(
@@ -128,6 +139,111 @@ describe('Linked Contacts page tests', () => {
       await getByText('222222222').click()
 
       await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no linked contacts are found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/linked-contacts/list/30000001', () =>
+          HttpResponse.json(null)
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=30000001')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No linked contacts found for SBI 30000001.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no linked contact details are found for the SBI and CRN',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/linked-contacts/list/30000002', () =>
+          HttpResponse.json([
+            {
+              crn: '444444444',
+              firstName: 'Test',
+              lastName: 'User',
+              role: 'Agent'
+            }
+          ])
+        ),
+        http.get('/api/dal/linked-contacts/details/30000002/444444444', () =>
+          HttpResponse.json(null)
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=30000002&crn=444444444')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No linked contact details found for SBI 30000002 and CRN 444444444.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no authenticate questions are found for the CRN',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/linked-contacts/list/30000003', () =>
+          HttpResponse.json([
+            {
+              crn: '555555555',
+              firstName: 'Test',
+              lastName: 'User',
+              role: 'Agent'
+            }
+          ])
+        ),
+        http.get('/api/dal/linked-contacts/details/30000003/555555555', () =>
+          HttpResponse.json({
+            displayName: 'Test User',
+            details: [],
+            permissions: []
+          })
+        ),
+        http.get(
+          '/api/dal/linked-contacts/authenticate-questions/555555555',
+          () => HttpResponse.json(null)
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=30000003&crn=555555555')
+
+      const { getByText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await getByText('View Authenticate Questions').click()
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No linked contact authentication questions found for CRN 555555555.'
+        )
+      })
     }
   )
 })

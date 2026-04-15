@@ -15,14 +15,14 @@ async function handleResponse(response, username) {
       notification.error(
         `You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account${emailAddressMessage}. See Consolidated View guidance for more information.`
       )
-    } else if (response.status === 404) {
-      const payload = await response.json()
-      if (payload.displayableError) {
-        notification.error(payload.displayableError)
-      } else {
-        notification.error('The requested resource was not found')
-      }
-    } else {
+      // } else if (response.status === 404) {
+      //   const payload = await response.json()
+      //   if (payload.displayableError) {
+      //     notification.error(payload.displayableError)
+      //   } else {
+      //     notification.error('The requested resource was not found')
+      //   }
+    } else if (response.status !== 404) {
       notification.error(
         <span>
           An error has occurred. Please report this if it continues to occur.{' '}
@@ -66,12 +66,12 @@ function useData(urlParts, runWhenTruthy) {
   const { instance, accounts, inProgress } = useMsal()
   const { isDisabled, authenticationRequest } = useAuth()
 
-  const key =
+  const shouldFetch =
     urlParts.every(Boolean) &&
     runWhenTruthy.every(Boolean) &&
     (isDisabled || accounts.length > 0)
-      ? urlParts.join('/')
-      : null
+
+  const key = shouldFetch ? urlParts.join('/') : null
 
   const swr = useSWR(
     key,
@@ -101,9 +101,17 @@ function useData(urlParts, runWhenTruthy) {
     }
   )
 
+  // swr.isLoading misses a one-render gap: when the key first becomes non-null,
+  // SWR schedules its fetch in a useEffect, so isValidating (and therefore
+  // isLoading) is still false on that first render. The extra term catches this
+  // window. swr.data === undefined (strict) distinguishes "no response yet"
+  // from a deliberate null response returned by the API.
   return {
     ...swr,
-    isLoading: inProgress !== 'none' || swr.isLoading
+    isLoading:
+      inProgress !== 'none' ||
+      swr.isLoading ||
+      (shouldFetch && swr.data === undefined && !swr.error)
   }
 }
 

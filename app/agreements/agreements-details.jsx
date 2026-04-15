@@ -10,6 +10,8 @@ import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
 import { ButtonLink } from '@/components/button-link/ButtonLink'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultAgreementSummary = [
   { dt: 'Agreement Reference' },
@@ -25,12 +27,21 @@ export function AgreementsDetails() {
 
   const contractId = searchParams.get('contractId')
 
-  const { data = { details: {} }, isLoading } = useDal([
-    'agreements',
-    searchParams.get('sbi')
-  ])
-
+  const sbi = searchParams.get('sbi')
+  const { data = { details: {} }, isLoading } = useDal(['agreements', sbi])
   const summary = data.details[contractId]?.summary ?? defaultAgreementSummary
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (!data?.details || Object.keys(data.details).length === 0) {
+        notification.error(`Business with SBI ${sbi} not found.`)
+      } else if (!data.details[contractId]) {
+        notification.error(
+          `No agreements found for SBI ${sbi} and Contract Id ${contractId}.`
+        )
+      }
+    }
+  }, [data, isLoading, sbi, contractId])
 
   return (
     <div className="space-y-6">

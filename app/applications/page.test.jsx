@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
@@ -58,6 +59,16 @@ describe('ApplicationsPage tests', () => {
     vi.mock('@/config', () => ({
       config: { get: () => 'error' } // quiet logs in test
     }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   testWithWorker(
@@ -121,6 +132,74 @@ describe('ApplicationsPage tests', () => {
       await getByText(applications[1].id).click()
 
       await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no applications are found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/applications/50000001', () =>
+          HttpResponse.json(null)
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=50000001')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No applications found for business with SBI 50000001.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no application details are found for the SBI and Application ID',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/applications/50000002', () =>
+          HttpResponse.json({
+            list: [
+              {
+                id: 'APP001',
+                year: 2022,
+                name: 'Some Application',
+                status: 'PAID',
+                scheme: 'Some Scheme',
+                agreementReferences: '1234567890'
+              }
+            ],
+            details: {
+              APP001: {
+                name: 'Some Application',
+                summary: [],
+                movementHistory: []
+              }
+            }
+          })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=50000002&applicationId=APP999')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'No application found for business with SBI 50000002 and Application ID APP999.'
+        )
+      })
     }
   )
 })
