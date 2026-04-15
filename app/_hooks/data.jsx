@@ -16,7 +16,12 @@ async function handleResponse(response, username) {
         `You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account${emailAddressMessage}. See Consolidated View guidance for more information.`
       )
     } else if (response.status === 404) {
-      notification.error('The requested resource was not found')
+      const payload = await response.json()
+      if (payload.displayableError) {
+        notification.error(payload.displayableError)
+      } else {
+        notification.error('The requested resource was not found')
+      }
     } else {
       notification.error(
         <span>

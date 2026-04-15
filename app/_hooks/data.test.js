@@ -229,6 +229,34 @@ describe('useDal and useDataverse Hooks', () => {
       )
     })
 
+    test('not found response (HTTP 404) with displayableError in payload shows this displayable error in the notification', async () => {
+      fetchSpy.mockImplementation(async () => ({
+        ok: false,
+        json: async () => ({ displayableError: 'Case not found' }),
+        status: 404,
+        statusText: 'Not Found'
+      }))
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      expect(notification.error).toHaveBeenCalledWith('Case not found')
+    })
+
+    test('not found response (HTTP 404) without displayableError shows generic not found message in the notification', async () => {
+      fetchSpy.mockImplementation(async () => ({
+        ok: false,
+        json: async () => ({}),
+        status: 404,
+        statusText: 'Not Found'
+      }))
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      expect(notification.error).toHaveBeenCalledWith(
+        'The requested resource was not found'
+      )
+    })
+
     it('partial DAL failure(HTTP response 206)', async () => {
       fetchSpy.mockImplementation(async () => ({
         ok: true,
