@@ -43,7 +43,9 @@ export async function GET(_, { params }) {
       id: application.id,
       year: application.year,
       name: application.name,
-      status: application.status
+      status: application.status,
+      scheme: application.scheme,
+      agreementReferences: application.agreementReferences.join(', ')
     })
 
     details[application.id] = {
