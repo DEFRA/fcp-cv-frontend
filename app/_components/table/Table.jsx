@@ -263,7 +263,7 @@ export default function Table({
       )}
       <div className="inline-block min-w-full overflow-hidden">
         <table className="min-w-full border-collapse">
-          <thead className="bg-green-700">
+          <thead className="bg-defra-green">
             {table.getHeaderGroups().map((headerGroup) => (
               <Header key={headerGroup.id} headerGroup={headerGroup} />
             ))}
