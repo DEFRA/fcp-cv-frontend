@@ -2,43 +2,66 @@ import { useMsal } from '@azure/msal-react'
 import useSWR from 'swr'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { notification } from '@/components/notification/Notifications.jsx'
+import { notification } from '@/components/notification/Notifications'
+import { ButtonLink } from '@/components/button-link/ButtonLink'
+import { reloadPage } from '@/hooks/reload-page'
 
-async function handleResponse(response) {
+async function handleResponse(response, username) {
   if (!response.ok) {
+    let notificationHandled = true
     if (response.status === 401 || response.status === 403) {
-      notification.error('You do not have permissions to view this data.')
+      const emailAddressMessage = username
+        ? ` with email address <${username}>`
+        : ``
+      notification.error(
+        `You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account${emailAddressMessage}. See Consolidated View guidance for more information.`
+      )
     } else if (response.status === 404) {
-      notification.error('The requested resource was not found')
+      // Some 404 responses don't need a notification, others do, leave that decision to the consuming components
+      notificationHandled = false
     } else {
       notification.error(
-        'An error has occurred. Please report this if it continues to occur.'
+        <span>
+          An error has occurred. Please report this if it continues to occur.{' '}
+          <ButtonLink onClick={reloadPage}>Click to retry.</ButtonLink>
+        </span>
       )
     }
-    throw new Error(`Request failed: ${response.status} ${response.statusText}`)
+
+    throw new DataError(
+      `Request failed: ${response.status} ${response.statusText}`,
+      response.status,
+      notificationHandled
+    )
   } else {
     if (response.status === 206) {
       // Although the DAL request has not failed.  Some elements of the requested data have not been retrieved, due to an error
       notification.warn(
-        'There was a problem retrieving some data. Some information may not be displayed correctly.'
+        <span>
+          An error has occurred. Some data may be missing.{' '}
+          <ButtonLink onClick={reloadPage}>Click to retry.</ButtonLink>
+        </span>
       )
     }
   }
   return response.json()
 }
 
-async function fetcher(url, headers = {}) {
+async function fetcher(url, username, headers = {}) {
   let response
   try {
     response = await fetch(url, { headers })
   } catch (error) {
     notification.error(
-      'An error has occurred. Please report this if it continues to occur.'
+      <span>
+        An error has occurred. Please report this if it continues to occur.{' '}
+        <ButtonLink onClick={reloadPage}>Click to retry.</ButtonLink>
+      </span>
     )
     throw error
   }
 
-  return handleResponse(response)
+  return handleResponse(response, username)
 }
 
 function useData(urlParts, runWhenTruthy) {
@@ -62,7 +85,7 @@ function useData(urlParts, runWhenTruthy) {
             account: accounts[0]
           })
 
-          return fetcher(url, {
+          return fetcher(url, accounts[0].username, {
             'x-msal-access-token': accessToken,
             'x-msal-id-token': idToken
           })
@@ -92,4 +115,12 @@ export function useDal(urlParts = [], runWhenTruthy = []) {
 
 export function useDataverse(urlParts = [], runWhenTruthy = []) {
   return useData(['/api/dataverse', ...urlParts], runWhenTruthy)
+}
+
+export class DataError extends Error {
+  constructor(message, status, notificationHandled) {
+    super(message)
+    this.status = status
+    this.notificationHandled = notificationHandled
+  }
 }

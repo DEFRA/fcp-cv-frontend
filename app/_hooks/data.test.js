@@ -2,8 +2,12 @@ import { beforeAll, describe, expect } from 'vitest'
 import { renderHook } from 'vitest-browser-react'
 
 import { useAuth } from '@/components/auth/auth-provider'
+import { ButtonLink } from '@/components/button-link/ButtonLink'
 import { useDal, useDataverse } from '@/hooks/data'
-import { notification } from '@/components/notification/Notifications.jsx'
+import { reloadPage } from '@/hooks/reload-page'
+import { notification } from '@/components/notification/Notifications'
+
+vi.mock('@/hooks/reload-page', () => ({ reloadPage: vi.fn() }))
 
 describe('useDal and useDataverse Hooks', () => {
   beforeAll(() => {
@@ -74,6 +78,24 @@ describe('useDal and useDataverse Hooks', () => {
         }
       })
     })
+
+    test.each([401, 403])(
+      'DAL auth (%i) error includes email address when present',
+      async (statusCode) => {
+        fetchSpy.mockImplementation(async () => ({
+          ok: false,
+          json: Promise.resolve(),
+          status: statusCode,
+          statusText: 'test error status text'
+        }))
+
+        await renderHook(() => useDal(['linked-contacts']))
+
+        expect(notification.error).toHaveBeenCalledWith(
+          `You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account with email address <test@user.com>. See Consolidated View guidance for more information.`
+        )
+      }
+    )
   })
 
   describe('auth disabled', () => {
@@ -114,12 +136,46 @@ describe('useDal and useDataverse Hooks', () => {
       }))
 
       const { result } = await renderHook(() => useDal(['linked-contacts']))
-      expect(result.current.error).toStrictEqual(
-        new Error('Request failed: test error status test error status text')
-      )
+
+      expect(result.current.error).toMatchObject({
+        message: 'Request failed: test error status test error status text',
+        status: 'test error status',
+        notificationHandled: true
+      })
+
       expect(notification.error).toHaveBeenCalledWith(
-        'An error has occurred. Please report this if it continues to occur.'
+        expect.objectContaining({
+          type: 'span',
+          props: expect.objectContaining({
+            children: expect.arrayContaining([
+              'An error has occurred. Please report this if it continues to occur.',
+              expect.objectContaining({
+                type: ButtonLink,
+                props: expect.objectContaining({ children: 'Click to retry.' })
+              })
+            ])
+          })
+        })
       )
+    })
+
+    it('request error - click to retry triggers a page reload', async () => {
+      fetchSpy.mockImplementation(async () => ({
+        ok: false,
+        json: Promise.resolve(),
+        status: 'test error status',
+        statusText: 'test error status text'
+      }))
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      const [notificationContent] = notification.error.mock.calls[0]
+      const buttonLink = notificationContent.props.children.find(
+        (child) => child?.type === ButtonLink
+      )
+      buttonLink.props.onClick()
+
+      expect(reloadPage).toHaveBeenCalledOnce()
     })
 
     it('request error (when fetch throws)', async () => {
@@ -127,8 +183,33 @@ describe('useDal and useDataverse Hooks', () => {
       const { result } = await renderHook(() => useDal(['linked-contacts']))
       expect(result.current.error).toStrictEqual(new Error('Failure'))
       expect(notification.error).toHaveBeenCalledWith(
-        'An error has occurred. Please report this if it continues to occur.'
+        expect.objectContaining({
+          type: 'span',
+          props: expect.objectContaining({
+            children: expect.arrayContaining([
+              'An error has occurred. Please report this if it continues to occur.',
+              expect.objectContaining({
+                type: ButtonLink,
+                props: expect.objectContaining({ children: 'Click to retry.' })
+              })
+            ])
+          })
+        })
       )
+    })
+
+    it('request error (when fetch throws) - click to retry invokes window.location.reload', async () => {
+      fetchSpy.mockRejectedValue(new Error('Failure'))
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      const [notificationContent] = notification.error.mock.calls[0]
+      const buttonLink = notificationContent.props.children.find(
+        (child) => child?.type === ButtonLink
+      )
+      buttonLink.props.onClick()
+
+      expect(reloadPage).toHaveBeenCalledOnce()
     })
 
     test.each([401, 403])('DAL auth (%i) error', async (statusCode) => {
@@ -140,12 +221,34 @@ describe('useDal and useDataverse Hooks', () => {
       }))
 
       const { result } = await renderHook(() => useDal(['linked-contacts']))
-      expect(result.current.error).toStrictEqual(
-        new Error(`Request failed: ${statusCode} test error status text`)
-      )
+
+      expect(result.current.error).toMatchObject({
+        message: `Request failed: ${statusCode} test error status text`,
+        status: statusCode,
+        notificationHandled: true
+      })
+
       expect(notification.error).toHaveBeenCalledWith(
-        'You do not have permissions to view this data.'
+        'You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account. See Consolidated View guidance for more information.'
       )
+    })
+
+    test('not found response (HTTP 404) does not show a notification', async () => {
+      fetchSpy.mockImplementation(async () => ({
+        ok: false,
+        json: async () => ({ displayableError: 'Case not found' }),
+        status: 404,
+        statusText: 'Not Found'
+      }))
+
+      const { result } = await renderHook(() => useDal(['linked-contacts']))
+
+      expect(notification.error).not.toHaveBeenCalled()
+      expect(result.current.error).toMatchObject({
+        message: 'Request failed: 404 Not Found',
+        status: 404,
+        notificationHandled: false
+      })
     })
 
     it('partial DAL failure(HTTP response 206)', async () => {
@@ -159,8 +262,38 @@ describe('useDal and useDataverse Hooks', () => {
       await renderHook(() => useDal(['linked-contacts']))
 
       expect(notification.warn).toHaveBeenCalledWith(
-        'There was a problem retrieving some data. Some information may not be displayed correctly.'
+        expect.objectContaining({
+          type: 'span',
+          props: expect.objectContaining({
+            children: expect.arrayContaining([
+              'An error has occurred. Some data may be missing.',
+              expect.objectContaining({
+                type: ButtonLink,
+                props: expect.objectContaining({ children: 'Click to retry.' })
+              })
+            ])
+          })
+        })
       )
+    })
+
+    it('partial DAL failure(HTTP response 206) - click to retry triggers a page reload', async () => {
+      fetchSpy.mockImplementation(async () => ({
+        ok: true,
+        json: Promise.resolve(),
+        status: 206,
+        statusText: 'partial content'
+      }))
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      const [notificationContent] = notification.warn.mock.calls[0]
+      const buttonLink = notificationContent.props.children.find(
+        (child) => child?.type === ButtonLink
+      )
+      buttonLink.props.onClick()
+
+      expect(reloadPage).toHaveBeenCalledOnce()
     })
 
     it('does not fetch when parts of the URL are false', async () => {
