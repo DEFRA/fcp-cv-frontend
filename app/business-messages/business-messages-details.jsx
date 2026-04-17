@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { KeyValueList } from '@/components/key-value-list/KeyValueList'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
 import { formatDate } from '@/lib/formatters'
-import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultItems = {
   Date: '',
@@ -43,14 +42,6 @@ export function BusinessMessagesDetails() {
     () => messages.find((msg) => msg.id === messageId),
     [messages, messageId]
   )
-
-  useEffect(() => {
-    if (!isLoading && contact && messageId && !message) {
-      notification.error(
-        `No message found for business with SBI ${sbi}, Contact ID ${contact} and Message ID ${messageId}.`
-      )
-    }
-  }, [isLoading, sbi, contact, messageId, message])
 
   if (!messageId) {
     return null

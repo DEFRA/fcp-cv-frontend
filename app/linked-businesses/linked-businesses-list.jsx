@@ -12,13 +12,13 @@ export function LinkedBusinessesList() {
   useDataverseContactIDToCRN()
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
   const crn = searchParams.get('crn')
-  const { data, isLoading } = useDal(['linked-businesses', 'list', crn])
+  const { data, isLoading, error } = useDal(['linked-businesses', 'list', crn])
 
   useEffect(() => {
-    if (!isLoading && crn && !data) {
-      notification.error(`No linked businesses found for CRN ${crn}.`)
+    if (!isLoading && error && !error.notificationHandled) {
+      notification.error(`Contact with CRN ${crn} not found.`)
     }
-  }, [data, isLoading, crn])
+  }, [data, isLoading, crn, error])
 
   useSelectOnlyTableRowBySBI(data)
 

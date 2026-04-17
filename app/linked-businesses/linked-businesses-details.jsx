@@ -29,15 +29,19 @@ export function LinkedBusinessesDetails() {
   const sbi = searchParams.get('sbi')
   const crn = searchParams.get('crn')
 
-  const { data, isLoading } = useDal(['linked-businesses', 'details', crn, sbi])
+  const { data, isLoading, error } = useDal([
+    'linked-businesses',
+    'details',
+    crn,
+    sbi
+  ])
 
   useEffect(() => {
-    if (!isLoading && sbi && !data?.name) {
-      notification.error(
-        `No linked business details found for CRN ${crn} and SBI ${sbi}.`
-      )
+    if (!isLoading && error && !error.notificationHandled) {
+      // It is the CRN lookup that triggers the NotFound in the DAL
+      notification.error(`Contact with CRN ${crn} not found.`)
     }
-  }, [data, isLoading, crn, sbi])
+  }, [data, isLoading, crn, sbi, error])
 
   if (!sbi) {
     return (

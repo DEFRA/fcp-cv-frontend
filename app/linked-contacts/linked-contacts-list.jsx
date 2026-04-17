@@ -13,16 +13,13 @@ export function LinkedContactsList() {
 
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
   const sbi = searchParams.get('sbi')
-  const { data, isLoading } = useDal(['linked-contacts', 'list', sbi])
+  const { data, isLoading, error } = useDal(['linked-contacts', 'list', sbi])
 
   useEffect(() => {
-    // console.log('Data: ' + JSON.stringify(data))
-    // console.log(isLoading)
-
-    if (!isLoading && sbi && !data) {
-      notification.error(`No linked contacts found for SBI ${sbi}.`)
+    if (!isLoading && error && !error.notificationHandled) {
+      notification.error(`Business with SBI ${sbi} not found.`)
     }
-  }, [data, isLoading, sbi])
+  }, [data, isLoading, sbi, error])
 
   useSelectOnlyTableRowByCRN(data)
 

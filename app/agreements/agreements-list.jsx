@@ -14,13 +14,13 @@ export function AgreementsList() {
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
   const sbi = searchParams.get('sbi')
 
-  const { data, isLoading } = useDal(['agreements', sbi])
+  const { data, isLoading, error } = useDal(['agreements', sbi])
 
   useEffect(() => {
-    if (isLoading === false && !data) {
+    if (!isLoading && error && !error.notificationHandled) {
       notification.error(`Business with SBI ${sbi} not found.`)
     }
-  }, [data, isLoading, sbi])
+  }, [data, isLoading, sbi, error])
 
   useSelectOnlyTableRowByCRN(data)
 

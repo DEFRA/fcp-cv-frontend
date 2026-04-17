@@ -9,6 +9,7 @@ import { useDal } from '@/hooks/data'
 import { useDataverseContactIDToCRN } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultItems = [
   { dt: 'Memorable Date' },
@@ -23,14 +24,15 @@ export function AuthenticateQuestions() {
   const { searchParams } = useSearchParams()
   const crn = searchParams.get('crn')
 
-  const { data, isLoading } = useDal(['authenticate', crn])
+  const { data, isLoading, error } = useDal(['authenticate', crn])
 
-  // TODO - Data is all coming back with "Not set" - that's not ideal, needs a different handling pattern
   useEffect(() => {
-    if (isLoading === false && Object.keys(data?.details ?? {}).length === 0) {
-      // notification.error(`No authentication questions found for customer with CRN ${crn}.`)
+    if (!isLoading && error && !error.notificationHandled) {
+      if (!error.notificationHandled) {
+        notification.error(`Contact with CRN ${crn} not found.`)
+      }
     }
-  }, [data, isLoading, crn])
+  }, [data, isLoading, crn, error])
 
   return (
     <KeyValueList>

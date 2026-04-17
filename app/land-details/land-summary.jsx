@@ -32,19 +32,18 @@ export function LandSummary() {
   const sbi = searchParams.get('sbi')
   const date = searchParams.get('date') || todayISO()
 
-  const { data, isLoading } = useDal(
+  const { data, isLoading, error } = useDal(
     ['land-details', `${sbi}?date=${date}`],
     [sbi]
   )
 
-  console.log(isLoading)
-  console.log(data)
-
   useEffect(() => {
-    if (!isLoading && !data) {
-      notification.error(`No land details found for business with SBI ${sbi}.`)
+    if (!isLoading && error) {
+      if (!error.notificationHandled) {
+        notification.error(`Business with SBI ${sbi} not found.`)
+      }
     }
-  }, [data, isLoading, sbi])
+  }, [data, isLoading, sbi, error])
 
   const summary = data?.summary || {}
 

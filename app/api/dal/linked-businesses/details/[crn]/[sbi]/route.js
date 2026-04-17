@@ -27,6 +27,17 @@ export async function GET(req, { params }) {
 
     const { data, errors } = response
     const business = data?.customer?.business
+
+    if (!data?.customer?.business) {
+      return handleApiError(
+        req,
+        new Error('No customer details in response'),
+        `No customer details in response with CRN: ${crn}, SBI: ${sbi}`,
+        404,
+        'Not Found'
+      )
+    }
+
     const details = {
       name: business?.name,
       details: [
@@ -44,7 +55,7 @@ export async function GET(req, { params }) {
       return partialResponse(
         req,
         errors,
-        `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`,
+        `Problem retrieving linked business details with CRN: ${crn}, SBI: ${sbi}`,
         details
       )
     }
@@ -54,7 +65,7 @@ export async function GET(req, { params }) {
     return handleApiError(
       req,
       error,
-      `Problem retrieving business details with CRN: ${crn}, SBI: ${sbi}`
+      `Problem retrieving linked business details with CRN: ${crn}, SBI: ${sbi}`
     )
   }
 }

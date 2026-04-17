@@ -14,15 +14,15 @@ export function ApplicationsList() {
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
   const sbi = searchParams.get('sbi')
 
-  const { data, isLoading } = useDal(['applications', sbi])
-
-  useSelectOnlyTableRowByCRN(data)
+  const { data, isLoading, error } = useDal(['applications', sbi])
 
   useEffect(() => {
-    if (!isLoading && sbi && Object.keys(data?.details ?? {}).length === 0) {
-      notification.error(`No applications found for business with SBI ${sbi}.`)
+    if (!isLoading && error && !error.notificationHandled) {
+      notification.error(`Business with SBI ${sbi} not found.`)
     }
-  }, [data, isLoading, sbi])
+  }, [data, isLoading, sbi, error])
+
+  useSelectOnlyTableRowByCRN(data)
 
   return (
     <Table

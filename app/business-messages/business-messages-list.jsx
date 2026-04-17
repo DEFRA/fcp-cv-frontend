@@ -119,11 +119,11 @@ export function BusinessMessagesList() {
   const dateRange = searchParams.get('dateRange') || '12'
   const fromDate = computeFromDate(Number(dateRange))
 
-  const { data: contacts = [], isLoading: contactsLoading } = useDal([
-    'business-messages',
-    'contacts',
-    sbi
-  ])
+  const {
+    data: contacts = [],
+    isLoading: contactsLoading,
+    error: contactsError
+  } = useDal(['business-messages', 'contacts', sbi])
 
   const messagesUrlSuffix = fromDate
     ? `${contact}?fromDate=${fromDate}`
@@ -135,11 +135,14 @@ export function BusinessMessagesList() {
   )
 
   useEffect(() => {
-    if (contactsLoading === false && contacts.length === 0) {
-      notification.error(`No contacts found for business with SBI ${sbi}.`)
-    } else {
+    if (
+      !contactsLoading &&
+      contactsError &&
+      !contactsError.notificationHandled
+    ) {
+      notification.error(`Business with SBI ${sbi} not found.`)
     }
-  }, [contactsLoading, contacts, sbi])
+  }, [contactsLoading, contacts, sbi, contactsError])
 
   useSelectOnlyTableRowByMessageId(messages)
 

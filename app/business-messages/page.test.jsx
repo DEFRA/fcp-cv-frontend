@@ -262,7 +262,7 @@ describe('Business Messages page tests', () => {
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/business-messages/contacts/20000001', () =>
-          HttpResponse.json([])
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -276,42 +276,7 @@ describe('Business Messages page tests', () => {
 
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
-          'No contacts found for business with SBI 20000001.'
-        )
-      })
-    }
-  )
-
-  testWithWorker(
-    'shows error notification when the message ID is not found in the loaded messages',
-    async ({ worker }) => {
-      worker.use(
-        http.get('/api/dal/business-messages/contacts/20000002', () =>
-          HttpResponse.json([
-            { crn: '333333333', firstName: 'Test', lastName: 'User' }
-          ])
-        ),
-        http.get(
-          '/api/dal/business-messages/messages/20000002/333333333*',
-          () => HttpResponse.json(mockMessages)
-        )
-      )
-
-      window.history.pushState(
-        null,
-        '',
-        '?sbi=20000002&contact=333333333&messageId=nonexistent-msg&dateRange=all'
-      )
-
-      await render(
-        <AuthProvider config={{ disabled: true }}>
-          <Page />
-        </AuthProvider>
-      )
-
-      await vi.waitFor(() => {
-        expect(notification.error).toHaveBeenCalledWith(
-          'No message found for business with SBI 20000002, Contact ID 333333333 and Message ID nonexistent-msg.'
+          'Business with SBI 20000001 not found.'
         )
       })
     }

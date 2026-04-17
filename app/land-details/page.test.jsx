@@ -685,7 +685,7 @@ describe('LandDetailsPage tests', () => {
           () => HttpResponse.json({ sbi: '123456789' })
         ),
         http.get('/api/dal/land-details/123456789*', () =>
-          HttpResponse.json(null)
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -705,46 +705,7 @@ describe('LandDetailsPage tests', () => {
       )
 
       await expect
-        .element(
-          getByText('No land details found for business with SBI 123456789.')
-        )
-        .toBeInTheDocument()
-    }
-  )
-
-  testWithWorker(
-    'shows error notification when land parcel data is not found',
-    async ({ worker }) => {
-      worker.use(
-        http.get('/api/dal/land-details/123456789*', () =>
-          HttpResponse.json(mockLandDetails)
-        ),
-        http.get('/api/dal/land-parcel/123456789*', () =>
-          HttpResponse.json(null)
-        )
-      )
-
-      window.history.pushState(
-        null,
-        '',
-        `?sbi=123456789&sheetId=SS6&parcelId=836`
-      )
-
-      const { getByText } = await render(
-        <SWRConfig value={{ provider: () => new Map() }}>
-          <AuthProvider config={{ disabled: true }}>
-            <Page />
-            <Notifications />
-          </AuthProvider>
-        </SWRConfig>
-      )
-
-      await expect
-        .element(
-          getByText(
-            'No land parcel found for business with SBI 123456789 Sheet ID SS6 and Parcel ID 836.'
-          )
-        )
+        .element(getByText('Business with SBI 123456789 not found.'))
         .toBeInTheDocument()
     }
   )

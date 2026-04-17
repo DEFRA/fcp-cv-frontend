@@ -109,7 +109,7 @@ describe('Linked Businesses page tests', () => {
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/linked-businesses/list/20000003', () =>
-          HttpResponse.json(null)
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -123,7 +123,7 @@ describe('Linked Businesses page tests', () => {
 
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
-          'No linked businesses found for CRN 20000003.'
+          'Contact with CRN 20000003 not found.'
         )
       })
     }
@@ -137,7 +137,7 @@ describe('Linked Businesses page tests', () => {
           HttpResponse.json([{ sbi: '9876543210', name: 'Some Business' }])
         ),
         http.get('/api/dal/linked-businesses/details/20000004/9876543210', () =>
-          HttpResponse.json({})
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -151,7 +151,7 @@ describe('Linked Businesses page tests', () => {
 
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
-          'No linked business details found for CRN 20000004 and SBI 9876543210.'
+          'Contact with CRN 20000004 not found.'
         )
       })
     }

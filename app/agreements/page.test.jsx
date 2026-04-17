@@ -384,7 +384,7 @@ describe('AgreementsPage tests', () => {
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/agreements/10000002', () =>
-          HttpResponse.json({ list: [], details: {} })
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -399,50 +399,6 @@ describe('AgreementsPage tests', () => {
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
           'Business with SBI 10000002 not found.'
-        )
-      })
-    }
-  )
-
-  testWithWorker(
-    'agreements details shows error notification when contract ID is not found for the SBI',
-    async ({ worker }) => {
-      worker.use(
-        http.get('/api/dal/agreements/12345678', () =>
-          HttpResponse.json({
-            list: [
-              {
-                contractId: 'AG00001234',
-                schemeYear: 2023,
-                name: 'Countryside Stewardship Higher Tier',
-                contractType: 'Higher Tier',
-                startDate: '01/01/2023',
-                endDate: '31/12/2027',
-                status: 'Active'
-              }
-            ],
-            details: {
-              AG00001234: {
-                name: 'Countryside Stewardship Higher Tier',
-                summary: [],
-                paymentSchedules: []
-              }
-            }
-          })
-        )
-      )
-
-      window.history.pushState(null, '', '?sbi=12345678&contractId=AG99999999')
-
-      await render(
-        <AuthProvider config={{ disabled: true }}>
-          <Page />
-        </AuthProvider>
-      )
-
-      await vi.waitFor(() => {
-        expect(notification.error).toHaveBeenCalledWith(
-          'No agreements found for SBI 12345678 and Contract ID AG99999999.'
         )
       })
     }

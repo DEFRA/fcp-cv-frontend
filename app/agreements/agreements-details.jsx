@@ -28,20 +28,18 @@ export function AgreementsDetails() {
   const contractId = searchParams.get('contractId')
 
   const sbi = searchParams.get('sbi')
-  const { data = { details: {} }, isLoading } = useDal(['agreements', sbi])
+  const {
+    data = { details: {} },
+    isLoading,
+    error
+  } = useDal(['agreements', sbi])
   const summary = data.details[contractId]?.summary ?? defaultAgreementSummary
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!data?.details || Object.keys(data.details).length === 0) {
-        notification.error(`Business with SBI ${sbi} not found.`)
-      } else if (!data.details[contractId]) {
-        notification.error(
-          `No agreements found for SBI ${sbi} and Contract Id ${contractId}.`
-        )
-      }
+    if (!isLoading && error && !error?.notificationHandled) {
+      notification.error(`Business with SBI ${sbi} not found.`)
     }
-  }, [data, isLoading, sbi, contractId])
+  }, [data, isLoading, sbi, error])
 
   return (
     <div className="space-y-6">

@@ -23,18 +23,16 @@ export function LinkedContactsAuthenticateQuestions() {
   const [isOpen, setIsOpen] = useState(false)
   const crn = searchParams.get('crn')
 
-  const { data, isLoading } = useDal(
+  const { data, isLoading, error } = useDal(
     ['linked-contacts', 'authenticate-questions', crn],
     [isOpen]
   )
 
   useEffect(() => {
-    if (!isLoading && isOpen && !data) {
-      notification.error(
-        `No linked contact authentication questions found for CRN ${crn}.`
-      )
+    if (!isLoading && error && !error.notificationHandled) {
+      notification.error(`Contact with CRN ${crn} not found.`)
     }
-  }, [data, isLoading, isOpen, crn])
+  }, [data, isLoading, isOpen, crn, error])
 
   return (
     <div className="space-y-4">

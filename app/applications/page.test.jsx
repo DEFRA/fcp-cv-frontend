@@ -136,11 +136,11 @@ describe('ApplicationsPage tests', () => {
   )
 
   testWithWorker(
-    'shows error notification when no applications are found for the SBI',
+    'shows error notification when business is not found for the SBI',
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/applications/50000001', () =>
-          HttpResponse.json(null)
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -154,50 +154,7 @@ describe('ApplicationsPage tests', () => {
 
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
-          'No applications found for business with SBI 50000001.'
-        )
-      })
-    }
-  )
-
-  testWithWorker(
-    'shows error notification when no application details are found for the SBI and Application ID',
-    async ({ worker }) => {
-      worker.use(
-        http.get('/api/dal/applications/50000002', () =>
-          HttpResponse.json({
-            list: [
-              {
-                id: 'APP001',
-                year: 2022,
-                name: 'Some Application',
-                status: 'PAID',
-                scheme: 'Some Scheme',
-                agreementReferences: '1234567890'
-              }
-            ],
-            details: {
-              APP001: {
-                name: 'Some Application',
-                summary: [],
-                movementHistory: []
-              }
-            }
-          })
-        )
-      )
-
-      window.history.pushState(null, '', '?sbi=50000002&applicationId=APP999')
-
-      await render(
-        <AuthProvider config={{ disabled: true }}>
-          <Page />
-        </AuthProvider>
-      )
-
-      await vi.waitFor(() => {
-        expect(notification.error).toHaveBeenCalledWith(
-          'No application found for business with SBI 50000002 and Application ID APP999.'
+          'Business with SBI 50000001 not found.'
         )
       })
     }

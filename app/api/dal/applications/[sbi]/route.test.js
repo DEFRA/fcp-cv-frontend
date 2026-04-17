@@ -20,6 +20,8 @@ describe('Applications API route', () => {
   })
 
   test('should make dal request with sbi param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
+
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: 'sbiParam' })
     })
@@ -141,5 +143,39 @@ describe('Applications API route', () => {
         (item) => item.dt === 'Agreement References'
       ).dd
     ).toBe('123, 456')
+  })
+
+  test('should return empty list and details when dal response is missing data', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(await response.json()).toStrictEqual({ list: [], details: {} })
+  })
+
+  test('should return partial response with errors if DAL response has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(206)
+    expect(await response.json()).toEqual({ list: [], details: {} })
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(500)
   })
 })

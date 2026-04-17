@@ -9,8 +9,6 @@ import {
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
-import { useEffect } from 'react'
-import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultApplicationSummary = [
   { dt: 'Application ID' },
@@ -31,22 +29,6 @@ export function ApplicationsDetails() {
   const sbi = searchParams.get('sbi')
 
   const { data = [], isLoading } = useDal(['applications', sbi])
-
-  // TODO
-  console.log('DET: ' + JSON.stringify(data))
-  console.log('DET: ' + isLoading)
-
-  useEffect(() => {
-    if (
-      isLoading === false &&
-      applicationId &&
-      Object.keys(data?.details?.[applicationId] ?? {}).length === 0
-    ) {
-      notification.error(
-        `No application found for business with SBI ${sbi} and Application ID ${applicationId}.`
-      )
-    }
-  }, [data, isLoading, sbi, applicationId])
 
   if (!applicationId) {
     return (

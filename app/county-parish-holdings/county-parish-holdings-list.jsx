@@ -13,19 +13,15 @@ export function CountyParishHoldingsList() {
 
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
   const sbi = searchParams.get('sbi')
-  const { data, isLoading } = useDal(['county-parish-holdings', sbi])
-
-  // TODO
-  console.log('LIST: ' + JSON.stringify(data))
-  console.log('LIST: ' + isLoading)
+  const { data, isLoading, error } = useDal(['county-parish-holdings', sbi])
 
   useEffect(() => {
-    if (!isLoading && sbi && Object.keys(data?.list ?? {}).length === 0) {
-      notification.error(
-        `No county parish holdings found for business with SBI ${sbi}.`
-      )
+    if (!isLoading && error && !error.notificationHandled) {
+      if (!error.notificationHandled) {
+        notification.error(`Business with SBI ${sbi} not found.`)
+      }
     }
-  }, [data, isLoading, sbi])
+  }, [data, isLoading, sbi, error])
 
   useSelectOnlyTableRowByCRN(data)
 

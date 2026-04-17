@@ -137,9 +137,12 @@ describe('useDal and useDataverse Hooks', () => {
 
       const { result } = await renderHook(() => useDal(['linked-contacts']))
 
-      expect(result.current.error).toStrictEqual(
-        new Error('Request failed: test error status test error status text')
-      )
+      expect(result.current.error).toMatchObject({
+        message: 'Request failed: test error status test error status text',
+        status: 'test error status',
+        notificationHandled: true
+      })
+
       expect(notification.error).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'span',
@@ -221,9 +224,12 @@ describe('useDal and useDataverse Hooks', () => {
 
       const { result } = await renderHook(() => useDal(['linked-contacts']))
 
-      expect(result.current.error).toStrictEqual(
-        new Error(`Request failed: ${statusCode} test error status text`)
-      )
+      expect(result.current.error).toMatchObject({
+        message: `Request failed: ${statusCode} test error status text`,
+        status: statusCode,
+        notificationHandled: true
+      })
+
       expect(notification.error).toHaveBeenCalledWith(
         'You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account. See Consolidated View guidance for more information.'
       )
@@ -240,9 +246,11 @@ describe('useDal and useDataverse Hooks', () => {
       const { result } = await renderHook(() => useDal(['linked-contacts']))
 
       expect(notification.error).not.toHaveBeenCalled()
-      expect(result.current.error).toStrictEqual(
-        new Error('Request failed: 404 Not Found')
-      )
+      expect(result.current.error).toMatchObject({
+        message: 'Request failed: 404 Not Found',
+        status: 404,
+        notificationHandled: false
+      })
     })
 
     it('partial DAL failure(HTTP response 206)', async () => {

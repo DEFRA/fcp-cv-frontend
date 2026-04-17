@@ -144,7 +144,7 @@ describe('CountyParishHoldingsPage tests', () => {
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/county-parish-holdings/40000001', () =>
-          HttpResponse.json(null)
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -158,7 +158,7 @@ describe('CountyParishHoldingsPage tests', () => {
 
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
-          'No county parish holdings found for business with SBI 40000001.'
+          'Business with SBI 40000001 not found.'
         )
       })
     }

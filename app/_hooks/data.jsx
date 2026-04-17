@@ -8,6 +8,7 @@ import { reloadPage } from '@/hooks/reload-page'
 
 async function handleResponse(response, username) {
   if (!response.ok) {
+    let notificationHandled = true
     if (response.status === 401 || response.status === 403) {
       const emailAddressMessage = username
         ? ` with email address <${username}>`
@@ -15,14 +16,10 @@ async function handleResponse(response, username) {
       notification.error(
         `You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account${emailAddressMessage}. See Consolidated View guidance for more information.`
       )
-      // } else if (response.status === 404) {
-      //   const payload = await response.json()
-      //   if (payload.displayableError) {
-      //     notification.error(payload.displayableError)
-      //   } else {
-      //     notification.error('The requested resource was not found')
-      //   }
-    } else if (response.status !== 404) {
+    } else if (response.status === 404) {
+      // Some 404 responses don't need a notification, others do, leave that decision to the consuming components
+      notificationHandled = false
+    } else {
       notification.error(
         <span>
           An error has occurred. Please report this if it continues to occur.{' '}
@@ -30,7 +27,12 @@ async function handleResponse(response, username) {
         </span>
       )
     }
-    throw new Error(`Request failed: ${response.status} ${response.statusText}`)
+
+    throw new DataError(
+      `Request failed: ${response.status} ${response.statusText}`,
+      response.status,
+      notificationHandled
+    )
   } else {
     if (response.status === 206) {
       // Although the DAL request has not failed.  Some elements of the requested data have not been retrieved, due to an error
@@ -66,12 +68,12 @@ function useData(urlParts, runWhenTruthy) {
   const { instance, accounts, inProgress } = useMsal()
   const { isDisabled, authenticationRequest } = useAuth()
 
-  const shouldFetch =
+  const key =
     urlParts.every(Boolean) &&
     runWhenTruthy.every(Boolean) &&
     (isDisabled || accounts.length > 0)
-
-  const key = shouldFetch ? urlParts.join('/') : null
+      ? urlParts.join('/')
+      : null
 
   const swr = useSWR(
     key,
@@ -101,17 +103,9 @@ function useData(urlParts, runWhenTruthy) {
     }
   )
 
-  // swr.isLoading misses a one-render gap: when the key first becomes non-null,
-  // SWR schedules its fetch in a useEffect, so isValidating (and therefore
-  // isLoading) is still false on that first render. The extra term catches this
-  // window. swr.data === undefined (strict) distinguishes "no response yet"
-  // from a deliberate null response returned by the API.
   return {
     ...swr,
-    isLoading:
-      inProgress !== 'none' ||
-      swr.isLoading ||
-      (shouldFetch && swr.data === undefined && !swr.error)
+    isLoading: inProgress !== 'none' || swr.isLoading
   }
 }
 
@@ -121,4 +115,12 @@ export function useDal(urlParts = [], runWhenTruthy = []) {
 
 export function useDataverse(urlParts = [], runWhenTruthy = []) {
   return useData(['/api/dataverse', ...urlParts], runWhenTruthy)
+}
+
+export class DataError extends Error {
+  constructor(message, status, notificationHandled) {
+    super(message)
+    this.status = status
+    this.notificationHandled = notificationHandled
+  }
 }

@@ -37,48 +37,6 @@ describe('DAL API tests', () => {
   describe('handleApiError', () => {
     beforeEach(() => vi.clearAllMocks())
 
-    it('returns displayableError when status is 404 with a single error in the payload', async () => {
-      const error = {
-        status: 404,
-        statusText: 'Not Found',
-        responsePayload: { errors: [{ message: 'Case not found' }] }
-      }
-
-      const res = handleApiError({ url: '/test' }, error, 'Not found')
-
-      expect(res.status).toBe(404)
-      expect(res.statusText).toBe('Not Found')
-      expect(await res.json()).toEqual({ displayableError: 'Case not found' })
-    })
-
-    it('returns generic error body when status is 404 with no errors in the payload', async () => {
-      const error = {
-        status: 404,
-        statusText: 'Not Found',
-        responsePayload: { errors: [] }
-      }
-
-      const res = handleApiError({ url: '/test' }, error, 'Not found')
-
-      expect(res.status).toBe(404)
-      expect(await res.json()).toEqual({ error: 'Not found' })
-    })
-
-    it('returns generic error body when status is 404 with multiple errors in the payload', async () => {
-      const error = {
-        status: 404,
-        statusText: 'Not Found',
-        responsePayload: {
-          errors: [{ message: 'Error 1' }, { message: 'Error 2' }]
-        }
-      }
-
-      const res = handleApiError({ url: '/test' }, error, 'Not found')
-
-      expect(res.status).toBe(404)
-      expect(await res.json()).toEqual({ error: 'Not found' })
-    })
-
     it('uses the status code passed in', async () => {
       const error = { status: 400, statusText: 'Bad Request' }
 

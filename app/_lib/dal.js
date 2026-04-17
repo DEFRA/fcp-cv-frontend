@@ -50,6 +50,9 @@ export async function dalRequest({ query, variables }) {
 
   if (!response.ok) {
     logger.warn('DAL request unsuccessful', { res: response })
+    if (response.status === 404) {
+      throw new NotFoundError(await response.json())
+    }
   }
 
   return response.json()

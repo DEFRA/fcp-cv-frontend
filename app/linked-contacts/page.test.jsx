@@ -147,7 +147,7 @@ describe('Linked Contacts page tests', () => {
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/linked-contacts/list/30000001', () =>
-          HttpResponse.json(null)
+          HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -161,42 +161,7 @@ describe('Linked Contacts page tests', () => {
 
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
-          'No linked contacts found for SBI 30000001.'
-        )
-      })
-    }
-  )
-
-  testWithWorker(
-    'shows error notification when no linked contact details are found for the SBI and CRN',
-    async ({ worker }) => {
-      worker.use(
-        http.get('/api/dal/linked-contacts/list/30000002', () =>
-          HttpResponse.json([
-            {
-              crn: '444444444',
-              firstName: 'Test',
-              lastName: 'User',
-              role: 'Agent'
-            }
-          ])
-        ),
-        http.get('/api/dal/linked-contacts/details/30000002/444444444', () =>
-          HttpResponse.json(null)
-        )
-      )
-
-      window.history.pushState(null, '', '?sbi=30000002&crn=444444444')
-
-      await render(
-        <AuthProvider config={{ disabled: true }}>
-          <Page />
-        </AuthProvider>
-      )
-
-      await vi.waitFor(() => {
-        expect(notification.error).toHaveBeenCalledWith(
-          'No linked contact details found for SBI 30000002 and CRN 444444444.'
+          'Business with SBI 30000001 not found.'
         )
       })
     }
@@ -225,7 +190,7 @@ describe('Linked Contacts page tests', () => {
         ),
         http.get(
           '/api/dal/linked-contacts/authenticate-questions/555555555',
-          () => HttpResponse.json(null)
+          () => HttpResponse.json(null, { status: 404 })
         )
       )
 
@@ -241,7 +206,7 @@ describe('Linked Contacts page tests', () => {
 
       await vi.waitFor(() => {
         expect(notification.error).toHaveBeenCalledWith(
-          'No linked contact authentication questions found for CRN 555555555.'
+          'Contact with CRN 555555555 not found.'
         )
       })
     }

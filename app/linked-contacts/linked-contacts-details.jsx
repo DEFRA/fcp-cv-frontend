@@ -10,8 +10,6 @@ import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
 import { LinkToCRMContact } from '@/components/link-to-crm/link-to-crm'
 import { LinkedContactsAuthenticateQuestions } from './linked-contacts-authenticate-questions'
-import { useEffect } from 'react'
-import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultDetails = [{ dt: 'CRN' }, { dt: 'Full Name' }, { dt: 'Role' }]
 
@@ -35,14 +33,6 @@ export function LinkedContactsDetails() {
     ['linked-contacts', 'details', sbi, crn],
     []
   )
-
-  useEffect(() => {
-    if (!isLoading && crn && !data) {
-      notification.error(
-        `No linked contact details found for SBI ${sbi} and CRN ${crn}.`
-      )
-    }
-  }, [data, isLoading, sbi, crn])
 
   if (!crn) {
     return (
