@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
@@ -8,6 +8,7 @@ import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { useSelectOnlyTableRowByMessageId } from '@/hooks/select-only-table-row'
 import { formatDate } from '@/lib/formatters'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const dateRangeOptions = [
   { label: 'Last 12 months', value: 12 },
@@ -118,11 +119,11 @@ export function BusinessMessagesList() {
   const dateRange = searchParams.get('dateRange') || '12'
   const fromDate = computeFromDate(Number(dateRange))
 
-  const { data: contacts = [], isLoading: contactsLoading } = useDal([
-    'business-messages',
-    'contacts',
-    sbi
-  ])
+  const {
+    data: contacts = [],
+    isLoading: contactsLoading,
+    error: contactsError
+  } = useDal(['business-messages', 'contacts', sbi])
 
   const messagesUrlSuffix = fromDate
     ? `${contact}?fromDate=${fromDate}`
@@ -132,6 +133,12 @@ export function BusinessMessagesList() {
     ['business-messages', 'messages', sbi, messagesUrlSuffix],
     [contact]
   )
+
+  useEffect(() => {
+    if (!contactsLoading && contactsError?.handleNotification) {
+      notification.error(`Business with SBI ${sbi} not found.`)
+    }
+  }, [contactsLoading, contacts, sbi, contactsError])
 
   useSelectOnlyTableRowByMessageId(messages)
 

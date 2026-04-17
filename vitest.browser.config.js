@@ -34,7 +34,10 @@ export default defineConfig({
       ...base.test.coverage,
       all: true,
       clean: false,
-      exclude: ['app/_components/iframe-messenger/IframeMessenger.jsx'],
+      exclude: [
+        'app/_components/iframe-messenger/IframeMessenger.jsx',
+        'app/_hooks/reload-page.js'
+      ],
       include: ['app/**/*.jsx', 'app/_hooks/*.js'],
       reporter: [['html'], ['json', { file: 'client-coverage.json' }]]
     },

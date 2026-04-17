@@ -11,6 +11,14 @@ export function handleApiError(
 ) {
   logger.warn({ error, req }, message)
 
+  if (error.status === 404 && error.responsePayload?.errors?.length === 1) {
+    // DAL has returned a NotFound response and a single un-ambiguous error definition.
+    // The contract with the DAL means that in this scenario, we can trust the message returned and use it for client display
+    return NextResponse.json(
+      { displayableError: error.responsePayload.errors[0].message },
+      { status: 404, statusText: 'Not Found' }
+    )
+  }
   return NextResponse.json(body, { status, statusText })
 }
 

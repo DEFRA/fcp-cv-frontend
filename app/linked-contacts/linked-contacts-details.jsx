@@ -27,9 +27,10 @@ export function LinkedContactsDetails() {
   const { searchParams } = useSearchParams()
 
   const crn = searchParams.get('crn')
+  const sbi = searchParams.get('sbi')
 
   const { data, isLoading } = useDal(
-    ['linked-contacts', 'details', searchParams.get('sbi'), crn],
+    ['linked-contacts', 'details', sbi, crn],
     []
   )
 

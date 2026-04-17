@@ -2,6 +2,7 @@ import { AuthProvider } from '@/components/auth/auth-provider'
 import { http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
@@ -10,6 +11,16 @@ describe('Linked Businesses page tests', () => {
     vi.mock('@/config', () => ({
       config: { get: () => 'error' } // quiet logs in test
     }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   testWithWorker(
@@ -90,6 +101,59 @@ describe('Linked Businesses page tests', () => {
 
       // Clear result
       await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no linked businesses are found for the CRN',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/linked-businesses/list/20000003', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(null, '', '?crn=20000003')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Contact with CRN 20000003 not found.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no linked business details are found for the CRN and SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/linked-businesses/list/20000004', () =>
+          HttpResponse.json([{ sbi: '9876543210', name: 'Some Business' }])
+        ),
+        http.get('/api/dal/linked-businesses/details/20000004/9876543210', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(null, '', '?crn=20000004&sbi=9876543210')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Contact with CRN 20000004 not found.'
+        )
+      })
     }
   )
 })

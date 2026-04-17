@@ -7,6 +7,7 @@ import { useSearchParams } from '@/hooks/search-params'
 import { formatCurrency, formatDate } from '@/lib/formatters'
 import { Transition } from '@headlessui/react'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const columns = [
   {
@@ -42,7 +43,13 @@ export function PaymentsList() {
 
   const [searchTerm, setSearchTerm] = useState('')
 
-  const { data } = useDal(['payments', sbi])
+  const { data, isLoading, error } = useDal(['payments', sbi])
+
+  useEffect(() => {
+    if (!isLoading && error?.handleNotification) {
+      notification.error(`Business with SBI ${sbi} not found.`)
+    }
+  }, [data, isLoading, sbi, error])
 
   const sortedPayments = useMemo(() => {
     if (!data?.payments) return undefined

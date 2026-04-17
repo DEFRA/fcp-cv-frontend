@@ -21,12 +21,10 @@ const defaultItems = [
 export function CountyParishHoldingsDetails() {
   const { searchParams } = useSearchParams()
 
+  const sbi = searchParams.get('sbi')
   const cphNumber = searchParams.get('cphNumber')
 
-  const { data = [], isLoading } = useDal([
-    'county-parish-holdings',
-    searchParams.get('sbi')
-  ])
+  const { data = [], isLoading } = useDal(['county-parish-holdings', sbi])
 
   if (!cphNumber) {
     return (
