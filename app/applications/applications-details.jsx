@@ -26,11 +26,9 @@ export function ApplicationsDetails() {
   const { searchParams } = useSearchParams()
 
   const applicationId = searchParams.get('applicationId')
+  const sbi = searchParams.get('sbi')
 
-  const { data = [], isLoading } = useDal([
-    'applications',
-    searchParams.get('sbi')
-  ])
+  const { data = [], isLoading } = useDal(['applications', sbi])
 
   if (!applicationId) {
     return (

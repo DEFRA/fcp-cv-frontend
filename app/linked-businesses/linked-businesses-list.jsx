@@ -5,16 +5,20 @@ import { useDal } from '@/hooks/data'
 import { useDataverseContactIDToCRN } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { useSelectOnlyTableRowBySBI } from '@/hooks/select-only-table-row'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 export function LinkedBusinessesList() {
   useDataverseContactIDToCRN()
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
+  const crn = searchParams.get('crn')
+  const { data, isLoading, error } = useDal(['linked-businesses', 'list', crn])
 
-  const { data } = useDal([
-    'linked-businesses',
-    'list',
-    searchParams.get('crn')
-  ])
+  useEffect(() => {
+    if (!isLoading && error && !error.notificationHandled) {
+      notification.error(`Contact with CRN ${crn} not found.`)
+    }
+  }, [data, isLoading, crn, error])
 
   useSelectOnlyTableRowBySBI(data)
 

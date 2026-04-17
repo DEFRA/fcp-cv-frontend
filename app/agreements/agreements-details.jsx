@@ -9,7 +9,9 @@ import {
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
-import { cn } from '@/lib/utils'
+import { ButtonLink } from '@/components/button-link/ButtonLink'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultAgreementSummary = [
   { dt: 'Agreement Reference' },
@@ -25,26 +27,28 @@ export function AgreementsDetails() {
 
   const contractId = searchParams.get('contractId')
 
-  const { data = { details: {} }, isLoading } = useDal([
-    'agreements',
-    searchParams.get('sbi')
-  ])
-
+  const sbi = searchParams.get('sbi')
+  const {
+    data = { details: {} },
+    isLoading,
+    error
+  } = useDal(['agreements', sbi])
   const summary = data.details[contractId]?.summary ?? defaultAgreementSummary
+
+  useEffect(() => {
+    if (!isLoading && error && !error?.notificationHandled) {
+      notification.error(`Business with SBI ${sbi} not found.`)
+    }
+  }, [data, isLoading, sbi, error])
 
   return (
     <div className="space-y-6">
-      <button
-        className={cn([
-          'text-blue-700 underline underline-offset-2 cursor-pointer',
-          'hover:text-blue-900 visited:text-purple-700',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-          'mb-2'
-        ])}
+      <ButtonLink
+        className="mb-2"
         onClick={() => unsetSearchParam('contractId')}
       >
         {'< Back to Agreements list'}
-      </button>
+      </ButtonLink>
 
       <KeyValueList>
         <KeyValueListTitle loading={isLoading}>

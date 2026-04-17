@@ -44,6 +44,8 @@ export function PaymentsList() {
 
   const { data } = useDal(['payments', sbi])
 
+  // TODO Add useEffect here to handle data not found error
+
   const sortedPayments = useMemo(() => {
     if (!data?.payments) return undefined
     return [...data.payments].sort((a, b) => a.date.localeCompare(b.date))

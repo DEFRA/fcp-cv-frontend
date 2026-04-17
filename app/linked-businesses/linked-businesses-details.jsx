@@ -9,6 +9,8 @@ import {
 import { LinkToCRMAccount } from '@/components/link-to-crm/link-to-crm'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultDetails = [{ dt: 'SBI' }, { dt: 'Role' }]
 
@@ -27,7 +29,19 @@ export function LinkedBusinessesDetails() {
   const sbi = searchParams.get('sbi')
   const crn = searchParams.get('crn')
 
-  const { data, isLoading } = useDal(['linked-businesses', 'details', crn, sbi])
+  const { data, isLoading, error } = useDal([
+    'linked-businesses',
+    'details',
+    crn,
+    sbi
+  ])
+
+  useEffect(() => {
+    if (!isLoading && error && !error.notificationHandled) {
+      // It is the CRN lookup that triggers the NotFound in the DAL
+      notification.error(`Contact with CRN ${crn} not found.`)
+    }
+  }, [data, isLoading, crn, sbi, error])
 
   if (!sbi) {
     return (

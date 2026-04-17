@@ -676,6 +676,40 @@ describe('LandDetailsPage tests', () => {
     }
   )
 
+  testWithWorker(
+    'shows error notification when land details data is not found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ sbi: '123456789' })
+        ),
+        http.get('/api/dal/land-details/123456789*', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
+
+      const { getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await expect
+        .element(getByText('Business with SBI 123456789 not found.'))
+        .toBeInTheDocument()
+    }
+  )
+
   it('renders the page component with content', async () => {
     const { getByRole } = await render(<Page />)
 
