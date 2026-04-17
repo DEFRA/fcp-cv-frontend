@@ -180,7 +180,9 @@ describe('useDal and useDataverse Hooks', () => {
 
     it('request error (when fetch throws)', async () => {
       fetchSpy.mockRejectedValue(new Error('Failure'))
+
       const { result } = await renderHook(() => useDal(['linked-contacts']))
+
       expect(result.current.error).toStrictEqual(new Error('Failure'))
       expect(notification.error).toHaveBeenCalledWith(
         expect.objectContaining({
