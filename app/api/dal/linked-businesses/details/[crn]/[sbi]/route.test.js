@@ -89,16 +89,6 @@ describe('Linked Businesses Details API route', () => {
     })
   })
 
-  test('should return 404 when no customer business in DAL response', async () => {
-    vi.mocked(dalRequest).mockResolvedValue({ data: {} })
-
-    const response = await GET(new NextRequest('http://localhost'), {
-      params: Promise.resolve({ crn: 'crnParam', sbi: 'sbiParam' })
-    })
-
-    expect(response.status).toBe(404)
-  })
-
   test('should return partial response with errors if DAL response has errors', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {

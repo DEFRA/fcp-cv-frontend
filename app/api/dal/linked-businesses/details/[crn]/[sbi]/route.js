@@ -28,16 +28,6 @@ export async function GET(req, { params }) {
     const { data, errors } = response
     const business = data?.customer?.business
 
-    if (!data?.customer?.business) {
-      return handleApiError(
-        req,
-        new Error('No customer details in response'),
-        `No customer details in response with CRN: ${crn}, SBI: ${sbi}`,
-        404,
-        'Not Found'
-      )
-    }
-
     const details = {
       name: business?.name,
       details: [
