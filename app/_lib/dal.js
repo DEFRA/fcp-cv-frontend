@@ -50,7 +50,18 @@ export async function dalRequest({ query, variables }) {
 
   if (!response.ok) {
     logger.warn('DAL request unsuccessful', { res: response })
+    if (response.status === 404) {
+      // Ensure that the browser receives the 404 status code
+      throw new NotFoundError()
+    }
   }
 
   return response.json()
+}
+
+export class NotFoundError extends Error {
+  constructor() {
+    super('Not Found')
+    this.status = 404
+  }
 }
