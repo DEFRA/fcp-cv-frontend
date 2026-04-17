@@ -44,8 +44,11 @@ const redefineConsoleLogging = () => {
  * @param pinoLoggerFunction the logger function to target, such as info(), debug() etc
  */
 const interceptLogStream = (stream, pinoLoggerFunction) => {
-  const originalWrite = (...args) => stream.write(...args)
+  // Capture the original write to stream (so that we can use it without recursively calling
+  // the overridden stream write
+  const writeToStreamDirectly = stream.write.bind(stream)
 
+  // Overwrite the stream, so that non-json formatted text is redirected to PINO
   stream.write = (chunk, ...args) => {
     const message = chunk?.toString().trim().replace(ANSI_COLOUR_ESCAPE, '')
 
@@ -53,14 +56,14 @@ const interceptLogStream = (stream, pinoLoggerFunction) => {
       try {
         // If it's already a JSON object (e.g. from pino itself), pass it through
         JSON.parse(message)
-        return originalWrite(chunk, ...args)
+        return writeToStreamDirectly(chunk, ...args)
       } catch {
         // Plain text from Next.js internals — wrap in ECS format
         pinoLoggerFunction(message)
         return true
       }
     }
-    return originalWrite(chunk, ...args)
+    return writeToStreamDirectly(chunk, ...args)
   }
 }
 
@@ -69,8 +72,8 @@ const interceptLogStream = (stream, pinoLoggerFunction) => {
 const redirectAllLogging = () => {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     redefineConsoleLogging()
-    interceptLogStream(process.stdout, (msg) => logger.info(msg))
-    interceptLogStream(process.stderr, (msg) => logger.error(msg))
+    interceptLogStream(process.stdout, (message) => logger.info(message))
+    interceptLogStream(process.stderr, (message) => logger.error(message))
   }
 }
 
