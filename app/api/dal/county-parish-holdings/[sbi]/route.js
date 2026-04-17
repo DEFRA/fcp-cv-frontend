@@ -1,5 +1,6 @@
 import { dalRequest } from '@/lib/dal'
 import { formatDate } from '@/lib/formatters'
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
   query CVCountyParishHoldings($sbi: ID!) {
@@ -18,11 +19,14 @@ const query = `#graphql
   }
 `
 
-export async function GET(_, { params }) {
-  const response = await dalRequest({ query, variables: await params })
+export async function GET(req, { params }) {
+  const { sbi } = await params
+  try {
+    const apiResponse = await dalRequest({ query, variables: { sbi } })
 
-  return Response.json(
-    (response?.data?.business?.countyParishHoldings || []).reduce(
+    const responsePayload = (
+      apiResponse?.data?.business?.countyParishHoldings || []
+    ).reduce(
       ({ list, details }, cph) => ({
         list: [
           ...list,
@@ -57,5 +61,18 @@ export async function GET(_, { params }) {
         details: {}
       }
     )
-  )
+
+    return dalApiResponse(
+      req,
+      apiResponse,
+      responsePayload,
+      `Problem retrieving county parish holdings with SBI: ${sbi}`
+    )
+  } catch (error) {
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving county parish holdings with SBI: ${sbi}`
+    )
+  }
 }

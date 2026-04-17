@@ -107,9 +107,9 @@ export async function GET(req, { params }) {
   const { sbi } = await params
 
   try {
-    const response = await dalRequest({ query, variables: { sbi } })
+    const apiResponse = await dalRequest({ query, variables: { sbi } })
 
-    const agreements = (response.data?.business?.agreements || []).sort(
+    const agreements = (apiResponse.data?.business?.agreements || []).sort(
       (a, b) => (b.schemeYear ?? 0) - (a.schemeYear ?? 0)
     )
 
@@ -132,7 +132,7 @@ export async function GET(req, { params }) {
 
     return dalApiResponse(
       req,
-      response,
+      apiResponse,
       responsePayload,
       `Problem retrieving agreements with SBI: ${sbi}`
     )
