@@ -53,5 +53,3 @@ export default function Notifications() {
     />
   )
 }
-
-export { toast as notification } from 'react-toastify'
