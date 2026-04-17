@@ -20,18 +20,7 @@ describe('Linked Businesses Details API route', () => {
   })
 
   test('should make dal request with sbi and crn param', async () => {
-    vi.mocked(dalRequest).mockResolvedValue({
-      data: {
-        customer: {
-          business: {
-            name: 'Test',
-            sbi: '123',
-            role: 'Owner',
-            permissionGroups: []
-          }
-        }
-      }
-    })
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: 'sbiParam', crn: 'crnParam' })
     })
@@ -91,16 +80,7 @@ describe('Linked Businesses Details API route', () => {
 
   test('should return partial response with errors if DAL response has errors', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
-      data: {
-        customer: {
-          business: {
-            name: 'Test Business',
-            sbi: '123456789',
-            role: 'Business Partner',
-            permissionGroups: []
-          }
-        }
-      },
+      data: {},
       errors: [{ message: 'some error' }]
     })
     const response = await GET(new NextRequest('http://localhost'), {
@@ -109,12 +89,7 @@ describe('Linked Businesses Details API route', () => {
 
     expect(response.status).toBe(206)
     expect(await response.json()).toEqual({
-      name: 'Test Business',
-      details: [
-        { dt: 'SBI', dd: '123456789' },
-        { dt: 'Role', dd: 'Business Partner' }
-      ],
-      permissions: []
+      details: [{ dt: 'SBI' }, { dt: 'Role' }]
     })
   })
 

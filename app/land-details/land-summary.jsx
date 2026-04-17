@@ -38,10 +38,8 @@ export function LandSummary() {
   )
 
   useEffect(() => {
-    if (!isLoading && error) {
-      if (!error.notificationHandled) {
-        notification.error(`Business with SBI ${sbi} not found.`)
-      }
+    if (!isLoading && error && !error.notificationHandled) {
+      notification.error(`Business with SBI ${sbi} not found.`)
     }
   }, [data, isLoading, sbi, error])
 
