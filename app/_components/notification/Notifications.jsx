@@ -1,6 +1,21 @@
 'use client'
 
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
+
+/**
+ * By providing the message, as the id to the toast, any duplicates will be filtered out, so the same
+ * message is only rendered once (while the toast is displayed)
+ */
+const deduplicatedToastMessage = (fn) => (message, options) => {
+  fn(message, { toastId: JSON.stringify(message), ...options })
+}
+
+export const notification = Object.assign(deduplicatedToastMessage(toast), {
+  error: deduplicatedToastMessage(toast.error),
+  warning: deduplicatedToastMessage(toast.warning),
+  info: deduplicatedToastMessage(toast.info),
+  success: deduplicatedToastMessage(toast.success)
+})
 
 const CloseButton = ({ closeToast }) => (
   <button
