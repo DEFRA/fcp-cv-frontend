@@ -59,9 +59,8 @@ export async function dalRequest({ query, variables }) {
 }
 
 export class NotFoundError extends Error {
-  constructor(responsePayload) {
+  constructor() {
     super('Not Found')
     this.status = 404
-    this.responsePayload = responsePayload
   }
 }

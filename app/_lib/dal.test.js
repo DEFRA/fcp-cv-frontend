@@ -162,7 +162,7 @@ describe('dalRequest', () => {
     )
   })
 
-  test('throws NotFoundError with response payload on 404', async () => {
+  test('throws NotFoundError when 404 is returned from DAL', async () => {
     const payload = { errors: [{ message: 'Case not found' }] }
 
     fetch.mockResolvedValueOnce({
@@ -176,8 +176,7 @@ describe('dalRequest', () => {
       dalRequest({ query: '', variables: {} })
     ).rejects.toMatchObject({
       message: 'Not Found',
-      status: 404,
-      responsePayload: payload
+      status: 404
     })
 
     expect(logger.warn).toHaveBeenCalledWith(
