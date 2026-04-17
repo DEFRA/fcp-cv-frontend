@@ -37,7 +37,7 @@ export function LinkedBusinessesDetails() {
   ])
 
   useEffect(() => {
-    if (!isLoading && error && !error.notificationHandled) {
+    if (!isLoading && error?.handleNotification) {
       // It is the CRN lookup that triggers the NotFound in the DAL
       notification.error(`Contact with CRN ${crn} not found.`)
     }

@@ -135,11 +135,7 @@ export function BusinessMessagesList() {
   )
 
   useEffect(() => {
-    if (
-      !contactsLoading &&
-      contactsError &&
-      !contactsError.notificationHandled
-    ) {
+    if (!contactsLoading && contactsError?.handleNotification) {
       notification.error(`Business with SBI ${sbi} not found.`)
     }
   }, [contactsLoading, contacts, sbi, contactsError])

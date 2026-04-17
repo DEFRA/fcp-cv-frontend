@@ -92,7 +92,8 @@ describe('useDal and useDataverse Hooks', () => {
         await renderHook(() => useDal(['linked-contacts']))
 
         expect(notification.error).toHaveBeenCalledWith(
-          `You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account with email address <test@user.com>. See Consolidated View guidance for more information.`
+          `You do not have permissions to view this data.
+        Make sure you have an active Rural Payments Portal account with email address <test@user.com>. See Consolidated View guidance for more information.`
         )
       }
     )
@@ -140,7 +141,7 @@ describe('useDal and useDataverse Hooks', () => {
       expect(result.current.error).toMatchObject({
         message: 'Request failed: test error status test error status text',
         status: 'test error status',
-        notificationHandled: true
+        handleNotification: false
       })
 
       expect(notification.error).toHaveBeenCalledWith(
@@ -227,11 +228,12 @@ describe('useDal and useDataverse Hooks', () => {
       expect(result.current.error).toMatchObject({
         message: `Request failed: ${statusCode} test error status text`,
         status: statusCode,
-        notificationHandled: true
+        handleNotification: false
       })
 
       expect(notification.error).toHaveBeenCalledWith(
-        'You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account. See Consolidated View guidance for more information.'
+        `You do not have permissions to view this data.
+        Make sure you have an active Rural Payments Portal account. See Consolidated View guidance for more information.`
       )
     })
 
@@ -249,7 +251,7 @@ describe('useDal and useDataverse Hooks', () => {
       expect(result.current.error).toMatchObject({
         message: 'Request failed: 404 Not Found',
         status: 404,
-        notificationHandled: false
+        handleNotification: true
       })
     })
 

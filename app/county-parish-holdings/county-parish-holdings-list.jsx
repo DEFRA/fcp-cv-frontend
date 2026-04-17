@@ -16,10 +16,8 @@ export function CountyParishHoldingsList() {
   const { data, isLoading, error } = useDal(['county-parish-holdings', sbi])
 
   useEffect(() => {
-    if (!isLoading && error && !error.notificationHandled) {
-      if (!error.notificationHandled) {
-        notification.error(`Business with SBI ${sbi} not found.`)
-      }
+    if (!isLoading && error?.handleNotification) {
+      notification.error(`Business with SBI ${sbi} not found.`)
     }
   }, [data, isLoading, sbi, error])
 

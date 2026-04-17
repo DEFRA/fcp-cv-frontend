@@ -8,17 +8,15 @@ import { reloadPage } from '@/hooks/reload-page'
 
 async function handleResponse(response, username) {
   if (!response.ok) {
-    let notificationHandled = true
+    let handleNotification = false
     if (response.status === 401 || response.status === 403) {
-      const emailAddressMessage = username
-        ? ` with email address <${username}>`
-        : ``
-      notification.error(
-        `You do not have permissions to view this data. Make sure you have an active Rural Payments Portal account${emailAddressMessage}. See Consolidated View guidance for more information.`
-      )
+      notification.error(`You do not have permissions to view this data.
+        Make sure you have an active Rural Payments Portal account${
+          username ? ` with email address <${username}>` : ''
+        }. See Consolidated View guidance for more information.`)
     } else if (response.status === 404) {
       // Some 404 responses don't need a notification, others do, leave that decision to the consuming components
-      notificationHandled = false
+      handleNotification = true
     } else {
       notification.error(
         <span>
@@ -31,7 +29,7 @@ async function handleResponse(response, username) {
     throw new DataError(
       `Request failed: ${response.status} ${response.statusText}`,
       response.status,
-      notificationHandled
+      handleNotification
     )
   } else {
     if (response.status === 206) {
@@ -118,9 +116,9 @@ export function useDataverse(urlParts = [], runWhenTruthy = []) {
 }
 
 export class DataError extends Error {
-  constructor(message, status, notificationHandled) {
+  constructor(message, status, handleNotification) {
     super(message)
     this.status = status
-    this.notificationHandled = notificationHandled
+    this.handleNotification = handleNotification
   }
 }

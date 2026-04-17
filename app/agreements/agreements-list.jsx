@@ -17,7 +17,7 @@ export function AgreementsList() {
   const { data, isLoading, error } = useDal(['agreements', sbi])
 
   useEffect(() => {
-    if (!isLoading && error && !error.notificationHandled) {
+    if (!isLoading && error?.handleNotification) {
       notification.error(`Business with SBI ${sbi} not found.`)
     }
   }, [data, isLoading, sbi, error])

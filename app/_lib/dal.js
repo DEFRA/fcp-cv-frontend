@@ -59,7 +59,7 @@ export async function dalRequest({ query, variables }) {
   return response.json()
 }
 
-export class NotFoundError extends Error {
+class NotFoundError extends Error {
   constructor() {
     super('Not Found')
     this.status = 404

@@ -27,10 +27,8 @@ export function AuthenticateQuestions() {
   const { data, isLoading, error } = useDal(['authenticate', crn])
 
   useEffect(() => {
-    if (!isLoading && error && !error.notificationHandled) {
-      if (!error.notificationHandled) {
-        notification.error(`Contact with CRN ${crn} not found.`)
-      }
+    if (!isLoading && error?.handleNotification) {
+      notification.error(`Contact with CRN ${crn} not found.`)
     }
   }, [data, isLoading, crn, error])
 

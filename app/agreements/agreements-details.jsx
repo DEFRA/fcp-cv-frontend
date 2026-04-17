@@ -36,7 +36,7 @@ export function AgreementsDetails() {
   const summary = data.details[contractId]?.summary ?? defaultAgreementSummary
 
   useEffect(() => {
-    if (!isLoading && error && !error?.notificationHandled) {
+    if (!isLoading && error && error?.handleNotification) {
       notification.error(`Business with SBI ${sbi} not found.`)
     }
   }, [data, isLoading, sbi, error])

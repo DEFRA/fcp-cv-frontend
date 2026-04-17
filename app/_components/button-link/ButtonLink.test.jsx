@@ -3,16 +3,11 @@ import { render } from 'vitest-browser-react'
 import { ButtonLink } from './ButtonLink'
 
 describe('ButtonLink component tests', () => {
-  it('renders with specified text', async () => {
-    const { getByText } = await render(<ButtonLink>Click here</ButtonLink>)
-
-    await expect.element(getByText('Click here')).toBeInTheDocument()
-  })
-
-  it('renders as a button element', async () => {
+  it('renders as a button element with specified text', async () => {
     const { getByRole } = await render(<ButtonLink>Click here</ButtonLink>)
-
-    await expect.element(getByRole('button')).toBeInTheDocument()
+    await expect
+      .element(getByRole('button', { name: 'Click here' }))
+      .toBeInTheDocument()
   })
 
   it('calls onClick when clicked', async () => {

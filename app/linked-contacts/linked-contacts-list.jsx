@@ -16,7 +16,7 @@ export function LinkedContactsList() {
   const { data, isLoading, error } = useDal(['linked-contacts', 'list', sbi])
 
   useEffect(() => {
-    if (!isLoading && error && !error.notificationHandled) {
+    if (!isLoading && error?.handleNotification) {
       notification.error(`Business with SBI ${sbi} not found.`)
     }
   }, [data, isLoading, sbi, error])

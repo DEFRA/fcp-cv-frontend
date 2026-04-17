@@ -45,7 +45,7 @@ export async function GET(req, { params }) {
       return partialResponse(
         req,
         errors,
-        `Problem retrieving linked business details with CRN: ${crn}, SBI: ${sbi}`,
+        `Problem retrieving linked business details with SBI: ${sbi}, for person with CRN: ${crn}`,
         details
       )
     }
@@ -55,7 +55,7 @@ export async function GET(req, { params }) {
     return handleApiError(
       req,
       error,
-      `Problem retrieving linked business details with CRN: ${crn}, SBI: ${sbi}`
+      `Problem retrieving linked business details with SBI: ${sbi}, for person with CRN: ${crn}`
     )
   }
 }

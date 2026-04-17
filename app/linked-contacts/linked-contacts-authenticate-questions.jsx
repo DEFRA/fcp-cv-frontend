@@ -29,7 +29,7 @@ export function LinkedContactsAuthenticateQuestions() {
   )
 
   useEffect(() => {
-    if (!isLoading && error && !error.notificationHandled) {
+    if (!isLoading && error?.handleNotification) {
       notification.error(`Contact with CRN ${crn} not found.`)
     }
   }, [data, isLoading, isOpen, crn, error])

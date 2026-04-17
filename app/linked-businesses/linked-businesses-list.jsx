@@ -15,7 +15,7 @@ export function LinkedBusinessesList() {
   const { data, isLoading, error } = useDal(['linked-businesses', 'list', crn])
 
   useEffect(() => {
-    if (!isLoading && error && !error.notificationHandled) {
+    if (!isLoading && error?.handleNotification) {
       notification.error(`Contact with CRN ${crn} not found.`)
     }
   }, [data, isLoading, crn, error])
