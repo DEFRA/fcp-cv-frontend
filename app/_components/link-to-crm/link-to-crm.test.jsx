@@ -11,6 +11,13 @@ describe('LinkToCRM component tests', () => {
       useDataverse: vi.fn()
     }))
 
+    vi.mock('@/components/notification/Notifications.jsx', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+
     mockParentLocationHref = vi.fn()
     originalParent = window.parent
     window.parent = {
@@ -24,6 +31,10 @@ describe('LinkToCRM component tests', () => {
 
   afterAll(() => {
     window.parent = originalParent
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
   it('renders LinkToCRMContact with correct button text', async () => {
@@ -84,5 +95,45 @@ describe('LinkToCRM component tests', () => {
     await getByText('View Contact').click()
 
     expect(mockParentLocationHref).not.toHaveBeenCalled()
+  })
+
+  it('shows error notification with CRN when contact is not found', async () => {
+    const { useDataverse } = await import('@/hooks/data')
+    const { notification } =
+      await import('@/components/notification/Notifications.jsx')
+
+    vi.mocked(useDataverse).mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: { handleNotification: true }
+    })
+
+    await render(<LinkToCRMContact crn="123456789" />)
+
+    await vi.waitFor(() => {
+      expect(notification.error).toHaveBeenCalledWith(
+        'Contact with CRN 123456789 not found.'
+      )
+    })
+  })
+
+  it('shows error notification with SBI when business account is not found', async () => {
+    const { useDataverse } = await import('@/hooks/data')
+    const { notification } =
+      await import('@/components/notification/Notifications.jsx')
+
+    vi.mocked(useDataverse).mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: { handleNotification: true }
+    })
+
+    await render(<LinkToCRMAccount sbi="12345678" />)
+
+    await vi.waitFor(() => {
+      expect(notification.error).toHaveBeenCalledWith(
+        'Business with SBI 12345678 not found.'
+      )
+    })
   })
 })
