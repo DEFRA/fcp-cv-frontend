@@ -4,7 +4,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_fcp-cv-frontend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=DEFRA_fcp-cv-frontend)
 
-FCP CV Node.js Frontend.
+FCP CV Node.js Frontend..
 
 - [fcp-cv-frontend](#fcp-cv-frontend)
   - [Requirements](#requirements)
