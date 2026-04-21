@@ -3,21 +3,28 @@
 import { Button } from '@/components/button/Button'
 import { useDataverse } from '@/hooks/data'
 import { useEffect, useState } from 'react'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 function LinkToCRM({ entityType, identifier, buttonText }) {
   const [shouldExecute, setShouldExecute] = useState(false)
 
-  const { data, isLoading } = useDataverse(
+  const { data, isLoading, error } = useDataverse(
     [entityType, 'crm-url', identifier],
     [shouldExecute]
   )
 
   // Navigate parent frame to CRM URL when data loads
   useEffect(() => {
-    if (data?.url) {
+    if (!isLoading && error?.handleNotification) {
+      if (entityType === 'contact') {
+        notification.error(`Contact with CRN ${identifier} not found.`)
+      } else {
+        notification.error(`Business with SBI ${identifier} not found.`)
+      }
+    } else if (data?.url) {
       window.parent.location.href = data.url
     }
-  }, [data])
+  }, [data, isLoading, error, identifier, entityType])
 
   const handleClick = () => {
     if (data?.url) {
