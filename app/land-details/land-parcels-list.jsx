@@ -21,14 +21,14 @@ export function LandParcelsList() {
   const sbi = searchParams.get('sbi')
   const date = searchParams.get('date') || todayISO()
 
-  const { data } = useDal(['land-details', `${sbi}?date=${date}`], [sbi])
+  const { data, error } = useDal(['land-details', `${sbi}?date=${date}`], [sbi])
 
   useSelectOnlyTableRowByParcel(data?.parcels)
 
   return (
     <div className="mt-4 ml-4">
       <Table
-        data={data?.parcels}
+        data={error ? [] : data?.parcels}
         columns={columns}
         onRowClick={(row) => {
           setSearchParams({
