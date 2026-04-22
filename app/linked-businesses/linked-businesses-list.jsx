@@ -24,7 +24,7 @@ export function LinkedBusinessesList() {
 
   return (
     <Table
-      data={data}
+      data={error ? [] : data}
       columns={[
         {
           header: 'SBI',

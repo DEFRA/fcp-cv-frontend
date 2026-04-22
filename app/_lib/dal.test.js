@@ -47,6 +47,7 @@ beforeEach(() => {
   vi.stubGlobal(
     'fetch',
     vi.fn().mockResolvedValue({
+      ok: true,
       status: 200,
       json: async () => ({
         message: 'Test response'
@@ -140,7 +141,7 @@ describe('dalRequest', () => {
     ).rejects.toThrow('DAL token retrieval failed')
   })
 
-  test('logs warning on unsuccessful response', async () => {
+  test('throws DalResponseError and logs warning on unsuccessful response', async () => {
     fetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
@@ -148,7 +149,13 @@ describe('dalRequest', () => {
       json: async () => ({})
     })
 
-    await dalRequest({ query: '', variables: {} })
+    await expect(() =>
+      dalRequest({ query: '', variables: {} })
+    ).rejects.toMatchObject({
+      message: 'Internal Server Error',
+      status: 500,
+      statusText: 'Internal Server Error'
+    })
 
     expect(logger.warn).toHaveBeenCalledWith(
       'DAL request unsuccessful',
@@ -162,26 +169,41 @@ describe('dalRequest', () => {
     )
   })
 
-  test('throws NotFoundError when 404 is returned from DAL', async () => {
-    const payload = { errors: [{ message: 'Case not found' }] }
+  test.each([
+    [400, 'Bad Request'],
+    [401, 'Unauthorized'],
+    [403, 'Forbidden'],
+    [404, 'Not Found'],
+    [502, 'Bad Gateway'],
+    [503, 'Service Unavailable']
+  ])(
+    'throws DalResponseError with correct status and message for %i responses',
+    async (status, statusText) => {
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status,
+        statusText,
+        json: async () => ({})
+      })
 
-    fetch.mockResolvedValueOnce({
-      ok: false,
-      status: 404,
-      statusText: 'Not Found',
-      json: async () => payload
-    })
+      await expect(() =>
+        dalRequest({ query: '', variables: {} })
+      ).rejects.toMatchObject({ message: statusText, status, statusText })
+    }
+  )
+
+  test('throws generic error when fetch fails due to a network error', async () => {
+    fetch.mockRejectedValueOnce(new Error('Network failure'))
 
     await expect(() =>
       dalRequest({ query: '', variables: {} })
-    ).rejects.toMatchObject({
-      message: 'Not Found',
-      status: 404
-    })
+    ).rejects.toThrow('DAL request failed')
 
     expect(logger.warn).toHaveBeenCalledWith(
-      'DAL request unsuccessful',
-      expect.objectContaining({ res: expect.objectContaining({ status: 404 }) })
+      'DAL request failed',
+      expect.objectContaining({
+        error: expect.objectContaining({ message: 'Network failure' })
+      })
     )
   })
 })

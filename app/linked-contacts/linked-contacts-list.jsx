@@ -25,7 +25,7 @@ export function LinkedContactsList() {
 
   return (
     <Table
-      data={data}
+      data={error ? [] : data}
       columns={[
         {
           header: 'CRN',

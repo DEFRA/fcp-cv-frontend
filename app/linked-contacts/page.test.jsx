@@ -211,4 +211,29 @@ describe('Linked Contacts page tests', () => {
       })
     }
   )
+
+  testWithWorker(
+    'linked contacts table shows empty state rather than skeleton rows when the DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/linked-contacts/list/30000004', () =>
+          HttpResponse.json(null, { status: 500 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=30000004')
+
+      const { getByRole, getByText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect.element(getByText('No results found')).toBeInTheDocument()
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      )
+    }
+  )
 })
