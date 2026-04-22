@@ -25,7 +25,7 @@ export function CountyParishHoldingsList() {
 
   return (
     <Table
-      data={data?.list}
+      data={error ? [] : data?.list}
       columns={[
         {
           header: 'CPH Number',

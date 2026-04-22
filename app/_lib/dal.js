@@ -46,22 +46,23 @@ export async function dalRequest({ query, variables }) {
     method: 'POST',
     headers: { 'content-type': 'application/json', email, authorization },
     body: JSON.stringify({ query, variables })
+  }).catch((error) => {
+    logger.warn('DAL request failed', { error })
+    throw new Error('DAL request failed')
   })
 
   if (!response.ok) {
     logger.warn('DAL request unsuccessful', { res: response })
-    if (response.status === 404) {
-      // Ensure that the browser receives the 404 status code
-      throw new NotFoundError()
-    }
+    throw new DalResponseError(response.status, response.statusText)
   }
 
   return response.json()
 }
 
-class NotFoundError extends Error {
-  constructor() {
-    super('Not Found')
-    this.status = 404
+class DalResponseError extends Error {
+  constructor(status, statusText) {
+    super(statusText)
+    this.status = status
+    this.statusText = statusText
   }
 }

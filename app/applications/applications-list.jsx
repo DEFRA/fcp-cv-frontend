@@ -27,7 +27,7 @@ export function ApplicationsList() {
   return (
     <Table
       skeletonRows={5}
-      data={data?.list}
+      data={error ? [] : data?.list}
       columns={[
         {
           header: 'Application ID',

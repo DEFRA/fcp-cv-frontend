@@ -163,4 +163,29 @@ describe('CountyParishHoldingsPage tests', () => {
       })
     }
   )
+
+  testWithWorker(
+    'county parish holdings table shows empty state rather than skeleton rows when the DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/county-parish-holdings/40000002', () =>
+          HttpResponse.json(null, { status: 500 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=40000002')
+
+      const { getByRole, getByText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect.element(getByText('No results found')).toBeInTheDocument()
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      )
+    }
+  )
 })

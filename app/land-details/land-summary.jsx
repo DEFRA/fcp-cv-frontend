@@ -84,7 +84,7 @@ export function LandSummary() {
           </KeyValueListContent>
         </KeyValueList>
         <Table
-          data={data?.landCovers}
+          data={error ? [] : data?.landCovers}
           columns={landCoverColumns}
           enableSearching={false}
           enableSorting={false}

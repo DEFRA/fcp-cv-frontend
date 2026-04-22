@@ -470,6 +470,33 @@ describe('LandDetailsPage tests', () => {
   )
 
   testWithWorker(
+    'parcels and land cover tables show empty state rather than skeleton rows when the land-details DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/land-details/60000001', () =>
+          HttpResponse.json(null, { status: 500 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=60000001')
+
+      const { getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await expect.element(getByText('No parcels found')).toBeInTheDocument()
+      await expect.element(getByText('No land cover data')).toBeInTheDocument()
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      )
+    }
+  )
+
+  testWithWorker(
     'updates all data when the date is changed',
     async ({ worker }) => {
       worker.use(
