@@ -57,5 +57,6 @@ COPY --from=development \
 ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
+ENV HOSTNAME=0.0.0.0
 
-CMD ["env", "HOSTNAME=0.0.0.0", "node", "server.js"]
+CMD ["node", "server.js"]

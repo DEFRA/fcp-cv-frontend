@@ -7,6 +7,8 @@
     "node": ">=24"
   },
   "scripts": {
+    "preup": "curl https://raw.githubusercontent.com/DEFRA/fcp-dal-api/refs/heads/main/compose.yml -o dal-api-compose.yml",
+    "up": "docker compose build && docker compose -f dal-api-compose.yml -f compose.yml up --pull always --quiet-pull --no-attach mongodb",
     "build": "next build",
     "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
