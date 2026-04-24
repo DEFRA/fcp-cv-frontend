@@ -1,4 +1,6 @@
+import { handleApiError } from '@/lib/api'
 import { ecsFormat } from '@elastic/ecs-pino-format'
+import { NextResponse } from 'next/server'
 import pino from 'pino'
 
 const logger = pino({ ...ecsFormat() })
@@ -100,8 +102,19 @@ const payments = [
 
 const onHold = true
 
-export async function GET(_request, ctx) {
-  const { sbi } = await ctx.params
-  logger.info(`GET /api/dal/payments/${sbi}`)
-  return Response.json({ payments, onHold })
+export async function GET(req, { params }) {
+  const { sbi } = await params
+
+  try {
+    // Simulate a delay
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    return NextResponse.json({ payments, onHold })
+  } catch (error) {
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving payments for business with SBI: ${sbi}`
+    )
+  }
 }
