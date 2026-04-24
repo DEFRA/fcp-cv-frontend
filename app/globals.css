@@ -12,3 +12,7 @@ html {
 @theme inline {
   --color-primary: var(--primary);
 }
+
+.bg-defra-green {
+  background-color: #009e43;
+}

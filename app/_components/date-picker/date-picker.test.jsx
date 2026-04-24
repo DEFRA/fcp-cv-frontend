@@ -89,6 +89,63 @@ describe('DatePicker', () => {
     expect(onChange).not.toHaveBeenCalled()
   })
 
+  it('calls onInvalidDate with "below" and the min date when date is too early', async () => {
+    const onChange = vi.fn()
+    const onInvalidDate = vi.fn()
+    const { getByLabelText } = await render(
+      <DatePicker
+        value={validDate}
+        onChange={onChange}
+        onInvalidDate={onInvalidDate}
+      />
+    )
+
+    await userEvent.fill(getByLabelText('Date'), '2014-12-31')
+    await userEvent.keyboard('{Enter}')
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onInvalidDate).toHaveBeenCalledExactlyOnceWith('below', '2015-01-01')
+  })
+
+  it('calls onInvalidDate with "above" and today when date is in the future', async () => {
+    const onChange = vi.fn()
+    const onInvalidDate = vi.fn()
+    const today = new Date().toISOString().split('T')[0]
+    const { getByLabelText } = await render(
+      <DatePicker
+        value={validDate}
+        onChange={onChange}
+        onInvalidDate={onInvalidDate}
+      />
+    )
+
+    await userEvent.fill(getByLabelText('Date'), '2099-01-01')
+    await userEvent.keyboard('{Enter}')
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onInvalidDate).toHaveBeenCalledExactlyOnceWith('above', today)
+  })
+
+  it('does not call onInvalidDate when the input is empty', async () => {
+    const onChange = vi.fn()
+    const onInvalidDate = vi.fn()
+    const { getByLabelText, getByRole } = await render(
+      <div>
+        <DatePicker
+          value={validDate}
+          onChange={onChange}
+          onInvalidDate={onInvalidDate}
+        />
+        <button type="button">elsewhere</button>
+      </div>
+    )
+
+    await userEvent.clear(getByLabelText('Date'))
+    await getByRole('button', { name: 'elsewhere' }).click()
+
+    expect(onInvalidDate).not.toHaveBeenCalled()
+  })
+
   it('does not call onChange when the input is empty on blur', async () => {
     const onChange = vi.fn()
     const { getByLabelText, getByRole } = await render(

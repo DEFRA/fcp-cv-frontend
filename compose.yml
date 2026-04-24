@@ -3,7 +3,7 @@ services:
     build:
       context: .
     ports:
-      - '3000:3000'
+      - '3200:3000'
     networks:
       - cdp-tenant
     healthcheck:
@@ -14,9 +14,11 @@ services:
     environment:
       USER_AUTH_DISABLED: 'true'
       DAL_TOKEN_GENERATION_DISABLED: 'true'
-      DAL_URL: ''
-      DAL_EMAIL: ''
+      DAL_URL: 'http://fcp-dal-api:3000/graphql'
+      DAL_EMAIL: 'testuser01@defra.gov.uk'
       DATAVERSE_URL: ''
+      CRM_BASE_URL: ''
+      CRM_APP_ID: ''
 
 ################################################################################
 

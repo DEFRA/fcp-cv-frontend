@@ -1,18 +1,20 @@
 {
   "name": "fcp-cv-frontend",
-  "version": "0.28.1",
+  "version": "0.50.1",
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {
-    "node": "24"
+    "node": ">=24"
   },
   "scripts": {
+    "preup": "curl https://raw.githubusercontent.com/DEFRA/fcp-dal-api/refs/heads/main/compose.yml -o dal-api-compose.yml",
+    "up": "docker compose build && docker compose -f dal-api-compose.yml -f compose.yml up --pull always --quiet-pull --no-attach mongodb",
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --log-level warn --write .",
-    "start": "node server.js",
-    "pretest": "npx playwright install chromium --with-deps ${CI:+--only-shell}",
+    "start": "next start",
+    "pretest": "[ ! ${CI} ] || npx playwright install chromium --with-deps --only-shell",
     "test": "vitest --coverage --reporter=blob --reporter=dot run && HEADLESS=true vitest --config=vitest.browser.config.js --coverage --reporter=blob --reporter=dot run",
     "posttest": "vitest --config=vitest.merge.config.js --mergeReports coverage/merge --coverage run",
     "test:server": "vitest --coverage --coverage.reporter=text",
@@ -28,6 +30,7 @@
     "@azure/msal-node": "5.0.6",
     "@azure/msal-react": "^3.0.25",
     "@date-fns/tz": "1.4.1",
+    "@defra/hapi-tracing": "1.30.0",
     "@elastic/ecs-pino-format": "^1.5.0",
     "@headlessui/react": "^2.2.9",
     "@tanstack/react-table": "^8.21.3",
@@ -58,5 +61,8 @@
     "tailwindcss": "^4.1.17",
     "vitest": "^4.0.16",
     "vitest-browser-react": "^2.0.2"
+  },
+  "overrides": {
+    "uuid": "^14.0.0"
   }
 }

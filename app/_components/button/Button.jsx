@@ -10,24 +10,14 @@ const className = cn(
   'focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60'
 )
 
-export function LinkButton({ href, children, ...props }) {
+export function Button({ children, loading, ...props }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer noopener"
-      className={className}
+    <button
       {...props}
+      className={cn(className, props.className)}
+      disabled={loading || props.disabled}
     >
-      {children}
-    </a>
-  )
-}
-
-export function Button({ onClick, children, ...props }) {
-  return (
-    <button onClick={onClick} className={className} {...props}>
-      {children}
+      {loading ? <>Loading&hellip;</> : children}
     </button>
   )
 }

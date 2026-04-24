@@ -1,6 +1,12 @@
 import convict from 'convict'
 
 export const config = convict({
+  logLevel: {
+    doc: 'Logging level',
+    format: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
+    default: process.env.NODE_ENV === 'test' ? 'error' : 'info',
+    env: 'LOG_LEVEL'
+  },
   userAuth: {
     disabled: {
       doc: 'Option to disable user authentication for local dev/testing',
@@ -112,6 +118,20 @@ export const config = convict({
       format: String,
       default: null,
       env: 'DATAVERSE_URL'
+    }
+  },
+  crm: {
+    baseUrl: {
+      doc: 'Base URL for CRM instance (e.g., https://example.crm4.dynamics.com/)',
+      format: String,
+      default: null,
+      env: 'CRM_BASE_URL'
+    },
+    appId: {
+      doc: 'CRM app ID (UUID) (e.g., 12345678-1234-1234-1234-123456789abc)',
+      format: String,
+      default: null,
+      env: 'CRM_APP_ID'
     }
   }
 })

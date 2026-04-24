@@ -20,6 +20,7 @@ describe('Land Details API route', () => {
   })
 
   test('makes a dal request with the sbi param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: '123456789' })
     })
@@ -98,14 +99,14 @@ describe('Land Details API route', () => {
         sheetId: 'SS6528',
         parcelId: '8779',
         area: 5.12,
-        pendingDigitisation: false,
+        pendingDigitisation: 'No',
         id: 'SS6528-8779'
       },
       {
         sheetId: 'SS6528',
         parcelId: '9001',
         area: 2.3,
-        pendingDigitisation: true,
+        pendingDigitisation: 'Yes',
         id: 'SS6528-9001'
       }
     ])
@@ -190,8 +191,8 @@ describe('Land Details API route', () => {
 
     expect(body.landCovers).toStrictEqual([
       { code: '110', name: 'Arable Land', area: 228.2947 },
-      { code: '120', name: 'Permanent Grassland', area: 530.1988 },
-      { code: '130', name: 'Permanent Crop Land', area: 7.3368 }
+      { code: '130', name: 'Permanent Grassland', area: 530.1988 },
+      { code: '140', name: 'Permanent Crop Land', area: 7.3368 }
     ])
   })
 
@@ -215,8 +216,8 @@ describe('Land Details API route', () => {
 
     expect(body.landCovers).toStrictEqual([
       { code: '110', name: 'Arable Land', area: 0 },
-      { code: '120', name: 'Permanent Grassland', area: 0 },
-      { code: '130', name: 'Permanent Crop Land', area: 0 }
+      { code: '130', name: 'Permanent Grassland', area: 0 },
+      { code: '140', name: 'Permanent Crop Land', area: 0 }
     ])
   })
 
@@ -233,8 +234,31 @@ describe('Land Details API route', () => {
     expect(body.summary).toStrictEqual({ pendingParcels: 0 })
     expect(body.landCovers).toStrictEqual([
       { code: '110', name: 'Arable Land', area: 0 },
-      { code: '120', name: 'Permanent Grassland', area: 0 },
-      { code: '130', name: 'Permanent Crop Land', area: 0 }
+      { code: '130', name: 'Permanent Grassland', area: 0 },
+      { code: '140', name: 'Permanent Crop Land', area: 0 }
     ])
+  })
+
+  test('should return partial response with errors if DAL response has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(206)
+    const body = await response.json()
+    expect(body.parcels).toStrictEqual([])
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(500)
   })
 })

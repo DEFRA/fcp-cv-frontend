@@ -124,7 +124,7 @@ function Header({ headerGroup }) {
 
     const props = {
       className:
-        'border-r border-white p-2 text-left font-bold text-white last:border-r-0',
+        'text-nowrap border-r border-white p-2 text-left font-bold text-white last:border-r-0',
       ...(sortable ? { 'aria-sort': ariaSort } : {}),
       style: getFixedWidthStyle(header.column.columnDef)
     }
@@ -263,7 +263,7 @@ export default function Table({
       )}
       <div className="inline-block min-w-full overflow-hidden">
         <table className="min-w-full border-collapse">
-          <thead className="bg-green-700">
+          <thead className="bg-defra-green">
             {table.getHeaderGroups().map((headerGroup) => (
               <Header key={headerGroup.id} headerGroup={headerGroup} />
             ))}

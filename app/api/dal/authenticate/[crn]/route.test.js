@@ -20,6 +20,8 @@ describe('Authenticate API route', () => {
   })
 
   test('should make dal request with crn param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
+
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ crn: 'crnParam' })
     })
@@ -70,9 +72,50 @@ describe('Authenticate API route', () => {
         dt: 'Memorable Event'
       },
       {
-        dd: '31/12/2024',
-        dt: 'Updated at'
+        dd: '31/12/2024 14:34',
+        dt: 'Updated At'
       }
     ])
+  })
+
+  test('should return (Not set) for missing authentication question fields', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: { customer: { authenticationQuestions: null } }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam' })
+    })
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toStrictEqual([
+      { dt: 'Memorable Date', dd: '(Not set)' },
+      { dt: 'Memorable Location', dd: '(Not set)' },
+      { dt: 'Memorable Event', dd: '(Not set)' },
+      { dt: 'Updated At', dd: '(Not set)' }
+    ])
+  })
+
+  test('should return partial response with errors if DAL response has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam' })
+    })
+
+    expect(response.status).toBe(206)
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam' })
+    })
+
+    expect(response.status).toBe(500)
   })
 })

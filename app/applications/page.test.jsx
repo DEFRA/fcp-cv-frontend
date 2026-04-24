@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
@@ -11,13 +12,17 @@ const applications = [
     id: '5836775937',
     year: 2022,
     name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-    status: 'PAID'
+    status: 'PAID',
+    scheme: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO',
+    agreementReferences: '3242226112'
   },
   {
     id: '5836775938',
     year: 2022,
     name: 'VOX CURRUS DELEO PEIOR CUNABULA AGNITIO CUR DEMO',
-    status: 'PAID'
+    status: 'PAID',
+    scheme: 'CIVITAS THECA PAUCI ACER SUNT VALETUDO',
+    agreementReferences: '3242226112'
   }
 ]
 
@@ -34,7 +39,7 @@ const applicationDetails = {
       { dt: 'Status', dd: 'PAID' },
       { dt: 'Status (Portal)', dd: null },
       { dt: 'Submitted Date', dd: '31/12/2022' },
-      { dt: 'Agreement References', dd: ['3242226112'] },
+      { dt: 'Agreement References', dd: '3242226112' },
       { dt: 'Last Movement', dd: 'TO PAID' },
       { dt: 'Last Movement Date/Time', dd: '31/12/2022' }
     ],
@@ -50,6 +55,22 @@ const applicationDetails = {
 }
 
 describe('ApplicationsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: () => 'error' } // quiet logs in test
+    }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   testWithWorker(
     'renders the page component with content',
     async ({ worker }) => {
@@ -73,12 +94,11 @@ describe('ApplicationsPage tests', () => {
         `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
       )
 
-      const { getByRole, getByText, getByPlaceholder, getByLabelText } =
-        await render(
-          <AuthProvider config={{ disabled: true }}>
-            <Page />
-          </AuthProvider>
-        )
+      const { getByRole, getByText, getByPlaceholder } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
 
       await expect
         .element(getByRole('heading', { name: 'Applications', exact: true }))
@@ -112,6 +132,56 @@ describe('ApplicationsPage tests', () => {
       await getByText(applications[1].id).click()
 
       await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when business is not found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/applications/50000001', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=50000001')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Business with SBI 50000001 not found.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'applications table shows empty state rather than skeleton rows when the DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/applications/50000002', () =>
+          HttpResponse.json(null, { status: 500 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=50000002')
+
+      const { getByRole, getByText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect.element(getByText('No results found')).toBeInTheDocument()
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      )
     }
   )
 })

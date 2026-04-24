@@ -3,10 +3,27 @@ import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
 describe('CountyParishHoldingsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: () => 'error' } // quiet logs in test
+    }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   testWithWorker(
     'renders the page component with content',
     async ({ worker }) => {
@@ -78,12 +95,11 @@ describe('CountyParishHoldingsPage tests', () => {
         `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
       )
 
-      const { getByRole, getByText, getByPlaceholder, getByLabelText } =
-        await render(
-          <AuthProvider config={{ disabled: true }}>
-            <Page />
-          </AuthProvider>
-        )
+      const { getByRole, getByText, getByPlaceholder } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
 
       await expect
         .element(getByRole('heading', { name: 'County Parish Holdings' }))
@@ -120,6 +136,56 @@ describe('CountyParishHoldingsPage tests', () => {
       await getByText('11/222/3333').click()
 
       await getByRole('button', { name: 'Clear search' }).click()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no county parish holdings are found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/county-parish-holdings/40000001', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=40000001')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Business with SBI 40000001 not found.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'county parish holdings table shows empty state rather than skeleton rows when the DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/county-parish-holdings/40000002', () =>
+          HttpResponse.json(null, { status: 500 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=40000002')
+
+      const { getByRole, getByText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect.element(getByText('No results found')).toBeInTheDocument()
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      )
     }
   )
 })

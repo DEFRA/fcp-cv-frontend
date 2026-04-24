@@ -27,6 +27,17 @@ describe('Notifications component tests', () => {
       .toBeInTheDocument()
   })
 
+  it('only displays one notification when the same message is triggered twice', async () => {
+    const { getByText } = await render(<Notifications />)
+
+    notification('Duplicate message')
+    notification('Duplicate message')
+
+    const matches = getByText('Duplicate message')
+    await expect.element(matches).toBeInTheDocument()
+    expect(matches.elements().length).toBe(1)
+  })
+
   it('closes the notification when the close button is clicked', async () => {
     const { getByText } = await render(<Notifications />)
 

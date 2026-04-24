@@ -67,6 +67,9 @@ export function BusinessMessagesDetails() {
         items={items}
         contentClassName="w-50"
       />
+      <p className="text-gray-500 italic">
+        Links in the message below do not work
+      </p>
       {message?.body ? (
         <div
           className="whitespace-pre-wrap text-gray-950 border border-black p-2 mr-3"

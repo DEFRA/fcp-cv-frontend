@@ -20,6 +20,7 @@ describe('Linked Businesses Details API route', () => {
   })
 
   test('should make dal request with sbi and crn param', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({})
     const response = await GET(new NextRequest('http://localhost'), {
       params: Promise.resolve({ sbi: 'sbiParam', crn: 'crnParam' })
     })
@@ -75,5 +76,29 @@ describe('Linked Businesses Details API route', () => {
         }
       ]
     })
+  })
+
+  test('should return partial response with errors if DAL response has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam', sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(206)
+    expect(await response.json()).toEqual({
+      details: [{ dt: 'SBI' }, { dt: 'Role' }]
+    })
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ crn: 'crnParam', sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(500)
   })
 })

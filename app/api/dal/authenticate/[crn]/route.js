@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server'
-
 import { dalRequest } from '@/lib/dal'
-import { formatDate } from '@/lib/formatters'
+import { formatDateAndTime } from '@/lib/formatters'
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
   query CVAuthenticate($crn: ID!) {
@@ -16,30 +15,45 @@ const query = `#graphql
   }
 `
 
-export async function GET(_, { params }) {
-  const response = await dalRequest({ query, variables: await params })
+export async function GET(req, { params }) {
+  const { crn } = await params
+  try {
+    const apiResponse = await dalRequest({ query, variables: { crn } })
 
-  const authenticationQuestions =
-    response?.data?.customer?.authenticationQuestions
+    const authenticationQuestions =
+      apiResponse?.data?.customer?.authenticationQuestions
 
-  return NextResponse.json([
-    {
-      dt: 'Memorable Date',
-      dd: authenticationQuestions?.memorableDate || '(Not set)'
-    },
-    {
-      dt: 'Memorable Location',
-      dd: authenticationQuestions?.memorableLocation || '(Not set)'
-    },
-    {
-      dt: 'Memorable Event',
-      dd: authenticationQuestions?.memorableEvent || '(Not set)'
-    },
-    {
-      dt: 'Updated at',
-      dd: authenticationQuestions?.updatedAt
-        ? formatDate(authenticationQuestions?.updatedAt)
-        : '(Not set)'
-    }
-  ])
+    const responsePayload = [
+      {
+        dt: 'Memorable Date',
+        dd: authenticationQuestions?.memorableDate || '(Not set)'
+      },
+      {
+        dt: 'Memorable Location',
+        dd: authenticationQuestions?.memorableLocation || '(Not set)'
+      },
+      {
+        dt: 'Memorable Event',
+        dd: authenticationQuestions?.memorableEvent || '(Not set)'
+      },
+      {
+        dt: 'Updated At',
+        dd: authenticationQuestions?.updatedAt
+          ? formatDateAndTime(authenticationQuestions?.updatedAt)
+          : '(Not set)'
+      }
+    ]
+    return dalApiResponse(
+      req,
+      apiResponse,
+      responsePayload,
+      `Problem retrieving authentication questions with CRN: ${crn}`
+    )
+  } catch (error) {
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving authentication questions with CRN: ${crn}`
+    )
+  }
 }

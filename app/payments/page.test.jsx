@@ -3,6 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { SWRConfig } from 'swr'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 import { PaymentsDetails } from './payments-details'
@@ -67,7 +68,20 @@ const renderPage = () =>
   )
 
 describe('PaymentsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: () => 'error' } // quiet logs in test
+    }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
   beforeEach(() => {
+    vi.clearAllMocks()
     window.history.pushState(null, '', '/')
   })
 
@@ -256,6 +270,33 @@ describe('PaymentsPage tests', () => {
       await expect
         .element(getByRole('cell', { name: '2022', exact: true }))
         .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no payments are found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/payments/40000001', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=40000001')
+
+      await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Business with SBI 40000001 not found.'
+        )
+      })
     }
   )
 

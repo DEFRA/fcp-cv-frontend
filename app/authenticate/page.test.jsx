@@ -1,10 +1,27 @@
 import { AuthProvider } from '@/components/auth/auth-provider'
 import { http, HttpResponse } from 'msw'
 import { render } from 'vitest-browser-react'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
 describe('Authenticate page tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: () => 'error' } // quiet logs in test
+    }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   testWithWorker(
     'renders the page component with content',
     async ({ worker }) => {
@@ -29,7 +46,7 @@ describe('Authenticate page tests', () => {
             },
             {
               dd: '02/02/2000',
-              dt: 'Updated at'
+              dt: 'Updated At'
             }
           ])
         )
@@ -42,7 +59,7 @@ describe('Authenticate page tests', () => {
         `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=contact`
       )
 
-      const { getByRole, getByText, getByPlaceholder } = await render(
+      const { getByRole, getByText } = await render(
         <AuthProvider config={{ disabled: true }}>
           <Page />
         </AuthProvider>
@@ -70,8 +87,33 @@ describe('Authenticate page tests', () => {
         .toBeInTheDocument()
 
       await expect
-        .element(getByText('Updated at' + '02/02/2000'))
+        .element(getByText('Updated At' + '02/02/2000'))
         .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when no authentication questions are found for the CRN',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/authenticate/60000001', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(null, '', '?crn=60000001')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Contact with CRN 60000001 not found.'
+        )
+      })
     }
   )
 })

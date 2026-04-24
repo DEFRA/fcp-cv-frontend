@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
@@ -8,6 +8,7 @@ import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { useSelectOnlyTableRowByMessageId } from '@/hooks/select-only-table-row'
 import { formatDate } from '@/lib/formatters'
+import { notification } from '@/components/notification/Notifications.jsx'
 
 const dateRangeOptions = [
   { label: 'Last 12 months', value: 12 },
@@ -31,6 +32,7 @@ function computeFromDate(months) {
 
 function FilterControls({
   contacts,
+  contactsLoading,
   contact,
   onContactChange,
   dateRange,
@@ -53,12 +55,20 @@ function FilterControls({
         value={contact}
         onChange={(e) => onContactChange(e.target.value)}
       >
-        <option value="">Select a contact</option>
-        {contacts.map((c) => (
-          <option key={c.crn} value={c.crn}>
-            {c.firstName} {c.lastName}
-          </option>
-        ))}
+        <option value="">
+          {contactsLoading ? 'Loading...' : 'Select a contact'}
+        </option>
+        {[...contacts]
+          .sort((a, b) =>
+            `${a.firstName} ${a.lastName}`.localeCompare(
+              `${b.firstName} ${b.lastName}`
+            )
+          )
+          .map((c) => (
+            <option key={c.crn} value={c.crn}>
+              {c.firstName} {c.lastName}
+            </option>
+          ))}
       </select>
 
       <label className="font-bold" htmlFor="date-range-filter">
@@ -106,26 +116,38 @@ export function BusinessMessagesList() {
 
   const sbi = searchParams.get('sbi')
   const contact = searchParams.get('contact')
-  const dateRange = searchParams.get('dateRange') || '24'
+  const dateRange = searchParams.get('dateRange') || '12'
   const fromDate = computeFromDate(Number(dateRange))
 
-  const { data: contacts = [] } = useDal(['business-messages', 'contacts', sbi])
+  const {
+    data: contacts = [],
+    isLoading: contactsLoading,
+    error: contactsError
+  } = useDal(['business-messages', 'contacts', sbi])
 
   const messagesUrlSuffix = fromDate
     ? `${contact}?fromDate=${fromDate}`
     : contact
 
-  const { data: messages } = useDal(
+  const { data: messages = [], isLoading: messagesLoading } = useDal(
     ['business-messages', 'messages', sbi, messagesUrlSuffix],
     [contact]
   )
 
+  useEffect(() => {
+    if (!contactsLoading && contactsError?.handleNotification) {
+      notification.error(`Business with SBI ${sbi} not found.`)
+    }
+  }, [contactsLoading, contacts, sbi, contactsError])
+
   useSelectOnlyTableRowByMessageId(messages)
 
   const filteredMessages = useMemo(() => {
-    if (!readFilter) return messages
-    return messages.filter((msg) =>
-      readFilter === 'read' ? msg.read : !msg.read
+    const filtered = readFilter
+      ? messages.filter((msg) => (readFilter === 'read' ? msg.read : !msg.read))
+      : messages
+    return [...filtered].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     )
   }, [messages, readFilter])
 
@@ -133,20 +155,22 @@ export function BusinessMessagesList() {
     {
       header: 'Status',
       accessorKey: 'read',
-      cell: ({ getValue }) => (getValue() ? 'Read' : 'Unread')
+      cell: ({ getValue }) => (getValue() ? '' : 'Unread')
     },
     {
       header: 'Date',
       accessorKey: 'date',
       cell: ({ getValue }) => formatDate(getValue())
     },
-    { header: 'Subject', accessorKey: 'subject' }
+    { header: 'Subject', accessorKey: 'subject' },
+    { header: 'Body', accessorKey: 'body' }
   ]
 
   return (
     <div className="mt-4 ml-4">
       <FilterControls
         contacts={contacts}
+        contactsLoading={contactsLoading}
         contact={contact || ''}
         onContactChange={(value) => setSearchParams({ contact: value })}
         dateRange={dateRange}
@@ -157,16 +181,16 @@ export function BusinessMessagesList() {
       {contact && (
         <Table
           skeletonRows={5}
-          data={filteredMessages}
+          data={messagesLoading ? undefined : filteredMessages}
           columns={columns}
           onRowClick={(row) => {
             setSearchParams({ messageId: row.id })
           }}
-          defaultSortColumn="date"
-          defaultSortDirection="desc"
           noResultsMessage="No messages found"
           selectedRow={searchParams.get('messageId')}
           selectedRowAccessorKey="id"
+          enableSorting={false}
+          columnVisibility={{ body: false }}
         />
       )}
     </div>

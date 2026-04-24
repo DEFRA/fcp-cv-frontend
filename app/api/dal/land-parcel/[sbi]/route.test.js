@@ -53,6 +53,7 @@ describe('Land Parcel API route', () => {
   })
 
   test('makes a dal request with sbi, sheetId and parcelId params', async () => {
+    vi.mocked(dalRequest).mockResolvedValue(mockLandResponse)
     const response = await GET(
       new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
       { params: Promise.resolve({ sbi: '123456789' }) }
@@ -291,5 +292,221 @@ describe('Land Parcel API route', () => {
     })
     expect(body.parcelCovers).toStrictEqual([])
     expect(body.parcelLandUses).toStrictEqual([])
+  })
+
+  test('sorts parcelCovers by code alphabetically', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          land: {
+            parcel: {
+              sheetId: 'SS6528',
+              parcelId: '8779',
+              area: 1,
+              pendingDigitisation: false,
+              effectiveFromDate: null,
+              effectiveToDate: null
+            },
+            parcelCovers: [
+              { code: '130', name: 'Rough Grazing', area: 1.5 },
+              { code: '110', name: 'Arable Land', area: 2.0 },
+              { code: '120', name: 'Permanent Grassland', area: 1.2 }
+            ],
+            parcelLandUses: []
+          }
+        }
+      }
+    })
+
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      { params: Promise.resolve({ sbi: '123456789' }) }
+    )
+
+    const body = await response.json()
+
+    expect(body.parcelCovers).toStrictEqual([
+      { code: '110', name: 'Arable Land', area: 2.0 },
+      { code: '120', name: 'Permanent Grassland', area: 1.2 },
+      { code: '130', name: 'Rough Grazing', area: 1.5 }
+    ])
+  })
+
+  test('sorts parcelLandUses by startDate descending then code ascending', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          land: {
+            parcel: {
+              sheetId: 'SS6528',
+              parcelId: '8779',
+              area: 1,
+              pendingDigitisation: false,
+              effectiveFromDate: null,
+              effectiveToDate: null
+            },
+            parcelCovers: [],
+            parcelLandUses: [
+              {
+                code: 'AC02',
+                type: 'Area',
+                area: 1.0,
+                length: null,
+                startDate: '2021-11-15',
+                endDate: '',
+                insertDate: '',
+                deleteDate: ''
+              },
+              {
+                code: 'AC01',
+                type: 'Area',
+                area: 1.0,
+                length: null,
+                startDate: '2021-11-15',
+                endDate: '',
+                insertDate: '',
+                deleteDate: ''
+              },
+              {
+                code: 'AC03',
+                type: 'Area',
+                area: 1.0,
+                length: null,
+                startDate: '2021-12-01',
+                endDate: '',
+                insertDate: '',
+                deleteDate: ''
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      { params: Promise.resolve({ sbi: '123456789' }) }
+    )
+
+    const body = await response.json()
+
+    expect(body.parcelLandUses).toStrictEqual([
+      {
+        code: 'AC03',
+        type: 'Area',
+        area: 1.0,
+        length: null,
+        startDate: '01/12/2021',
+        endDate: '',
+        insertDate: '',
+        deleteDate: ''
+      },
+      {
+        code: 'AC01',
+        type: 'Area',
+        area: 1.0,
+        length: null,
+        startDate: '15/11/2021',
+        endDate: '',
+        insertDate: '',
+        deleteDate: ''
+      },
+      {
+        code: 'AC02',
+        type: 'Area',
+        area: 1.0,
+        length: null,
+        startDate: '15/11/2021',
+        endDate: '',
+        insertDate: '',
+        deleteDate: ''
+      }
+    ])
+  })
+
+  test('handles invalid dates in parcelLandUses sorting', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          land: {
+            parcel: {
+              sheetId: 'SS6528',
+              parcelId: '8779',
+              area: 1,
+              pendingDigitisation: false,
+              effectiveFromDate: null,
+              effectiveToDate: null
+            },
+            parcelCovers: [],
+            parcelLandUses: [
+              {
+                code: 'AC01',
+                type: 'Area',
+                area: 1.0,
+                length: null,
+                startDate: 'invalid-date',
+                endDate: '',
+                insertDate: '',
+                deleteDate: ''
+              },
+              {
+                code: 'AC02',
+                type: 'Area',
+                area: 1.0,
+                length: null,
+                startDate: '2021-11-15',
+                endDate: '',
+                insertDate: '',
+                deleteDate: ''
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      { params: Promise.resolve({ sbi: '123456789' }) }
+    )
+
+    const body = await response.json()
+
+    // Should still return data even with invalid dates
+    expect(body.parcelLandUses).toHaveLength(2)
+    expect(body.parcelLandUses[0].code).toBe('AC01') // Invalid date comes first (NaN sorting behavior)
+    expect(body.parcelLandUses[1].code).toBe('AC02') // Valid date comes last
+    expect(body.parcelLandUses[0].startDate).toBe('') // Invalid date becomes empty string
+    expect(body.parcelLandUses[1].startDate).toBe('15/11/2021') // Valid date formatted
+  })
+
+  test('should return partial response with errors if DAL response has errors', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {},
+      errors: [{ message: 'some error' }]
+    })
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      {
+        params: Promise.resolve({ sbi: 'sbiParam' })
+      }
+    )
+
+    expect(response.status).toBe(206)
+
+    const responseBody = await response.json()
+    expect(responseBody.parcelCovers).toStrictEqual([])
+  })
+
+  test('should return 500 if DAL request throws error', async () => {
+    vi.mocked(dalRequest).mockRejectedValue(new Error('DAL error'))
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      {
+        params: Promise.resolve({ sbi: 'sbiParam' })
+      }
+    )
+
+    expect(response.status).toBe(500)
   })
 })

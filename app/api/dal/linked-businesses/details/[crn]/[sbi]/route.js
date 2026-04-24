@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server'
-
+import { handleApiError, partialResponse } from '@/lib/api'
 import { dalRequest } from '@/lib/dal'
 import { uppercaseSnakeToTitleCase } from '@/lib/formatters'
 
@@ -20,21 +19,43 @@ const query = `#graphql
   }
 `
 
-export async function GET(_, { params }) {
-  const response = await dalRequest({ query, variables: await params })
+export async function GET(req, { params }) {
+  const { crn, sbi } = await params
 
-  const business = response?.data?.customer?.business
+  try {
+    const response = await dalRequest({ query, variables: { crn, sbi } })
 
-  return NextResponse.json({
-    name: business?.name,
-    details: [
-      { dt: 'SBI', dd: business?.sbi },
-      { dt: 'Role', dd: business?.role }
-    ],
-    permissions: business?.permissionGroups.map((item) => ({
-      dt: uppercaseSnakeToTitleCase(item.id),
-      dd: uppercaseSnakeToTitleCase(item.level),
-      expand: item.functions
-    }))
-  })
+    const { data, errors } = response
+    const business = data?.customer?.business
+
+    const details = {
+      name: business?.name,
+      details: [
+        { dt: 'SBI', dd: business?.sbi },
+        { dt: 'Role', dd: business?.role }
+      ],
+      permissions: business?.permissionGroups.map((item) => ({
+        dt: uppercaseSnakeToTitleCase(item.id),
+        dd: uppercaseSnakeToTitleCase(item.level),
+        expand: item.functions
+      }))
+    }
+
+    if (errors?.length) {
+      return partialResponse(
+        req,
+        errors,
+        `Problem retrieving linked business details with SBI: ${sbi}, for person with CRN: ${crn}`,
+        details
+      )
+    }
+
+    return Response.json(details)
+  } catch (error) {
+    return handleApiError(
+      req,
+      error,
+      `Problem retrieving linked business details with SBI: ${sbi}, for person with CRN: ${crn}`
+    )
+  }
 }

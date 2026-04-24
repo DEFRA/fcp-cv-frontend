@@ -1,4 +1,5 @@
 import { AuthProvider } from '@/components/auth/auth-provider'
+import Notifications from '@/components/notification/Notifications'
 import { http, HttpResponse } from 'msw'
 import { SWRConfig } from 'swr'
 import { render } from 'vitest-browser-react'
@@ -13,21 +14,21 @@ const mockLandDetails = {
       sheetId: 'SS6',
       parcelId: '836',
       area: 1.6939,
-      pendingDigitisation: false
+      pendingDigitisation: 'No'
     },
     {
       id: 'SS6-856',
       sheetId: 'SS6',
       parcelId: '856',
       area: 4.0797,
-      pendingDigitisation: true
+      pendingDigitisation: 'Yes'
     },
     {
       id: 'SS6-852',
       sheetId: 'SS6',
       parcelId: '852',
       area: 5.893,
-      pendingDigitisation: false
+      pendingDigitisation: 'No'
     }
   ],
   summary: {
@@ -52,7 +53,7 @@ const mockLandDetailsHistorical = {
       sheetId: 'SS6',
       parcelId: '836',
       area: 1.6939,
-      pendingDigitisation: false
+      pendingDigitisation: 'No'
     }
   ],
   summary: {
@@ -123,12 +124,18 @@ const mockParcelDetail856 = {
 }
 
 describe('LandDetailsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: () => 'error' } // quiet logs in test
+    }))
+  })
+
   beforeEach(() => {
     window.history.pushState(null, '', '/')
   })
 
   testWithWorker(
-    'renders the full page layout with summary, parcel list, and auto-selected first parcel detail',
+    'renders the full page layout with summary, parcel list, and placeholder when no parcel selected',
     async ({ worker }) => {
       worker.use(
         http.get(
@@ -168,7 +175,7 @@ describe('LandDetailsPage tests', () => {
         .toBeInTheDocument()
 
       await expect
-        .element(getByText('Total Number of Parcels'))
+        .element(getByText('Total Number Of Parcels'))
         .toBeInTheDocument()
       await expect.element(getByText('3', { exact: true })).toBeInTheDocument()
 
@@ -209,11 +216,7 @@ describe('LandDetailsPage tests', () => {
         .toBeInTheDocument()
 
       await expect
-        .element(getByRole('heading', { name: 'SS6 836' }))
-        .toBeInTheDocument()
-      await expect.element(getByText('Effective Date From')).toBeInTheDocument()
-      await expect
-        .element(getByText('14/11/2021', { exact: true }))
+        .element(getByText('Select a parcel from the table'))
         .toBeInTheDocument()
     }
   )
@@ -251,6 +254,8 @@ describe('LandDetailsPage tests', () => {
           </AuthProvider>
         </SWRConfig>
       )
+
+      await getByRole('cell', { name: '836' }).click()
 
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))
@@ -302,6 +307,8 @@ describe('LandDetailsPage tests', () => {
           </AuthProvider>
         </SWRConfig>
       )
+
+      await getByRole('cell', { name: '836' }).click()
 
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))
@@ -356,6 +363,8 @@ describe('LandDetailsPage tests', () => {
           </AuthProvider>
         </SWRConfig>
       )
+
+      await getByRole('cell', { name: '836' }).click()
 
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))
@@ -461,6 +470,33 @@ describe('LandDetailsPage tests', () => {
   )
 
   testWithWorker(
+    'parcels and land cover tables show empty state rather than skeleton rows when the land-details DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/land-details/60000001', () =>
+          HttpResponse.json(null, { status: 500 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=60000001')
+
+      const { getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await expect.element(getByText('No parcels found')).toBeInTheDocument()
+      await expect.element(getByText('No land cover data')).toBeInTheDocument()
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      )
+    }
+  )
+
+  testWithWorker(
     'updates all data when the date is changed',
     async ({ worker }) => {
       worker.use(
@@ -554,6 +590,8 @@ describe('LandDetailsPage tests', () => {
         </SWRConfig>
       )
 
+      await getByRole('cell', { name: '836' }).click()
+
       await expect
         .element(getByRole('heading', { name: 'SS6 836' }))
         .toBeInTheDocument()
@@ -582,6 +620,120 @@ describe('LandDetailsPage tests', () => {
 
       expect(landDetailsCount).toBe(landDetailsAfterLoad)
       expect(landParcelCount).toBe(landParcelAfterLoad + 1)
+    }
+  )
+
+  testWithWorker(
+    'shows a warning notification when a date before the minimum is entered',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ sbi: '123456789' })
+        ),
+        http.get('/api/dal/land-details/123456789', () =>
+          HttpResponse.json(mockLandDetails)
+        ),
+        http.get('/api/dal/land-parcel/123456789', () =>
+          HttpResponse.json(mockParcelDetail836)
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
+
+      const { getByLabelText, getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await userEvent.fill(getByLabelText('Date'), '2014-12-31')
+      await userEvent.keyboard('{Enter}')
+
+      await expect
+        .element(getByText('Date cannot be before 01/01/2015.'))
+        .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'shows a warning notification when a date after the maximum is entered',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ sbi: '123456789' })
+        ),
+        http.get('/api/dal/land-details/123456789', () =>
+          HttpResponse.json(mockLandDetails)
+        ),
+        http.get('/api/dal/land-parcel/123456789', () =>
+          HttpResponse.json(mockParcelDetail836)
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
+
+      const { getByLabelText, getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await userEvent.fill(getByLabelText('Date'), '2099-01-01')
+      await userEvent.keyboard('{Enter}')
+
+      await expect
+        .element(getByText(`Date cannot be in the future.`))
+        .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'shows error notification when land details data is not found for the SBI',
+    async ({ worker }) => {
+      worker.use(
+        http.get(
+          '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
+          () => HttpResponse.json({ sbi: '123456789' })
+        ),
+        http.get('/api/dal/land-details/123456789*', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(
+        null,
+        '',
+        `?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account`
+      )
+
+      const { getByText } = await render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <AuthProvider config={{ disabled: true }}>
+            <Page />
+            <Notifications />
+          </AuthProvider>
+        </SWRConfig>
+      )
+
+      await expect
+        .element(getByText('Business with SBI 123456789 not found.'))
+        .toBeInTheDocument()
     }
   )
 

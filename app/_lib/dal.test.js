@@ -1,4 +1,5 @@
 import { dalRequest } from '@/lib/dal'
+import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -11,21 +12,23 @@ vi.mock('@azure/msal-node', () => ({
     }
   })
 }))
-
-vi.mock('@/lib/auth', () => ({
-  getEmailFromToken: vi.fn(() => 'test@example.com')
-}))
-
 vi.mock('next/headers', () => ({
   headers: vi.fn(async () => ({
     get: vi.fn(() => 'mocked-token')
   }))
 }))
 
+vi.mock('@/lib/auth', () => ({
+  getEmailFromToken: vi.fn(() => 'test@example.com')
+}))
+vi.mock('@/lib/logger', () => ({
+  logger: { warn: vi.fn() }
+}))
 vi.mock('@/config', () => ({
   config: {
     get: vi.fn((key) => {
       const values = {
+        logLevel: 'info',
         'dal.url': 'http://dal/graphql',
         'dal.tokenGeneration.scope': 'test.scope',
         'dal.tokenGeneration.clientId': 'client-id',
@@ -44,6 +47,7 @@ beforeEach(() => {
   vi.stubGlobal(
     'fetch',
     vi.fn().mockResolvedValue({
+      ok: true,
       status: 200,
       json: async () => ({
         message: 'Test response'
@@ -98,7 +102,8 @@ describe('dalRequest', () => {
     })
 
     const request = { query: '', variables: {} }
-    await dalRequest(request)
+    const dal = await import('@/lib/dal?rand=1')
+    await dal.dalRequest(request)
 
     expect(acquireTokenByClientCredential).not.toHaveBeenCalled()
     expect(fetch).toHaveBeenCalledWith('http://dal/graphql', {
@@ -127,5 +132,78 @@ describe('dalRequest', () => {
   test('returns parsed JSON response', async () => {
     const result = await dalRequest({ query: '', variables: {} })
     expect(result).toEqual({ message: 'Test response' })
+  })
+
+  test('handles errors during token retrieval', async () => {
+    acquireTokenByClientCredential.mockRejectedValue(new Error('Token error'))
+    await expect(() =>
+      dalRequest({ query: '', variables: {} })
+    ).rejects.toThrow('DAL token retrieval failed')
+  })
+
+  test('throws DalResponseError and logs warning on unsuccessful response', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: async () => ({})
+    })
+
+    await expect(() =>
+      dalRequest({ query: '', variables: {} })
+    ).rejects.toMatchObject({
+      message: 'Internal Server Error',
+      status: 500,
+      statusText: 'Internal Server Error'
+    })
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      'DAL request unsuccessful',
+      expect.objectContaining({
+        res: expect.objectContaining({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error'
+        })
+      })
+    )
+  })
+
+  test.each([
+    [400, 'Bad Request'],
+    [401, 'Unauthorized'],
+    [403, 'Forbidden'],
+    [404, 'Not Found'],
+    [502, 'Bad Gateway'],
+    [503, 'Service Unavailable']
+  ])(
+    'throws DalResponseError with correct status and message for %i responses',
+    async (status, statusText) => {
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status,
+        statusText,
+        json: async () => ({})
+      })
+
+      await expect(() =>
+        dalRequest({ query: '', variables: {} })
+      ).rejects.toMatchObject({ message: statusText, status, statusText })
+    }
+  )
+
+  test('throws generic error when fetch fails due to a network error', async () => {
+    fetch.mockRejectedValueOnce(new Error('Network failure'))
+
+    await expect(() =>
+      dalRequest({ query: '', variables: {} })
+    ).rejects.toThrow('DAL request failed')
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      'DAL request failed',
+      expect.objectContaining({
+        error: expect.objectContaining({ message: 'Network failure' })
+      })
+    )
   })
 })

@@ -1,16 +1,19 @@
 'use client'
 
+import { DatePicker } from '@/components/date-picker/date-picker'
 import {
   KeyValueList,
   KeyValueListContent,
   KeyValueListItem,
   KeyValueListTitle
 } from '@/components/key-value-list-v2/key-value-list'
+import { notification } from '@/components/notification/Notifications'
 import Table from '@/components/table/Table'
-import { DatePicker } from '@/components/date-picker/date-picker'
 import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
+import { formatDate } from '@/lib/formatters'
+import { useEffect } from 'react'
 
 const landCoverColumns = [
   { header: 'Code', accessorKey: 'code', fixedWidth: 50 },
@@ -29,10 +32,16 @@ export function LandSummary() {
   const sbi = searchParams.get('sbi')
   const date = searchParams.get('date') || todayISO()
 
-  const { data, isLoading } = useDal(
+  const { data, isLoading, error } = useDal(
     ['land-details', `${sbi}?date=${date}`],
     [sbi]
   )
+
+  useEffect(() => {
+    if (!isLoading && error?.handleNotification) {
+      notification.error(`Business with SBI ${sbi} not found.`)
+    }
+  }, [data, isLoading, sbi, error])
 
   const summary = data?.summary || {}
 
@@ -41,6 +50,16 @@ export function LandSummary() {
       <DatePicker
         value={date}
         onChange={(newDate) => setSearchParams({ date: newDate })}
+        onInvalidDate={(reason, boundaryDate) => {
+          if (reason === 'above') {
+            return notification.warning(`Date cannot be in the future.`)
+          } else if (reason === 'below') {
+            return notification.warning(
+              `Date cannot be before ${formatDate(boundaryDate)}.`
+            )
+          }
+          return notification.warning(`Date is invalid.`)
+        }}
       />
 
       <div className="grid grid-cols-2 gap-8">
@@ -48,7 +67,7 @@ export function LandSummary() {
           <KeyValueListTitle>Land Summary</KeyValueListTitle>
           <KeyValueListContent>
             <KeyValueListItem
-              dt="Total Number of Parcels"
+              dt="Total Number Of Parcels"
               dd={summary.totalParcels ?? ''}
               loading={isLoading}
             />
@@ -65,7 +84,7 @@ export function LandSummary() {
           </KeyValueListContent>
         </KeyValueList>
         <Table
-          data={data?.landCovers}
+          data={error ? [] : data?.landCovers}
           columns={landCoverColumns}
           enableSearching={false}
           enableSorting={false}

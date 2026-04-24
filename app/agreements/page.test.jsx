@@ -3,6 +3,7 @@ import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { notification } from '@/components/notification/Notifications'
 import { testWithWorker } from '../../test/test-with-worker'
 import Page from './page.jsx'
 
@@ -81,6 +82,22 @@ const defaultWorkerHandlers = (worker) =>
 const defaultUrl = '?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account'
 
 describe('AgreementsPage tests', () => {
+  beforeAll(() => {
+    vi.mock('@/config', () => ({
+      config: { get: (key) => 'error' } // quiet logs in test
+    }))
+    vi.mock('@/components/notification/Notifications', () => ({
+      notification: {
+        error: vi.fn(),
+        warn: vi.fn()
+      }
+    }))
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   testWithWorker(
     'renders the agreements list with correct columns',
     async ({ worker }) => {
@@ -119,6 +136,33 @@ describe('AgreementsPage tests', () => {
       await expect
         .element(getByRole('cell', { name: 'Status' }))
         .toBeInTheDocument()
+
+      await expect
+        .element(getByRole('cell', { name: 'View' }).first())
+        .toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'agreements list is sorted by year descending by default',
+    async ({ worker }) => {
+      defaultWorkerHandlers(worker)
+      window.history.pushState(null, '', defaultUrl)
+
+      const { getByRole } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+
+      const rows = document.querySelectorAll('tbody tr')
+      const firstRowYear = rows[0].querySelector('td:nth-child(2)')?.textContent
+      const secondRowYear =
+        rows[1].querySelector('td:nth-child(2)')?.textContent
+
+      expect(Number(firstRowYear)).toBeGreaterThan(Number(secondRowYear))
     }
   )
 
@@ -332,6 +376,56 @@ describe('AgreementsPage tests', () => {
       )
 
       await expect.element(getByText('Agreement Reference')).toBeInTheDocument()
+    }
+  )
+
+  testWithWorker(
+    'agreements details shows error notification when business data is not found',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/agreements/10000002', () =>
+          HttpResponse.json(null, { status: 404 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=10000002&contractId=AG00001234')
+
+      await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await vi.waitFor(() => {
+        expect(notification.error).toHaveBeenCalledWith(
+          'Business with SBI 10000002 not found.'
+        )
+      })
+    }
+  )
+
+  testWithWorker(
+    'agreements table shows empty state rather than skeleton rows when the DAL request fails',
+    async ({ worker }) => {
+      worker.use(
+        http.get('/api/dal/agreements/10000003', () =>
+          HttpResponse.json(null, { status: 500 })
+        )
+      )
+
+      window.history.pushState(null, '', '?sbi=10000003')
+
+      const { getByRole, getByText } = await render(
+        <AuthProvider config={{ disabled: true }}>
+          <Page />
+        </AuthProvider>
+      )
+
+      await expect.element(getByRole('table')).toBeInTheDocument()
+      await expect.element(getByText('No results found')).toBeInTheDocument()
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      )
     }
   )
 })
