@@ -28,20 +28,6 @@ describe('Payments API route', () => {
     vi.mocked(dalRequest).mockReset()
   })
 
-  test('should make dal request with sbi and fallback userIP', async () => {
-    vi.mocked(dalRequest).mockResolvedValue({})
-
-    const response = await GET(...makeRequest())
-
-    expect(response.status).toBe(200)
-    expect(dalRequest).toHaveBeenCalledTimes(1)
-    expect(dalRequest).toHaveBeenCalledWith(
-      expect.objectContaining({
-        variables: { sbi: 'sbiParam', userIP: '0.0.0.0' }
-      })
-    )
-  })
-
   test('should use first ip from x-forwarded-for header', async () => {
     vi.mocked(dalRequest).mockResolvedValue({})
 

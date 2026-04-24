@@ -1,5 +1,5 @@
-import { dalRequest } from '@/lib/dal'
 import { dalApiResponse, handleApiError } from '@/lib/api.js'
+import { dalRequest } from '@/lib/dal'
 
 const query = `#graphql
   query BusinessCustomer($sbi: ID!, $userIP: String!) {
@@ -30,7 +30,7 @@ function resolveUserIP(request) {
   if (forwardedFor) {
     return forwardedFor.split(',')[0].trim()
   }
-  return request.headers.get('x-real-ip') || '0.0.0.0'
+  return request.headers.get('x-real-ip')
 }
 
 export async function GET(request, ctx) {
@@ -42,9 +42,9 @@ export async function GET(request, ctx) {
     const apiResponse = await dalRequest({ query, variables })
 
     const paymentsData = apiResponse?.data?.business?.payments ?? {}
-    const payments = (paymentsData.payments ?? [])
-      .slice()
-      .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
+    const payments = (paymentsData.payments ?? []).sort((a, b) =>
+      (a.date ?? '').localeCompare(b.date ?? '')
+    )
 
     const responsePayload = {
       onHold: paymentsData.onHold ?? false,
