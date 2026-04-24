@@ -1,6 +1,6 @@
 {
   "name": "fcp-cv-frontend",
-  "version": "0.63.1",
+  "version": "0.63.2",
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {

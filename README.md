@@ -281,11 +281,30 @@ npm run test:accessibility:docker
 
 ### E2E tests
 
-TODO: Gordon
+The CV E2E post deployment tests have been built from the original CDP Journey test template which was adapted to:
+
+- Use Playwright.
+- Use Playwright-Bdd.
+- Include tests running under both Edge and Chrome.
+
+Tests currently cover all CV apps with at least one test. This coverage will be expanded over time.
+
+The GitHub Repository can be found here: https://github.com/DEFRA/fcp-cv-postdeployment-tests
+The results history of these tests run within CDP can be found here: https://portal.cdp-int.defra.cloud/test-suites/fcp-cv-postdeployment-tests
 
 ### Performance tests
 
-TODO: Gordon
+The CV performance tests have been built from the original CDP Performance (Jmeter) test template. The tests include:
+
+- Calls to all the main application areas.
+- Configurable loads and durations.
+- Configurable "model" whereby all calls can be set to achieve a certain requests-per-minute (rpm).
+- Data files to fix the data (SBIs, CRNs and land data) as the test is progressing.
+
+Tests currently cover all CV apps with at least one call. By default these tests run to around 300rpm which is the highest load expected in Production.
+
+The GitHub Repository can be found here: https://github.com/DEFRA/fcp-cv-frontend-performance-test
+The results history of these tests run within CDP can be found here: https://portal.cdp-int.defra.cloud/test-suites/fcp-cv-frontend-performance-test
 
 ## Licence
 
