@@ -1,12 +1,14 @@
 {
   "name": "fcp-cv-frontend",
-  "version": "0.50.0",
+  "version": "0.50.1",
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {
-    "node": "24"
+    "node": ">=24"
   },
   "scripts": {
+    "preup": "curl https://raw.githubusercontent.com/DEFRA/fcp-dal-api/refs/heads/main/compose.yml -o dal-api-compose.yml",
+    "up": "docker compose build && docker compose -f dal-api-compose.yml -f compose.yml up --pull always --quiet-pull --no-attach mongodb",
     "build": "next build",
     "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
@@ -59,5 +61,8 @@
     "tailwindcss": "^4.1.17",
     "vitest": "^4.0.16",
     "vitest-browser-react": "^2.0.2"
+  },
+  "overrides": {
+    "uuid": "^14.0.0"
   }
 }

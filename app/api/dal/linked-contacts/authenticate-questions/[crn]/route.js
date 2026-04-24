@@ -1,5 +1,5 @@
 import { dalRequest } from '@/lib/dal'
-import { formatDate } from '@/lib/formatters'
+import { formatDate, formatDateAndTime } from '@/lib/formatters'
 import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
@@ -55,7 +55,7 @@ export async function GET(req, { params }) {
         {
           dt: 'Updated At',
           dd: authenticationQuestions?.updatedAt
-            ? formatDate(authenticationQuestions?.updatedAt)
+            ? formatDateAndTime(authenticationQuestions?.updatedAt)
             : '(Not set)'
         }
       ]
