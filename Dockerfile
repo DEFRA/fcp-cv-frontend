@@ -57,6 +57,11 @@ COPY --from=development \
 ARG PORT
 ENV PORT=${PORT}
 EXPOSE ${PORT}
-ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "server.js"]
+# Note: do not change to this…
+# ENV HOSTNAME=0.0.0.0
+# CMD ["node", "server.js"]
+# …this does not work on CDP.
+# If HOSTNAME is set in this way, the HOSTNAME value injected by CDP takes precedent,
+# and the Next.js server ends up binding to an internal hostname that has no ingress.
+CMD ["env", "HOSTNAME=0.0.0.0", "node", "server.js"]
