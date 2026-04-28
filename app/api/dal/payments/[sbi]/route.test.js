@@ -4,8 +4,20 @@ import { vi } from 'vitest'
 
 import { GET } from './route'
 
+const makeJwt = (claims) => {
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'RS256', typ: 'JWT' })
+  ).toString('base64url')
+  const payload = Buffer.from(JSON.stringify(claims)).toString('base64url')
+  return `${header}.${payload}.signature`
+}
+
+const defaultToken = makeJwt({ ipaddr: '203.0.113.1' })
+
 const makeRequest = ({ sbi = 'sbiParam', headers = {} } = {}) => [
-  new NextRequest('http://localhost', { headers }),
+  new NextRequest('http://localhost', {
+    headers: { 'x-msal-access-token': defaultToken, ...headers }
+  }),
   { params: Promise.resolve({ sbi }) }
 ]
 
@@ -22,18 +34,21 @@ describe('Payments API route', () => {
     vi.mock('@/lib/dal', () => ({
       dalRequest: vi.fn()
     }))
+    vi.mock('@/lib/logger', () => ({
+      logger: { warn: vi.fn() }
+    }))
   })
 
   beforeEach(() => {
     vi.mocked(dalRequest).mockReset()
   })
 
-  test('should use first ip from x-forwarded-for header', async () => {
+  test('should extract userIP from ipaddr claim in MSAL access token', async () => {
     vi.mocked(dalRequest).mockResolvedValue({})
 
     await GET(
       ...makeRequest({
-        headers: { 'x-forwarded-for': '203.0.113.4, 198.51.100.2' }
+        headers: { 'x-msal-access-token': makeJwt({ ipaddr: '203.0.113.4' }) }
       })
     )
 
@@ -44,19 +59,31 @@ describe('Payments API route', () => {
     )
   })
 
-  test('should fall back to x-real-ip when x-forwarded-for missing', async () => {
-    vi.mocked(dalRequest).mockResolvedValue({})
+  test('should return 500 and warn when MSAL token is missing', async () => {
+    const { logger } = await import('@/lib/logger')
 
-    await GET(
+    const response = await GET(
+      ...makeRequest({ headers: { 'x-msal-access-token': null } })
+    )
+
+    expect(response.status).toBe(500)
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Unable to resolve user IP address from MSAL access token'
+    )
+  })
+
+  test('should return 500 and warn when MSAL token is malformed', async () => {
+    const { logger } = await import('@/lib/logger')
+
+    const response = await GET(
       ...makeRequest({
-        headers: { 'x-real-ip': '198.51.100.9' }
+        headers: { 'x-msal-access-token': 'not.a.jwt' }
       })
     )
 
-    expect(dalRequest).toHaveBeenCalledWith(
-      expect.objectContaining({
-        variables: expect.objectContaining({ userIP: '198.51.100.9' })
-      })
+    expect(response.status).toBe(500)
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Unable to resolve user IP address from MSAL access token'
     )
   })
 
