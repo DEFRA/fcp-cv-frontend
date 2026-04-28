@@ -178,4 +178,74 @@ describe('Applications API route', () => {
 
     expect(response.status).toBe(500)
   })
+
+  test('should sort applications by year descending', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          applications: [
+            {
+              id: '1',
+              year: '2020',
+              name: 'App 2020',
+              scheme: 'Scheme A',
+              status: 'PAID',
+              submissionDate: '2020-12-31T22:01:36.356Z',
+              portalStatus: null,
+              agreementReferences: ['111'],
+              transitionHistory: [
+                {
+                  name: 'TO PAID',
+                  timestamp: '2020-12-31T06:30:16.953Z'
+                }
+              ]
+            },
+            {
+              id: '2',
+              year: '2022',
+              name: 'App 2022',
+              scheme: 'Scheme B',
+              status: 'PAID',
+              submissionDate: '2022-12-31T22:01:36.356Z',
+              portalStatus: null,
+              agreementReferences: ['222'],
+              transitionHistory: [
+                {
+                  name: 'TO PAID',
+                  timestamp: '2022-12-31T06:30:16.953Z'
+                }
+              ]
+            },
+            {
+              id: '3',
+              year: '2019',
+              name: 'App 2019',
+              scheme: 'Scheme C',
+              status: 'PAID',
+              submissionDate: '2019-12-31T22:01:36.356Z',
+              portalStatus: null,
+              agreementReferences: ['333'],
+              transitionHistory: [
+                {
+                  name: 'TO PAID',
+                  timestamp: '2019-12-31T06:30:16.953Z'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(200)
+    const result = await response.json()
+    expect(result.list).toHaveLength(3)
+    expect(result.list[0].year).toBe('2022')
+    expect(result.list[1].year).toBe('2020')
+    expect(result.list[2].year).toBe('2019')
+  })
 })

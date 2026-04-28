@@ -77,6 +77,8 @@ export async function GET(req, { params }) {
       }
     }
 
+    list.sort((a, b) => parseInt(b.year) - parseInt(a.year))
+
     return dalApiResponse(
       req,
       apiResponse,
