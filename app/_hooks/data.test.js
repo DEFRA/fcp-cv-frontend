@@ -42,7 +42,7 @@ describe('useDal and useDataverse Hooks', () => {
       return {
         notification: {
           error: vi.fn(),
-          warn: vi.fn()
+          warning: vi.fn()
         }
       }
     })
@@ -265,7 +265,7 @@ describe('useDal and useDataverse Hooks', () => {
 
       await renderHook(() => useDal(['linked-contacts']))
 
-      expect(notification.warn).toHaveBeenCalledWith(
+      expect(notification.warning).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'span',
           props: expect.objectContaining({
@@ -291,7 +291,7 @@ describe('useDal and useDataverse Hooks', () => {
 
       await renderHook(() => useDal(['linked-contacts']))
 
-      const [notificationContent] = notification.warn.mock.calls[0]
+      const [notificationContent] = notification.warning.mock.calls[0]
       const buttonLink = notificationContent.props.children.find(
         (child) => child?.type === ButtonLink
       )
