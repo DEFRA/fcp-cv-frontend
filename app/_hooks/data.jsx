@@ -34,7 +34,7 @@ async function handleResponse(response, username) {
   } else {
     if (response.status === 206) {
       // Although the DAL request has not failed.  Some elements of the requested data have not been retrieved, due to an error
-      notification.warn(
+      notification.warning(
         <span>
           An error has occurred. Some data may be missing.{' '}
           <ButtonLink onClick={reloadPage}>Click to retry.</ButtonLink>
