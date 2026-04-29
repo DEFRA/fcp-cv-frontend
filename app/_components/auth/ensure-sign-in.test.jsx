@@ -31,11 +31,13 @@ describe('EnsureSignIn component tests', () => {
     await expect.element(getByText('Test child content')).toBeInTheDocument()
     await expect
       .element(
-        getByText('Sign in to your DEFRA account to use Consolidated View.')
+        getByText(
+          "Click 'Continue' to use Consolidated View (CV). You should only need to do this once."
+        )
       )
       .toBeVisible()
 
-    const signInButton = getByRole('button', { name: 'Sign in' })
+    const signInButton = getByRole('button', { name: 'Continue' })
     await expect.element(signInButton).toBeVisible()
     await signInButton.click()
     expect(login).toHaveBeenCalledWith('popup', {
