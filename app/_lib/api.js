@@ -23,7 +23,7 @@ export function handleApiError(
 }
 
 export function partialResponse(req, errors, message, data) {
-  const error = errors.map((er) => er?.stack ?? er?.toString() ?? er).join('\n')
+  const error = errors.map((er) => er?.stack ?? JSON.stringify(er)).join('\n')
   return handleApiError(
     req,
     new Error(`${message}, DAL returned partial data with errors:\n${error}`),

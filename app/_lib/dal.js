@@ -52,7 +52,15 @@ export async function dalRequest({ query, variables }) {
   })
 
   if (!response.ok) {
-    logger.warn('DAL request unsuccessful', { res: response })
+    const responseBody = await response.json()
+    const error = responseBody?.errors
+      ?.map((er) => er?.stack ?? JSON.stringify(er))
+      .join('\n')
+
+    logger.warn(
+      { response: { status: response.status, errorDetails: error } },
+      'DAL request unsuccessful'
+    )
     throw new DalResponseError(response.status, response.statusText)
   }
 
