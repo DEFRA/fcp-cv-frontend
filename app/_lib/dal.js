@@ -47,23 +47,22 @@ export async function dalRequest({ query, variables }) {
     headers: { 'content-type': 'application/json', email, authorization },
     body: JSON.stringify({ query, variables })
   }).catch((error) => {
-    logger.warn('DAL request failed', { error })
+    logger.warn('DAL request failed', { error: { message: error } })
     throw new Error('DAL request failed')
   })
 
   if (!response.ok) {
     const responseBody = await response.json()
-    const error = responseBody?.errors
-      ?.map((er) => er?.stack ?? JSON.stringify(er))
+    const error = responseBody.errors
+      ?.filter(Boolean)
+      .map((er) => JSON.stringify(er?.stack ?? er))
       .join('\n')
 
-    logger.warn(
-      {
-        error: { message: error },
-        http: { response: { status_code: response.status } }
-      },
-      'DAL request unsuccessful'
-    )
+    logger.warn('DAL request unsuccessful', {
+      error: { message: error },
+      http: { response: { status_code: response.status } }
+    })
+
     throw new DalResponseError(response.status, response.statusText)
   }
 

@@ -9,7 +9,16 @@ export function handleApiError(
   statusText = error.statusText ?? 'ServerError',
   body = { error: message }
 ) {
-  logger.warn({ error, req }, message)
+  logger.warn(
+    {
+      error: { message: error },
+      url: { full: req.url },
+      http: {
+        response: { status_code: status }
+      }
+    },
+    message
+  )
 
   if (error.status === 404 && error.responsePayload?.errors?.length === 1) {
     // DAL has returned a NotFound response and a single un-ambiguous error definition.
@@ -23,7 +32,10 @@ export function handleApiError(
 }
 
 export function partialResponse(req, errors, message, data) {
-  const error = errors.map((er) => er?.stack ?? JSON.stringify(er)).join('\n')
+  const error = errors
+    .filter(Boolean)
+    .map((er) => JSON.stringify(er?.stack ?? er))
+    .join('\n')
   return handleApiError(
     req,
     new Error(`${message}, DAL returned partial data with errors:\n${error}`),

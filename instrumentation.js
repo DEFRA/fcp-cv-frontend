@@ -70,11 +70,11 @@ const interceptLogStream = (stream, pinoLoggerFunction) => {
 // Next.js uses a mixture of console.logging and in some cases even just writes directly to stdout/stderr!
 // Ensure that each flavour of logging is converted to ECS JSON format
 const redirectAllLogging = () => {
-  // if (process.env.NEXT_RUNTIME === 'nodejs') {
-  //   redefineConsoleLogging()
-  //   interceptLogStream(process.stdout, (message) => logger.info(message))
-  //   interceptLogStream(process.stderr, (message) => logger.error(message))
-  // }
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    redefineConsoleLogging()
+    interceptLogStream(process.stdout, (message) => logger.info(message))
+    interceptLogStream(process.stderr, (message) => logger.error(message))
+  }
 }
 
 export async function register() {
