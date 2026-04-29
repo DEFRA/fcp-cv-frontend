@@ -9,7 +9,7 @@ export function handleApiError(
   statusText = error.statusText ?? 'ServerError',
   body = { error: message }
 ) {
-  logger.warn('Handling API error')
+  logger.warn(`Handling API error ${message}`)
   logger.warn(error)
   logger.warn(
     JSON.stringify({
