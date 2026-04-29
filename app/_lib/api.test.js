@@ -20,18 +20,19 @@ describe('DAL API tests', () => {
       expect(res.statusText).toBe('Partial Content')
       expect(await res.json()).toEqual({ data: 'some data' })
 
-      // expect(logger.warn).toHaveBeenCalledOnce()
-      // const [info, warning] = logger.warn.mock.calls[0]
+      expect(logger.warn).toHaveBeenCalledOnce()
+      const [info, warning] = logger.warn.mock.calls[0]
 
-      // expect(info.http.response.status_code).toEqual(206)
-      // expect(info.error.message.message).toContain(
-      //   'Problem fetching data, DAL returned partial data with errors:'
-      // )
-      // expect(info.error.message.message).toContain('Error 1')
-      // expect(info.error.message.message).not.toContain('null')
-      // expect(info.error.message.message).not.toContain('undefined')
-      // expect(info.error.message.message).toContain('Error 2')
-      // expect(warning).toEqual('Problem fetching data')
+      expect(info.http.response.status_code).toEqual(206)
+      expect(info.url.full).toEqual('/test')
+      expect(info.error.message).toContain(
+        'Problem fetching data, DAL returned partial data with errors:'
+      )
+      expect(info.error.message).toContain('Error 1')
+      expect(info.error.message).not.toContain('null')
+      expect(info.error.message).not.toContain('undefined')
+      expect(info.error.message).toContain('Error 2')
+      expect(warning).toEqual('Problem fetching data')
     })
   })
 
