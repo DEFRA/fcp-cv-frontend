@@ -28,7 +28,7 @@ async function getAccessToken() {
 
     return `Bearer ${response.accessToken}`
   } catch (error) {
-    logger.warn({ error }, 'DAL token retrieval failed')
+    logger.warn({ error: { message: error } }, 'DAL token retrieval failed')
 
     const cleanError = new Error('DAL token retrieval failed')
     cleanError.status = 401
@@ -47,7 +47,7 @@ export async function dalRequest({ query, variables }) {
     headers: { 'content-type': 'application/json', email, authorization },
     body: JSON.stringify({ query, variables })
   }).catch((error) => {
-    logger.warn('DAL request failed', { error: { message: error } })
+    logger.warn({ error: { message: error } }, 'DAL request failed')
     throw new Error('DAL request failed')
   })
 
@@ -58,10 +58,13 @@ export async function dalRequest({ query, variables }) {
       .map((er) => JSON.stringify(er?.stack ?? er))
       .join('\n')
 
-    logger.warn('DAL request unsuccessful', {
-      error: { message: error },
-      http: { response: { status_code: response.status } }
-    })
+    logger.warn(
+      {
+        error: { message: error },
+        http: { response: { status_code: response.status } }
+      },
+      'DAL request unsuccessful'
+    )
 
     throw new DalResponseError(response.status, response.statusText)
   }
