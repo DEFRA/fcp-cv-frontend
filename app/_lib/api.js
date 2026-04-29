@@ -9,28 +9,10 @@ export function handleApiError(
   statusText = error.statusText ?? 'ServerError',
   body = { error: message }
 ) {
-  logger.warn(`Handling API error ${message}`)
-  logger.warn(error)
-  logger.warn(
-    JSON.stringify({
-      error: { message: error },
-      // url: { full: req.url },
-      http: {
-        response: { status_code: status }
-      }
-    })
-  )
-  logger.warn({
-    error: { message: error },
-    // url: { full: req.url },
-    http: {
-      response: { status_code: status }
-    }
-  })
   logger.warn(
     {
       error: { message: JSON.stringify(error) },
-      // url: { full: req.url },
+      url: { full: req.url },
       http: {
         response: { status_code: status }
       }
