@@ -58,7 +58,7 @@ export async function dalRequest({ query, variables }) {
       .join('\n')
 
     logger.warn(
-      { response: { status: response.status, errorDetails: error } },
+      { labels: { response_status: response.status, error_details: error } },
       'DAL request unsuccessful'
     )
     throw new DalResponseError(response.status, response.statusText)
