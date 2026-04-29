@@ -165,13 +165,13 @@ describe('dalRequest', () => {
     })
 
     expect(logger.warn).toHaveBeenCalledWith(
-      'DAL request unsuccessful',
       expect.objectContaining({
         error: {
           message: `${JSON.stringify({ field: 'This is an error that should be stringified' })}\n${JSON.stringify(['Stack', 'should', 'be', 'stringified'])}`
         },
         http: { response: { status_code: 500 } }
-      })
+      }),
+      'DAL request unsuccessful'
     )
   })
 
@@ -206,10 +206,10 @@ describe('dalRequest', () => {
     ).rejects.toThrow(new Error('DAL request failed'))
 
     expect(logger.warn).toHaveBeenCalledWith(
-      'DAL request failed',
       expect.objectContaining({
         error: { message: new Error('Network failure') }
-      })
+      }),
+      'DAL request failed'
     )
   })
 })
