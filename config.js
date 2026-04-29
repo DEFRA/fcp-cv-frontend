@@ -36,6 +36,13 @@ export const config = convict({
       env: 'USER_AUTH_JWKS_URL',
       nullable: process.env.USER_AUTH_DISABLED === 'true'
     },
+    accessTokenIssuer: {
+      doc: 'The expected issuer of MSAL access tokens, usually in the form https://sts.windows.net/{tenantId}/',
+      format: String,
+      default: null,
+      env: 'USER_AUTH_ACCESS_TOKEN_ISSUER',
+      nullable: process.env.USER_AUTH_DISABLED === 'true'
+    },
     clientId: {
       doc: 'The Application (client) ID of the Microsoft Entra ID app registration',
       format: String,

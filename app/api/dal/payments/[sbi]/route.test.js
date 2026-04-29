@@ -4,20 +4,8 @@ import { vi } from 'vitest'
 
 import { GET } from './route'
 
-const makeJwt = (claims) => {
-  const header = Buffer.from(
-    JSON.stringify({ alg: 'RS256', typ: 'JWT' })
-  ).toString('base64url')
-  const payload = Buffer.from(JSON.stringify(claims)).toString('base64url')
-  return `${header}.${payload}.signature`
-}
-
-const defaultToken = makeJwt({ ipaddr: '203.0.113.1' })
-
-const makeRequest = ({ sbi = 'sbiParam', headers = {} } = {}) => [
-  new NextRequest('http://localhost', {
-    headers: { 'x-msal-access-token': defaultToken, ...headers }
-  }),
+const makeRequest = ({ sbi = 'sbiParam' } = {}) => [
+  new NextRequest('http://localhost'),
   { params: Promise.resolve({ sbi }) }
 ]
 
@@ -29,7 +17,8 @@ describe('Payments API route', () => {
       })
     }))
     vi.mock('@/lib/auth', () => ({
-      getEmailFromToken: () => 'test@example.com'
+      getEmailFromToken: vi.fn().mockResolvedValue('test@example.com'),
+      getIPFromToken: vi.fn().mockResolvedValue('203.0.113.1')
     }))
     vi.mock('@/lib/dal', () => ({
       dalRequest: vi.fn()
@@ -44,13 +33,11 @@ describe('Payments API route', () => {
   })
 
   test('should extract userIP from ipaddr claim in MSAL access token', async () => {
+    const { getIPFromToken } = await import('@/lib/auth')
     vi.mocked(dalRequest).mockResolvedValue({})
+    vi.mocked(getIPFromToken).mockResolvedValueOnce('203.0.113.4')
 
-    await GET(
-      ...makeRequest({
-        headers: { 'x-msal-access-token': makeJwt({ ipaddr: '203.0.113.4' }) }
-      })
-    )
+    await GET(...makeRequest())
 
     expect(dalRequest).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -59,27 +46,14 @@ describe('Payments API route', () => {
     )
   })
 
-  test('should return 500 and warn when MSAL token is missing', async () => {
+  test('should return 500 and warn when IP cannot be resolved from token', async () => {
+    const { getIPFromToken } = await import('@/lib/auth')
     const { logger } = await import('@/lib/logger')
-
-    const response = await GET(
-      ...makeRequest({ headers: { 'x-msal-access-token': null } })
+    vi.mocked(getIPFromToken).mockRejectedValueOnce(
+      new Error('Authorisation failure: no access token provided')
     )
 
-    expect(response.status).toBe(500)
-    expect(logger.warn).toHaveBeenCalledWith(
-      'Unable to resolve user IP address from MSAL access token'
-    )
-  })
-
-  test('should return 500 and warn when MSAL token is malformed', async () => {
-    const { logger } = await import('@/lib/logger')
-
-    const response = await GET(
-      ...makeRequest({
-        headers: { 'x-msal-access-token': 'not.a.jwt' }
-      })
-    )
+    const response = await GET(...makeRequest())
 
     expect(response.status).toBe(500)
     expect(logger.warn).toHaveBeenCalledWith(
