@@ -14,19 +14,21 @@ import { formatCurrency, formatDate } from '@/lib/formatters'
 const lineItemColumns = [
   {
     header: 'Agreement / Claim No.',
-    accessorKey: 'agreement_reference',
+    accessorKey: 'agreementClaimNo',
     cell: (props) => {
-      const row = props.row.original
+      const [agreementReference, claimNumber] = (props.getValue() ?? '').split(
+        '/'
+      )
       return (
         <span className="tabular-nums">
-          <div>{row.agreement_reference}</div>
-          <div>{row.claim_number}</div>
+          <div>{agreementReference}</div>
+          <div>{claimNumber}</div>
         </span>
       )
     }
   },
   { header: 'Scheme', accessorKey: 'scheme' },
-  { header: 'Marketing Year', accessorKey: 'marketing_year' },
+  { header: 'Marketing Year', accessorKey: 'marketingYear' },
   { header: 'Description', accessorKey: 'description' },
   {
     header: 'Amount',
@@ -77,7 +79,7 @@ export function PaymentsDetails() {
       <div>
         <h3 className="text-xl font-bold mb-3">Line Items</h3>
         <Table
-          data={payment?.line_items}
+          data={payment?.lineItems}
           columns={lineItemColumns}
           enableSorting={false}
           enableSearching={false}

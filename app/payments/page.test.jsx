@@ -15,12 +15,12 @@ const mockPayments = {
       reference: 'PAY0000001',
       date: '2023-03-15',
       amount: 2500,
-      line_items: [
+      currency: 'GBP',
+      lineItems: [
         {
-          agreement_reference: 'AG00001234',
-          claim_number: 'CLM0001',
+          agreementClaimNo: 'AG00001234/CLM0001',
           scheme: 'Countryside Stewardship',
-          marketing_year: '2023',
+          marketingYear: '2023',
           description: 'Arable field margins',
           amount: 1500
         }
@@ -30,12 +30,12 @@ const mockPayments = {
       reference: 'PAY0000002',
       date: '2022-06-01',
       amount: 750.5,
-      line_items: [
+      currency: 'GBP',
+      lineItems: [
         {
-          agreement_reference: 'AG00009999',
-          claim_number: 'CLM0003',
+          agreementClaimNo: 'AG00009999/CLM0003',
           scheme: 'Basic Payment Scheme',
-          marketing_year: '2022',
+          marketingYear: '2022',
           description: 'BPS payment',
           amount: 750.5
         }
