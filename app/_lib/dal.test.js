@@ -146,7 +146,14 @@ describe('dalRequest', () => {
       ok: false,
       status: 500,
       statusText: 'Internal Server Error',
-      json: async () => ({})
+      json: async () => ({
+        errors: [
+          { field: 'This is an error that should be stringified' },
+          null,
+          undefined,
+          { stack: ['Stack', 'should', 'be', 'stringified'] }
+        ]
+      })
     })
 
     await expect(() =>
@@ -157,16 +164,15 @@ describe('dalRequest', () => {
       statusText: 'Internal Server Error'
     })
 
-    // expect(logger.warn).toHaveBeenCalledWith(
-    //   'DAL request unsuccessful',
-    //   expect.objectContaining({
-    //     response: expect.objectContaining({
-    //       ok: false,
-    //       status: 500,
-    //       statusText: 'Internal Server Error'
-    //     })
-    //   })
-    // )
+    expect(logger.warn).toHaveBeenCalledWith(
+      'DAL request unsuccessful',
+      expect.objectContaining({
+        error: {
+          message: `${JSON.stringify({ field: 'This is an error that should be stringified' })}\n${JSON.stringify(['Stack', 'should', 'be', 'stringified'])}`
+        },
+        http: { response: { status_code: 500 } }
+      })
+    )
   })
 
   test.each([
@@ -197,12 +203,12 @@ describe('dalRequest', () => {
 
     await expect(() =>
       dalRequest({ query: '', variables: {} })
-    ).rejects.toThrow('DAL request failed')
+    ).rejects.toThrow(new Error('DAL request failed'))
 
     expect(logger.warn).toHaveBeenCalledWith(
       'DAL request failed',
       expect.objectContaining({
-        error: expect.objectContaining({ message: 'Network failure' })
+        error: { message: new Error('Network failure') }
       })
     )
   })
