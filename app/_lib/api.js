@@ -29,7 +29,7 @@ export function handleApiError(
   })
   logger.warn(
     {
-      error: { message: error },
+      error: { message: JSON.stringify(error) },
       // url: { full: req.url },
       http: {
         response: { status_code: status }
