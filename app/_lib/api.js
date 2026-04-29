@@ -1,32 +1,48 @@
 import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 
+const toStandardRequest = (nextRequest) => {
+  // CDP logging will automatically log HTTP requests, but NextRequest does not expose the fields during serialisation
+  return {
+    url: nextRequest.url,
+    method: nextRequest.method,
+    headers: nextRequest.headers && Object.fromEntries(nextRequest.headers)
+  }
+}
+
 export function handleApiError(
-  req,
+  request,
   error,
   message,
   status = error.status ?? 500,
   statusText = error.statusText ?? 'ServerError',
   body = { error: message }
 ) {
-  logger.warn({ error, req }, message)
+  logger.warn(
+    {
+      error,
+      req: toStandardRequest(request),
+      'http/response/status_code': status
+    },
+    message
+  )
 
-  if (error.status === 404 && error.responsePayload?.errors?.length === 1) {
-    // DAL has returned a NotFound response and a single un-ambiguous error definition.
-    // The contract with the DAL means that in this scenario, we can trust the message returned and use it for client display
-    return NextResponse.json(
-      { displayableError: error.responsePayload.errors[0].message },
-      { status: 404, statusText: 'Not Found' }
-    )
-  }
   return NextResponse.json(body, { status, statusText })
 }
 
+export const summariseErrors = (errors) => {
+  return errors
+    ?.filter(Boolean)
+    .map((er) => JSON.stringify(er?.stack ?? er))
+    .join('\n')
+}
+
 export function partialResponse(req, errors, message, data) {
-  const error = errors.map((er) => er?.stack ?? er?.toString() ?? er).join('\n')
   return handleApiError(
     req,
-    new Error(`${message}, DAL returned partial data with errors:\n${error}`),
+    new Error(
+      `${message}, DAL returned partial data with errors:\n${summariseErrors(errors)}`
+    ),
     message,
     206,
     'Partial Content',
