@@ -10,7 +10,23 @@ export function handleApiError(
   body = { error: message }
 ) {
   logger.warn('Handling API error')
-  logger.warn(req)
+  logger.warn(error)
+  logger.warn(
+    JSON.stringify({
+      error: { message: error },
+      // url: { full: req.url },
+      http: {
+        response: { status_code: status }
+      }
+    })
+  )
+  logger.warn({
+    error: { message: error },
+    // url: { full: req.url },
+    http: {
+      response: { status_code: status }
+    }
+  })
   logger.warn(
     {
       error: { message: error },
