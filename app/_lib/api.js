@@ -1,5 +1,6 @@
 import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
+
 const toStandardRequest = (nextRequest) => {
   return {
     url: nextRequest.url,
@@ -19,30 +20,28 @@ export function handleApiError(
   logger.warn(
     {
       error,
-      req: toStandardRequest(request)
+      req: toStandardRequest(request),
+      'http/response/status_code': status
     },
     message
   )
 
-  if (error.status === 404 && error.responsePayload?.errors?.length === 1) {
-    // DAL has returned a NotFound response and a single un-ambiguous error definition.
-    // The contract with the DAL means that in this scenario, we can trust the message returned and use it for client display
-    return NextResponse.json(
-      { displayableError: error.responsePayload.errors[0].message },
-      { status: 404, statusText: 'Not Found' }
-    )
-  }
   return NextResponse.json(body, { status, statusText })
 }
 
-export function partialResponse(req, errors, message, data) {
-  const error = errors
-    .filter(Boolean)
+export const summariseErrors = (errors) => {
+  return errors
+    ?.filter(Boolean)
     .map((er) => JSON.stringify(er?.stack ?? er))
     .join('\n')
+}
+
+export function partialResponse(req, errors, message, data) {
   return handleApiError(
     req,
-    new Error(`${message}, DAL returned partial data with errors:\n${error}`),
+    new Error(
+      `${message}, DAL returned partial data with errors:\n${summariseErrors(errors)}`
+    ),
     message,
     206,
     'Partial Content',

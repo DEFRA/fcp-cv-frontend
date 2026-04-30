@@ -240,7 +240,6 @@ describe('useDal and useDataverse Hooks', () => {
     test('not found response (HTTP 404) does not show a notification', async () => {
       fetchSpy.mockImplementation(async () => ({
         ok: false,
-        json: async () => ({ displayableError: 'Case not found' }),
         status: 404,
         statusText: 'Not Found'
       }))

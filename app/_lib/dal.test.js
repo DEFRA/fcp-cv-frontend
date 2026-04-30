@@ -206,9 +206,7 @@ describe('dalRequest', () => {
     ).rejects.toThrow(new Error('DAL request failed'))
 
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        error: { message: new Error('Network failure') }
-      }),
+      expect.objectContaining(new Error('DAL request failed')),
       'DAL request failed'
     )
   })

@@ -3,6 +3,7 @@ import { getEmailFromToken } from '@/lib/auth'
 import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
+import { summariseErrors } from '@/lib/api.js'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
 
@@ -28,7 +29,7 @@ async function getAccessToken() {
 
     return `Bearer ${response.accessToken}`
   } catch (error) {
-    logger.warn({ error: { message: error } }, 'DAL token retrieval failed')
+    logger.warn({ error }, 'DAL token retrieval failed')
 
     const cleanError = new Error('DAL token retrieval failed')
     cleanError.status = 401
@@ -47,20 +48,16 @@ export async function dalRequest({ query, variables }) {
     headers: { 'content-type': 'application/json', email, authorization },
     body: JSON.stringify({ query, variables })
   }).catch((error) => {
-    logger.warn({ error: { message: error } }, 'DAL request failed')
+    logger.warn({ error }, 'DAL request failed')
     throw new Error('DAL request failed')
   })
 
   if (!response.ok) {
     const responseBody = await response.json()
-    const error = responseBody.errors
-      ?.filter(Boolean)
-      .map((er) => JSON.stringify(er?.stack ?? er))
-      .join('\n')
 
     logger.warn(
       {
-        error: { message: error },
+        error: { message: summariseErrors(responseBody.errors) },
         http: { response: { status_code: response.status } }
       },
       'DAL request unsuccessful'
@@ -77,5 +74,13 @@ class DalResponseError extends Error {
     super(statusText)
     this.status = status
     this.statusText = statusText
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      status: this.status,
+      statusText: this.statusText
+    }
   }
 }
