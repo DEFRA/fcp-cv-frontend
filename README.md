@@ -6,7 +6,7 @@
 
 <abbr title="Farming & Countryside Programme">FCP</abbr>'s <abbr title="Consolidated View">CV</abbr> service (a.k.a. <abbr title="Single Customer View">SCV</abbr>).
 Principally a `React` frontend UI, built on top of the `Next.js` framework (including a Node.js <abbr title="Backend For Frontend">BFF</abbr>).
-The service displays DEFRA data relating to businesses and people, requested form the <abbr title="Data Access Layer">DAL</abbr> API.
+The service displays DEFRA data relating to businesses and people, requested from the <abbr title="Data Access Layer">DAL</abbr> API.
 The service comprises a collection of micro SPAs delivered through an iframe in the FCP CRM.
 
 ```mermaid
