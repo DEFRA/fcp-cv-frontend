@@ -1,5 +1,12 @@
 import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
+const toStandardRequest = (nextRequest) => {
+  return {
+    url: nextRequest.url,
+    method: nextRequest.method,
+    headers: nextRequest.headers && Object.fromEntries(nextRequest.headers)
+  }
+}
 
 export function handleApiError(
   request,
@@ -9,29 +16,10 @@ export function handleApiError(
   statusText = error.statusText ?? 'ServerError',
   body = { error: message }
 ) {
-  // logger.warn(JSON.stringify(request))
-  // logger.warn(`/req/originalUrl: ${request.originalUrl}`)
-  // logger.warn(`/req/url: ${request.url}`);
-  // logger.warn(`/req/ip: ${request.ip}`);
-  // logger.warn(`/req/remoteAddress: ${request.remoteAddress}`);
-  // logger.warn(`/req/remotePort: ${request.remotePort}`);
-  // logger.warn(`/req/headers/user-agent: ${request.userAgent}`);
-  // logger.warn(`/req/headers/host: ${request.host}`);
-  // logger.warn(`/req/method: ${request.method}`);
-  // logger.warn(`/req/id: ${request.id}`);
-  // logger.warn(`/responseTime: ${}`);
-  // logger.warn(`/res/headers: ${}`);
-  // logger.warn(`/process.pid: ${}`);
-
   logger.warn(
     {
-      error: { message: JSON.stringify(error.message) },
-      // url: { full: req.url },
-      req: {
-        url: request.url,
-        method: request.method,
-        headers: request.headers && Object.fromEntries(request.headers)
-      }
+      error,
+      req: toStandardRequest(request)
     },
     message
   )
