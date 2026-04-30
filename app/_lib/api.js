@@ -2,7 +2,7 @@ import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 
 export function handleApiError(
-  req,
+  request,
   error,
   message,
   status = error.status ?? 500,
@@ -12,8 +12,9 @@ export function handleApiError(
   logger.warn(
     {
       error: { message: JSON.stringify(error.message) },
-      url: { full: req.url },
+      // url: { full: req.url },
       http: {
+        request,
         response: { status_code: status }
       }
     },
