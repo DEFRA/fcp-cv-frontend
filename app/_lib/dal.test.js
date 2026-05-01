@@ -166,9 +166,9 @@ describe('dalRequest', () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       expect.objectContaining({
-        err: {
-          message: `${JSON.stringify({ field: 'This is an error that should be stringified' })}\n${JSON.stringify(['Stack', 'should', 'be', 'stringified'])}`
-        },
+        err: new Error(
+          `${JSON.stringify({ field: 'This is an error that should be stringified' })}\n${JSON.stringify(['Stack', 'should', 'be', 'stringified'])}`
+        ),
         req: expect.objectContaining({
           body: JSON.stringify({ query: '', variables: {} })
         }),

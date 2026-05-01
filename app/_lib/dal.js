@@ -59,7 +59,7 @@ export async function dalRequest({ query, variables }) {
 
     logger.warn(
       {
-        err: { message: summariseErrors(responseBody.errors) },
+        err: new Error(summariseErrors(responseBody.errors)),
         req,
         res: response
       },

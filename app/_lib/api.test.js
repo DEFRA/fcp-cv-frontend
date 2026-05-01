@@ -23,7 +23,8 @@ describe('DAL API tests', () => {
       expect(logger.warn).toHaveBeenCalledOnce()
       const [info, warning] = logger.warn.mock.calls[0]
 
-      expect(info['http.response.status_code']).toEqual(206)
+      expect(info.res.status).toEqual(206)
+      expect(info.res.statusText).toEqual('Partial Content')
       expect(info.req.url).toEqual('/test')
       expect(info.err.message).toContain(
         'Problem fetching data, DAL returned partial data with errors:'
