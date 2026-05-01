@@ -22,14 +22,17 @@ describe('DAL API tests', () => {
 
       expect(logger.warn).toHaveBeenCalledOnce()
       const [info, warning] = logger.warn.mock.calls[0]
-      expect(info.req).toEqual({ url: '/test' })
-      expect(info.error.message).toContain(
+
+      expect(info.res.status).toEqual(206)
+      expect(info.res.statusText).toEqual('Partial Content')
+      expect(info.req.url).toEqual('/test')
+      expect(info.err.message).toContain(
         'Problem fetching data, DAL returned partial data with errors:'
       )
-      expect(info.error.message).toContain('Error 1')
-      expect(info.error.message).not.toContain('null')
-      expect(info.error.message).not.toContain('undefined')
-      expect(info.error.message).toContain('Error 2')
+      expect(info.err.message).toContain('Error 1')
+      expect(info.err.message).not.toContain('null')
+      expect(info.err.message).not.toContain('undefined')
+      expect(info.err.message).toContain('Error 2')
       expect(warning).toEqual('Problem fetching data')
     })
   })
