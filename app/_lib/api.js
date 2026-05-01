@@ -13,7 +13,7 @@ export function handleApiError(
     {
       err,
       req,
-      'http/response/status_code': status
+      'http.response.status_code': status
     },
     message
   )
