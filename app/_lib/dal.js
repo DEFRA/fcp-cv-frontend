@@ -29,7 +29,7 @@ async function getAccessToken() {
 
     return `Bearer ${response.accessToken}`
   } catch (error) {
-    logger.warn({ error }, 'DAL token retrieval failed')
+    logger.warn({ err: error }, 'DAL token retrieval failed')
 
     const cleanError = new Error('DAL token retrieval failed')
     cleanError.status = 401
@@ -43,12 +43,14 @@ export async function dalRequest({ query, variables }) {
   const email = await getEmailFromToken(await headers())
   const authorization = DAL_AUTH_DISABLED ? '' : await getAccessToken()
 
-  const response = await fetch(config.get('dal.url'), {
+  const req = {
     method: 'POST',
     headers: { 'content-type': 'application/json', email, authorization },
     body: JSON.stringify({ query, variables })
-  }).catch((error) => {
-    logger.warn({ error }, 'DAL request failed')
+  }
+
+  const response = await fetch(config.get('dal.url'), req).catch((error) => {
+    logger.warn({ err: error }, 'DAL request failed')
     throw new Error('DAL request failed')
   })
 
@@ -57,8 +59,9 @@ export async function dalRequest({ query, variables }) {
 
     logger.warn(
       {
-        error: { message: summariseErrors(responseBody.errors) },
-        http: { response: { status_code: response.status } }
+        err: { message: summariseErrors(responseBody.errors) },
+        req,
+        res: response
       },
       'DAL request unsuccessful'
     )

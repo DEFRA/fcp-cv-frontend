@@ -1,27 +1,18 @@
 import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 
-const toStandardRequest = (nextRequest) => {
-  // CDP logging will automatically log HTTP requests, but NextRequest does not expose the fields during serialisation
-  return {
-    url: nextRequest.url,
-    method: nextRequest.method,
-    headers: nextRequest.headers && Object.fromEntries(nextRequest.headers)
-  }
-}
-
 export function handleApiError(
-  request,
-  error,
+  req,
+  err,
   message,
-  status = error.status ?? 500,
-  statusText = error.statusText ?? 'ServerError',
+  status = err.status ?? 500,
+  statusText = err.statusText ?? 'ServerError',
   body = { error: message }
 ) {
   logger.warn(
     {
-      error,
-      req: toStandardRequest(request),
+      err,
+      req,
       'http/response/status_code': status
     },
     message
