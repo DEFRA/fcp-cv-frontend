@@ -25,13 +25,13 @@ describe('DAL API tests', () => {
 
       expect(info['http/response/status_code']).toEqual(206)
       expect(info.req.url).toEqual('/test')
-      expect(info.error.message).toContain(
+      expect(info.err.message).toContain(
         'Problem fetching data, DAL returned partial data with errors:'
       )
-      expect(info.error.message).toContain('Error 1')
-      expect(info.error.message).not.toContain('null')
-      expect(info.error.message).not.toContain('undefined')
-      expect(info.error.message).toContain('Error 2')
+      expect(info.err.message).toContain('Error 1')
+      expect(info.err.message).not.toContain('null')
+      expect(info.err.message).not.toContain('undefined')
+      expect(info.err.message).toContain('Error 2')
       expect(warning).toEqual('Problem fetching data')
     })
   })

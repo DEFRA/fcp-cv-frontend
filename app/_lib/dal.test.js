@@ -166,10 +166,13 @@ describe('dalRequest', () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: {
+        err: {
           message: `${JSON.stringify({ field: 'This is an error that should be stringified' })}\n${JSON.stringify(['Stack', 'should', 'be', 'stringified'])}`
         },
-        http: { response: { status_code: 500 } }
+        req: expect.objectContaining({
+          body: JSON.stringify({ query: '', variables: {} })
+        }),
+        res: expect.objectContaining({ status: 500 })
       }),
       'DAL request unsuccessful'
     )
