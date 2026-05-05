@@ -97,6 +97,28 @@ describe('Table component tests', () => {
         .not.toBeInTheDocument()
     })
 
+    it('filters on columns whose first row value is null', async () => {
+      const data = [
+        { sheetName: null, parcelName: null, optionDescription: 'CIPM1' },
+        { sheetName: 'TL1337', parcelName: '0664', optionDescription: 'CAHL2' }
+      ]
+      const columns = [
+        { header: 'Sheet', accessorKey: 'sheetName' },
+        { header: 'Parcel', accessorKey: 'parcelName' },
+        { header: 'Description', accessorKey: 'optionDescription' }
+      ]
+
+      const { getByPlaceholder, getByRole } = await render(
+        <Table data={data} columns={columns} enableSorting={false} />
+      )
+
+      await userEvent.type(getByPlaceholder(searchPlaceholder), 'TL1337')
+
+      await expect
+        .element(getByRole('cell', { name: 'TL1337' }))
+        .toBeInTheDocument()
+    })
+
     it('shows a message when no data matches search term', async () => {
       const { getByPlaceholder, getByRole, getByText } = await render(
         <Table data={[defaultData[0]]} columns={defaultColumns} />

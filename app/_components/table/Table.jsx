@@ -240,6 +240,7 @@ export default function Table({
     columns,
     onGlobalFilterChange: enableSearching ? setGlobalFilter : undefined,
     globalFilterFn: 'includesString',
+    getColumnCanGlobalFilter: () => true, // tanstack disables searching for entire column if first row+column is empty. This overrides the default behavior and always allows all columns defined to be searchable
     state,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
