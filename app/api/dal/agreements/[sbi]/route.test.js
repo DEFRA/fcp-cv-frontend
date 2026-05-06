@@ -279,14 +279,10 @@ describe('Agreements API route', () => {
     expect(response.status).toBe(200)
 
     const { list, details } = await response.json()
-    expect(list[0].startDate).toBe('01/01/1970')
-    expect(list[0].endDate).toBe('01/01/1970')
-    expect(details.AG00009999.paymentSchedules[0].paymentSchedule).toBe(
-      '01/01/1970 - 01/01/1970'
-    )
-    expect(details.AG00009999.paymentSchedules[0].commitmentTerm).toBe(
-      '01/01/1970 - 01/01/1970'
-    )
+    expect(list[0].startDate).toBe('')
+    expect(list[0].endDate).toBe('')
+    expect(details.AG00009999.paymentSchedules[0].paymentSchedule).toBe(' - ')
+    expect(details.AG00009999.paymentSchedules[0].commitmentTerm).toBe(' - ')
   })
 
   test('should return empty list and details when dal response is missing data', async () => {
