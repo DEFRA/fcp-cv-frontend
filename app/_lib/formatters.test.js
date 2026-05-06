@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import {
   formatCurrency,
   formatDate,
+  formatDateAndTime,
   uppercaseSnakeToTitleCase
 } from '@/lib/formatters'
 
@@ -108,6 +109,54 @@ describe('formatDate', () => {
     expect(() => formatDate('invalid-date')).toThrow()
     expect(() => formatDate('2025-13-01')).toThrow() // invalid month
     expect(() => formatDate(NaN)).toThrow()
+  })
+
+  it('returns empty string for null or undefined', () => {
+    expect(formatDate(null)).toBe('')
+    expect(formatDate(undefined)).toBe('')
+  })
+
+  it('returns custom defaultReturnValue when input is null or undefined', () => {
+    expect(formatDate(null, 'N/A')).toBe('N/A')
+    expect(formatDate(undefined, 'N/A')).toBe('N/A')
+  })
+})
+
+describe('formatDateAndTime', () => {
+  const london = 'Europe/London'
+
+  it('formats ISO strings (Z) correctly in Europe/London', () => {
+    // Winter time (GMT)
+    expect(formatDateAndTime('2025-01-15T23:30:00Z')).toBe('15/01/2025 23:30')
+
+    // Summer time (BST = UTC+1)
+    expect(formatDateAndTime('2025-07-10T22:59:59Z')).toBe('10/07/2025 23:59')
+    expect(formatDateAndTime('2025-07-11T00:30:00Z')).toBe('11/07/2025 01:30')
+  })
+
+  it('accepts native Date objects', () => {
+    const d = new Date('2025-04-05T14:20:00Z')
+    expect(formatDateAndTime(d)).toBe('05/04/2025 15:20') // BST = UTC+1
+  })
+
+  it('handles already TZDate instances', () => {
+    const tz = new TZDate(new Date('2025-06-20T10:00:00Z'), london)
+    expect(formatDateAndTime(tz)).toBe('20/06/2025 11:00') // BST = UTC+1
+  })
+
+  it('throws on clearly invalid date input', () => {
+    expect(() => formatDateAndTime('invalid-date')).toThrow()
+    expect(() => formatDateAndTime(NaN)).toThrow()
+  })
+
+  it('returns empty string for null or undefined', () => {
+    expect(formatDateAndTime(null)).toBe('')
+    expect(formatDateAndTime(undefined)).toBe('')
+  })
+
+  it('returns custom defaultReturnValue when input is null or undefined', () => {
+    expect(formatDateAndTime(null, 'N/A')).toBe('N/A')
+    expect(formatDateAndTime(undefined, 'N/A')).toBe('N/A')
   })
 })
 

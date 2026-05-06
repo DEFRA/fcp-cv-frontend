@@ -179,6 +179,44 @@ describe('Applications API route', () => {
     expect(response.status).toBe(500)
   })
 
+  test('should return empty string for null submissionDate', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          applications: [
+            {
+              id: '5836775937',
+              year: 2022,
+              name: 'TEST APPLICATION',
+              scheme: 'TEST SCHEME',
+              status: 'PAID',
+              submissionDate: null,
+              portalStatus: null,
+              agreementReferences: ['3242226112'],
+              transitionHistory: [
+                {
+                  name: 'TO PAID',
+                  timestamp: '2022-12-31T06:30:16.953Z'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    })
+
+    const response = await GET(new NextRequest('http://localhost'), {
+      params: Promise.resolve({ sbi: 'sbiParam' })
+    })
+
+    expect(response.status).toBe(200)
+    const result = await response.json()
+    const submittedDate = result.details['5836775937'].summary.find(
+      (item) => item.dt === 'Submitted Date'
+    )
+    expect(submittedDate.dd).toBe('')
+  })
+
   test('should sort applications by year descending', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {

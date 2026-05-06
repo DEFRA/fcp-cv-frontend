@@ -22,11 +22,17 @@ export function uppercaseSnakeToTitleCase(input) {
     .join(' ')
 }
 
-export function formatDate(input) {
+export function formatDate(input, defaultReturnValue = '') {
+  if (input == null) {
+    return defaultReturnValue
+  }
   return format(new TZDate(new Date(input), 'Europe/London'), 'dd/MM/yyyy')
 }
 
-export function formatDateAndTime(input) {
+export function formatDateAndTime(input, defaultReturnValue = '') {
+  if (input == null) {
+    return defaultReturnValue
+  }
   return format(
     new TZDate(new Date(input), 'Europe/London'),
     'dd/MM/yyyy HH:mm'

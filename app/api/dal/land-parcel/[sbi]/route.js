@@ -65,12 +65,8 @@ export async function GET(request, ctx) {
     const responsePayload = {
       parcel: {
         ...parcel,
-        effectiveFromDate: parcel.effectiveFromDate
-          ? formatDate(parcel.effectiveFromDate)
-          : '',
-        effectiveToDate: parcel.effectiveToDate
-          ? formatDate(parcel.effectiveToDate)
-          : ''
+        effectiveFromDate: formatDate(parcel.effectiveFromDate),
+        effectiveToDate: formatDate(parcel.effectiveToDate)
       },
       parcelCovers,
       parcelLandUses: parcelLandUses.map((use) => {

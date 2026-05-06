@@ -36,9 +36,10 @@ export async function GET(req, { params }) {
       items: [
         {
           dt: 'Date of Birth',
-          dd: apiResponse?.data?.customer?.info?.dateOfBirth
-            ? formatDate(apiResponse.data.customer.info.dateOfBirth)
-            : '(Not set)'
+          dd: formatDate(
+            apiResponse?.data?.customer?.info?.dateOfBirth,
+            '(Not set)'
+          )
         },
         {
           dt: 'Memorable Date',
@@ -54,9 +55,7 @@ export async function GET(req, { params }) {
         },
         {
           dt: 'Updated At',
-          dd: authenticationQuestions?.updatedAt
-            ? formatDateAndTime(authenticationQuestions?.updatedAt)
-            : '(Not set)'
+          dd: formatDateAndTime(authenticationQuestions?.updatedAt, '(Not set)')
         }
       ]
     }
