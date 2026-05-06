@@ -38,9 +38,7 @@ export async function GET(req, { params }) {
       },
       {
         dt: 'Updated At',
-        dd: authenticationQuestions?.updatedAt
-          ? formatDateAndTime(authenticationQuestions?.updatedAt)
-          : '(Not set)'
+        dd: formatDateAndTime(authenticationQuestions?.updatedAt, '(Not set)')
       }
     ]
     return dalApiResponse(
