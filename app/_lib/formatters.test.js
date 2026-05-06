@@ -106,8 +106,8 @@ describe('formatDate', () => {
   })
 
   it('throws on clearly invalid date input', () => {
-    // expect(() => formatDate('invalid-date')).toThrow()
-    // expect(() => formatDate('2025-13-01')).toThrow() // invalid month
+    expect(() => formatDate('invalid-date')).toThrow()
+    expect(() => formatDate('2025-13-01')).toThrow() // invalid month
     expect(() => formatDate(NaN)).toThrow()
   })
 
