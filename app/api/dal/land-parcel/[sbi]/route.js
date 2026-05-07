@@ -28,6 +28,8 @@ const query = `#graphql
           area
           length
           type
+          campaign
+          insertDate
         }
       }
     }
@@ -55,11 +57,14 @@ export async function GET(request, ctx) {
       a.code.localeCompare(b.code)
     )
     const parcelLandUses = (land.parcelLandUses || []).sort((a, b) => {
-      const dateA = new Date(a.startDate)
-      const dateB = new Date(b.startDate)
-      if (dateA.getTime() !== dateB.getTime())
-        return dateB.getTime() - dateA.getTime() // desc
-      return a.code.localeCompare(b.code) // asc
+      // Sort by campaign (year) descending first
+      const campaignA = parseInt(a.campaign) || 0
+      const campaignB = parseInt(b.campaign) || 0
+      if (campaignA !== campaignB) {
+        return campaignB - campaignA // desc
+      }
+      // Then sort by type (land use) ascending
+      return (a.type || '').localeCompare(b.type || '') // asc
     })
 
     const responsePayload = {

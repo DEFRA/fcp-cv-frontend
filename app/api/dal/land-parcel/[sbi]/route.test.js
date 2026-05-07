@@ -332,7 +332,7 @@ describe('Land Parcel API route', () => {
     ])
   })
 
-  test('sorts parcelLandUses by startDate descending then code ascending', async () => {
+  test('sorts parcelLandUses by campaign descending then type ascending', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         business: {
@@ -348,8 +348,9 @@ describe('Land Parcel API route', () => {
             parcelCovers: [],
             parcelLandUses: [
               {
-                code: 'AC02',
-                type: 'Area',
+                code: 'AC01',
+                type: 'Grassland',
+                campaign: '2021',
                 area: 1.0,
                 length: null,
                 startDate: '2021-11-15',
@@ -358,21 +359,34 @@ describe('Land Parcel API route', () => {
                 deleteDate: ''
               },
               {
-                code: 'AC01',
-                type: 'Area',
+                code: 'AC02',
+                type: 'Arable',
+                campaign: '2022',
                 area: 1.0,
                 length: null,
-                startDate: '2021-11-15',
+                startDate: '2022-01-01',
                 endDate: '',
                 insertDate: '',
                 deleteDate: ''
               },
               {
                 code: 'AC03',
-                type: 'Area',
+                type: 'Woodland',
+                campaign: '2021',
                 area: 1.0,
                 length: null,
                 startDate: '2021-12-01',
+                endDate: '',
+                insertDate: '',
+                deleteDate: ''
+              },
+              {
+                code: 'AC04',
+                type: 'Arable',
+                campaign: '2021',
+                area: 1.0,
+                length: null,
+                startDate: '2021-10-01',
                 endDate: '',
                 insertDate: '',
                 deleteDate: ''
@@ -392,18 +406,31 @@ describe('Land Parcel API route', () => {
 
     expect(body.parcelLandUses).toStrictEqual([
       {
-        code: 'AC03',
-        type: 'Area',
+        code: 'AC02',
+        type: 'Arable',
+        campaign: '2022',
         area: 1.0,
         length: null,
-        startDate: '01/12/2021',
+        startDate: '01/01/2022',
+        endDate: '',
+        insertDate: '',
+        deleteDate: ''
+      },
+      {
+        code: 'AC04',
+        type: 'Arable',
+        campaign: '2021',
+        area: 1.0,
+        length: null,
+        startDate: '01/10/2021',
         endDate: '',
         insertDate: '',
         deleteDate: ''
       },
       {
         code: 'AC01',
-        type: 'Area',
+        type: 'Grassland',
+        campaign: '2021',
         area: 1.0,
         length: null,
         startDate: '15/11/2021',
@@ -412,11 +439,12 @@ describe('Land Parcel API route', () => {
         deleteDate: ''
       },
       {
-        code: 'AC02',
-        type: 'Area',
+        code: 'AC03',
+        type: 'Woodland',
+        campaign: '2021',
         area: 1.0,
         length: null,
-        startDate: '15/11/2021',
+        startDate: '01/12/2021',
         endDate: '',
         insertDate: '',
         deleteDate: ''
