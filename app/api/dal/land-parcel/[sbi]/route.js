@@ -61,10 +61,10 @@ export async function GET(request, ctx) {
       const campaignA = parseInt(a.campaign) || 0
       const campaignB = parseInt(b.campaign) || 0
       if (campaignA !== campaignB) {
-        return campaignB - campaignA // desc
+        return campaignB - campaignA
       }
       // Then sort by type (land use) ascending
-      return (a.type || '').localeCompare(b.type || '') // asc
+      return (a.type || '').localeCompare(b.type || '')
     })
 
     const responsePayload = {

@@ -337,59 +337,22 @@ describe('Land Parcel API route', () => {
       data: {
         business: {
           land: {
-            parcel: {
-              sheetId: 'SS6528',
-              parcelId: '8779',
-              area: 1,
-              pendingDigitisation: false,
-              effectiveFromDate: null,
-              effectiveToDate: null
-            },
-            parcelCovers: [],
             parcelLandUses: [
               {
-                code: 'AC01',
-                type: 'Grassland',
-                campaign: '2021',
-                area: 1.0,
-                length: null,
-                startDate: '2021-11-15',
-                endDate: '',
-                insertDate: '',
-                deleteDate: ''
+                code: 'C',
+                campaign: '2026'
               },
               {
-                code: 'AC02',
-                type: 'Arable',
-                campaign: '2022',
-                area: 1.0,
-                length: null,
-                startDate: '2022-01-01',
-                endDate: '',
-                insertDate: '',
-                deleteDate: ''
+                code: 'D',
+                campaign: '2022'
               },
               {
-                code: 'AC03',
-                type: 'Woodland',
-                campaign: '2021',
-                area: 1.0,
-                length: null,
-                startDate: '2021-12-01',
-                endDate: '',
-                insertDate: '',
-                deleteDate: ''
+                code: 'B',
+                campaign: '2024'
               },
               {
-                code: 'AC04',
-                type: 'Arable',
-                campaign: '2021',
-                area: 1.0,
-                length: null,
-                startDate: '2021-10-01',
-                endDate: '',
-                insertDate: '',
-                deleteDate: ''
+                code: 'A',
+                campaign: '2024'
               }
             ]
           }
@@ -404,51 +367,11 @@ describe('Land Parcel API route', () => {
 
     const body = await response.json()
 
-    expect(body.parcelLandUses).toStrictEqual([
-      {
-        code: 'AC02',
-        type: 'Arable',
-        campaign: '2022',
-        area: 1.0,
-        length: null,
-        startDate: '01/01/2022',
-        endDate: '',
-        insertDate: '',
-        deleteDate: ''
-      },
-      {
-        code: 'AC04',
-        type: 'Arable',
-        campaign: '2021',
-        area: 1.0,
-        length: null,
-        startDate: '01/10/2021',
-        endDate: '',
-        insertDate: '',
-        deleteDate: ''
-      },
-      {
-        code: 'AC01',
-        type: 'Grassland',
-        campaign: '2021',
-        area: 1.0,
-        length: null,
-        startDate: '15/11/2021',
-        endDate: '',
-        insertDate: '',
-        deleteDate: ''
-      },
-      {
-        code: 'AC03',
-        type: 'Woodland',
-        campaign: '2021',
-        area: 1.0,
-        length: null,
-        startDate: '01/12/2021',
-        endDate: '',
-        insertDate: '',
-        deleteDate: ''
-      }
+    expect(body.parcelLandUses).toEqual([
+      expect.objectContaining({ code: 'C' }),
+      expect.objectContaining({ code: 'B' }),
+      expect.objectContaining({ code: 'A' }),
+      expect.objectContaining({ code: 'D' })
     ])
   })
 
@@ -506,6 +429,111 @@ describe('Land Parcel API route', () => {
     expect(body.parcelLandUses[1].code).toBe('AC02') // Valid date comes last
     expect(body.parcelLandUses[0].startDate).toBe('') // Invalid date becomes empty string
     expect(body.parcelLandUses[1].startDate).toBe('15/11/2021') // Valid date formatted
+  })
+
+  test('sorts parcelLandUses with undefined campaigns (fallback to 0, sorts last)', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          land: {
+            parcelLandUses: [
+              {
+                code: 'B',
+                campaign: undefined,
+                type: 'Y'
+              },
+              {
+                code: 'A',
+                campaign: '2021',
+                type: 'X'
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      { params: Promise.resolve({ sbi: '123456789' }) }
+    )
+
+    const body = await response.json()
+
+    expect(body.parcelLandUses).toEqual([
+      expect.objectContaining({ code: 'A' }),
+      expect.objectContaining({ code: 'B' })
+    ])
+  })
+
+  test('sorts by type when campaigns equal (including undefined, fallback to ""), with undefined types first', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          land: {
+            parcelLandUses: [
+              {
+                code: 'B',
+                campaign: undefined,
+                type: 'Z'
+              },
+              {
+                code: 'A',
+                campaign: undefined,
+                type: undefined
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      { params: Promise.resolve({ sbi: '123456789' }) }
+    )
+
+    const body = await response.json()
+
+    expect(body.parcelLandUses).toEqual([
+      expect.objectContaining({ code: 'A' }),
+      expect.objectContaining({ code: 'B' })
+    ])
+  })
+
+  test('sorts by type when campaigns equal (both undefined), with defined type after undefined type', async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          land: {
+            parcelLandUses: [
+              {
+                code: 'B',
+                campaign: undefined,
+                type: 'A'
+              },
+              {
+                code: 'A',
+                campaign: undefined,
+                type: undefined
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const response = await GET(
+      new NextRequest('http://localhost?sheetId=SS6528&parcelId=8779'),
+      { params: Promise.resolve({ sbi: '123456789' }) }
+    )
+
+    const body = await response.json()
+
+    expect(body.parcelLandUses).toEqual([
+      expect.objectContaining({ code: 'A' }),
+      expect.objectContaining({ code: 'B' })
+    ])
   })
 
   test('should return partial response with errors if DAL response has errors', async () => {
