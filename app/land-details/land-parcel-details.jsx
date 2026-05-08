@@ -19,10 +19,11 @@ const coversColumns = [
 const landUsesColumns = [
   { header: 'Code', accessorKey: 'code', fixedWidth: 50 },
   { header: 'Land Use', accessorKey: 'type' },
-  { header: 'Start Date', accessorKey: 'startDate', fixedWidth: 90 },
-  { header: 'End Date', accessorKey: 'endDate', fixedWidth: 90 },
+  { header: 'Year', accessorKey: 'campaign', fixedWidth: 90 },
   { header: 'Area (ha)', accessorKey: 'area', fixedWidth: 95 },
-  { header: 'Length (m)', accessorKey: 'length', fixedWidth: 95 }
+  { header: 'Length (m)', accessorKey: 'length', fixedWidth: 95 },
+  { header: 'Added Date', accessorKey: 'insertDate', fixedWidth: 90 },
+  { header: 'Start Date', accessorKey: 'startDate', fixedWidth: 90 }
 ]
 
 function todayISO() {

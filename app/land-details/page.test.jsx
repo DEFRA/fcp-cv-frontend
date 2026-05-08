@@ -92,7 +92,8 @@ const mockParcelDetail836 = {
       startDate: '15/11/2021',
       endDate: '14/11/2022',
       insertDate: '01/01/2021',
-      deleteDate: ''
+      deleteDate: '',
+      campaign: '2026'
     }
   ]
 }
@@ -325,7 +326,10 @@ describe('LandDetailsPage tests', () => {
         .element(getByRole('cell', { name: 'AC01' }))
         .toBeInTheDocument()
       await expect
-        .element(getByRole('cell', { name: '14/11/2022' }))
+        .element(getByRole('cell', { name: '01/01/2021' }))
+        .toBeInTheDocument()
+      await expect
+        .element(getByRole('cell', { name: '2026' }))
         .toBeInTheDocument()
     }
   )
