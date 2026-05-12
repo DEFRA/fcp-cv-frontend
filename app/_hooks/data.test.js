@@ -50,6 +50,7 @@ describe('useDal and useDataverse Hooks', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.useRealTimers()
   })
 
   describe('auth enabled', () => {
@@ -309,6 +310,24 @@ describe('useDal and useDataverse Hooks', () => {
       await renderHook(() => useDal(['linked-contacts'], [false]))
 
       expect(fetchSpy).not.toHaveBeenCalledOnce()
+    })
+
+    it('does not retry when a request fails', async () => {
+      vi.useFakeTimers()
+
+      fetchSpy.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error'
+      })
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      // Advance time beyond teh first few SWR retries
+      await vi.advanceTimersByTimeAsync(60000)
+
+      // Only the first fetch call should have been triggered, no retries attempted
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
     })
   })
 })
