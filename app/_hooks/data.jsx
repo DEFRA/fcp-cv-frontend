@@ -97,7 +97,11 @@ function useData(urlParts, runWhenTruthy) {
       //   console.debug('Data fetched successfully:', data)
       // },
       revalidateIfStale: false,
-      revalidateOnFocus: false
+      revalidateOnFocus: false,
+
+      // Disable all retries.  To enabled per-status code retries, remove this (or set to true) and implement
+      // onRetryError instead
+      shouldRetryOnError: false
     }
   )
 
