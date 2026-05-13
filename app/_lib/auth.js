@@ -3,25 +3,23 @@ import { createRemoteJWKSet, decodeJwt, jwtVerify } from 'jose'
 import { config } from '@/config'
 import { logger } from '@/lib/logger'
 
-export const clientAuthConfig = {
-  disabled: config.get('userAuth.disabled'),
-  authority: config.get('userAuth.authority'),
-  clientId: config.get('userAuth.clientId'),
-  redirectUri: config.get('userAuth.redirectUri'),
-  scope: config.get('userAuth.scope')
-}
-
-const ID_TOKEN_AUDIENCE = config.get('userAuth.clientId')
-const ID_TOKEN_ISSUER = config.get('userAuth.authority')
-const JWKS_URL = config.get('userAuth.jwksUrl')
+const TENANT_BASE_URL = config.get('auth.tenantBaseUrl')
+const ID_TOKEN_AUDIENCE = config.get('auth.appRegId')
+const ID_TOKEN_ISSUER = `${TENANT_BASE_URL}/v2.0`
+const JWKS_URL = `${TENANT_BASE_URL}/discovery/v2.0/keys`
 
 // MSAL access tokens for Dataverse are v1 tokens — issuer is sts.windows.net,
 // audience is the Dataverse resource URL.
-const ACCESS_TOKEN_ISSUER = config.get('userAuth.accessTokenIssuer')
-const ACCESS_TOKEN_AUDIENCE = (() => {
-  const url = config.get('dataverse.url')
-  return url ? new URL(url).origin : null
-})()
+const ACCESS_TOKEN_ISSUER = `https://sts.windows.net/${TENANT_BASE_URL.replace(/.*\//, '')}`
+const ACCESS_TOKEN_AUDIENCE = config.get('crm.baseUrl')
+
+export const clientAuthConfig = {
+  disabled: config.get('auth.userLogin.disabled'),
+  authority: ID_TOKEN_ISSUER,
+  clientId: ID_TOKEN_AUDIENCE,
+  redirectUri: config.get('auth.userLogin.redirectUri'),
+  scope: `${ACCESS_TOKEN_AUDIENCE}/.default`
+}
 
 let remoteJWKSet = null
 function getRemoteJWKSet() {
@@ -80,7 +78,7 @@ export async function getIPFromToken(headers) {
 }
 
 export async function getEmailFromToken(headers) {
-  if (clientAuthConfig.disabled) return config.get('dal.email')
+  if (clientAuthConfig.disabled) return config.get('testUserEmail')
 
   const token = headers.get('x-msal-id-token')
   const payload = await verifyToken(token, {

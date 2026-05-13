@@ -84,6 +84,7 @@ describe('getEmailFromToken', () => {
 
   test('returns DAL_EMAIL when auth disabled', async () => {
     vi.stubEnv('USER_AUTH_DISABLED', 'true')
+    vi.stubEnv('TEST_USER_EMAIL', 'test@defra.gov.uk')
 
     const { getEmailFromToken } = await import('./auth')
 

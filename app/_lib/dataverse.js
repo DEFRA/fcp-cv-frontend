@@ -1,6 +1,6 @@
 import { config } from '@/config'
 
-const dataverseUrl = config.get('dataverse.url')
+const dataverseUrl = `${config.get('crm.baseUrl')}/${config.get('crm.dataversePath')}`
 
 async function lookupEntity(
   entityType,

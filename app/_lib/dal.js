@@ -5,16 +5,16 @@ import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
 import { summariseErrors } from '@/lib/api.js'
 
-const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
+const DAL_AUTH_DISABLED = config.get('auth.dalLogin.disabled')
 
 let client = null
 function getClient() {
   if (!client) {
     client = new ConfidentialClientApplication({
       auth: {
-        clientId: config.get('dal.tokenGeneration.clientId'),
-        authority: config.get('dal.tokenGeneration.authority'),
-        clientSecret: config.get('dal.tokenGeneration.clientSecret')
+        clientId: config.get('auth.appRegId'),
+        authority: config.get('auth.tenantBaseUrl'),
+        clientSecret: config.get('auth.dalLogin.clientSecret')
       }
     })
   }
@@ -24,7 +24,7 @@ function getClient() {
 async function getAccessToken() {
   try {
     const response = await getClient().acquireTokenByClientCredential({
-      scopes: [config.get('dal.tokenGeneration.scope')]
+      scopes: [`${config.get('auth.appRegId')}/.default`]
     })
 
     return `Bearer ${response.accessToken}`
@@ -49,7 +49,7 @@ export async function dalRequest({ query, variables }) {
     body: JSON.stringify({ query, variables })
   }
 
-  const response = await fetch(config.get('dal.url'), req).catch((err) => {
+  const response = await fetch(config.get('dalUrl'), req).catch((err) => {
     logger.warn({ err }, 'DAL request failed')
     throw new Error('DAL request failed')
   })

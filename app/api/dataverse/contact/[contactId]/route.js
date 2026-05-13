@@ -17,7 +17,7 @@ export async function GET(req, { params }) {
       )
 
     const response = await fetch(
-      `${config.get('dataverse.url')}/contacts(${contactId})?$select=rpa_capcustomerid`,
+      `${config.get('crm.baseUrl')}/${config.get('crm.dataversePath')}/contacts(${contactId})?$select=rpa_capcustomerid`,
       {
         headers: {
           Authorization: `Bearer ${token}`

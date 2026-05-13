@@ -4,7 +4,17 @@ import { lookupContactIdByCrn, lookupAccountIdBySbi } from './dataverse'
 
 vi.mock('@/config', () => ({
   config: {
-    get: vi.fn(() => 'https://dataverse.example.com')
+    get: vi.fn((key) => {
+      switch (key) {
+        case 'crm.baseUrl':
+          return 'https://dataverse.example.com'
+        case 'crm.dataversePath':
+          return 'api/data/v9.2'
+
+        default:
+          return 'missing config'
+      }
+    })
   }
 }))
 
@@ -21,7 +31,7 @@ describe('Dataverse lookup functions', () => {
 
       expect(result).toEqual({ id: 'contact-123' })
       expect(fetch).toHaveBeenCalledWith(
-        "https://dataverse.example.com/contacts?$filter=rpa_capcustomerid eq 'crn-456'&$select=contactid",
+        "https://dataverse.example.com/api/data/v9.2/contacts?$filter=rpa_capcustomerid eq 'crn-456'&$select=contactid",
         {
           headers: { Authorization: 'Bearer token' }
         }
@@ -53,7 +63,7 @@ describe('Dataverse lookup functions', () => {
 
       expect(result).toEqual({ id: 'account-789' })
       expect(fetch).toHaveBeenCalledWith(
-        "https://dataverse.example.com/accounts?$filter=rpa_sbinumber eq 'sbi-101'&$select=accountid",
+        "https://dataverse.example.com/api/data/v9.2/accounts?$filter=rpa_sbinumber eq 'sbi-101'&$select=accountid",
         {
           headers: { Authorization: 'Bearer token' }
         }

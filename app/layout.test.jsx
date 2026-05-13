@@ -13,10 +13,12 @@ describe('RootLayout component tests', () => {
       config: {
         get: (key) => {
           switch (key) {
-            case 'LOG_LEVEL':
+            case 'logLevel':
               return 'error'
-            case 'DAL_URL':
+            case 'dalUrl':
               return 'http://localhost:3000'
+            case 'auth.tenantBaseUrl':
+              return 'https://login.microsoftonline.com/tenant-id'
           }
         }
       }

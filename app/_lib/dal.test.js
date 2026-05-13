@@ -29,12 +29,11 @@ vi.mock('@/config', () => ({
     get: vi.fn((key) => {
       const values = {
         logLevel: 'info',
-        'dal.url': 'http://dal/graphql',
-        'dal.tokenGeneration.scope': 'test.scope',
-        'dal.tokenGeneration.clientId': 'client-id',
-        'dal.tokenGeneration.authority': 'authority',
-        'dal.tokenGeneration.clientSecret': 'secret',
-        'dal.tokenGeneration.disabled': false
+        dalUrl: 'http://dal/graphql',
+        'auth.appRegId': 'app-reg-id',
+        'auth.tenantBaseUrl': 'entra-tenant-url',
+        'auth.dalLogin.clientSecret': 'secret',
+        'auth.dalLogin.disabled': false
       }
       return values[key]
     })
@@ -77,7 +76,7 @@ describe('dalRequest', () => {
     const response = await dalRequest(request)
 
     expect(acquireTokenByClientCredential).toHaveBeenCalledWith({
-      scopes: ['test.scope']
+      scopes: ['app-reg-id/.default']
     })
 
     expect(fetch).toHaveBeenCalledWith('http://dal/graphql', {
@@ -96,8 +95,8 @@ describe('dalRequest', () => {
   test('does not generate token when disabled', async () => {
     const { config } = await import('@/config')
     config.get.mockImplementation((key) => {
-      if (key === 'dal.tokenGeneration.disabled') return true
-      const values = { 'dal.url': 'http://dal/graphql' }
+      if (key === 'auth.dalLogin.disabled') return true
+      const values = { dalUrl: 'http://dal/graphql' }
       return values[key]
     })
 
