@@ -8,6 +8,9 @@ console.log(`Running browser tests in ${headless ? 'headless' : 'headed'} mode`)
 
 export default defineConfig({
   ...base,
+  define: {
+    'process.env.NEXT_PUBLIC_FETCH_TIMEOUT_MS': '35000'
+  },
   expect: {
     timeout: 2000
   },
