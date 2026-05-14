@@ -1,14 +1,24 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import { lookupContactIdByCrn, lookupAccountIdBySbi } from './dataverse'
 
 vi.mock('@/config', () => ({
   config: {
-    get: vi.fn(() => 'https://dataverse.example.com')
+    get: vi.fn((key) => {
+      const values = {
+        'dataverse.url': 'https://dataverse.example.com',
+        'dataverse.requestTimeout': 30000
+      }
+      return values[key]
+    })
   }
 }))
 
 describe('Dataverse lookup functions', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
   describe('lookupContactIdByCrn', () => {
     it('returns contact ID when found', async () => {
       global.fetch = vi.fn(() =>
@@ -23,7 +33,8 @@ describe('Dataverse lookup functions', () => {
       expect(fetch).toHaveBeenCalledWith(
         "https://dataverse.example.com/contacts?$filter=rpa_capcustomerid eq 'crn-456'&$select=contactid",
         {
-          headers: { Authorization: 'Bearer token' }
+          headers: { Authorization: 'Bearer token' },
+          signal: expect.any(AbortSignal)
         }
       )
     })
@@ -55,7 +66,8 @@ describe('Dataverse lookup functions', () => {
       expect(fetch).toHaveBeenCalledWith(
         "https://dataverse.example.com/accounts?$filter=rpa_sbinumber eq 'sbi-101'&$select=accountid",
         {
-          headers: { Authorization: 'Bearer token' }
+          headers: { Authorization: 'Bearer token' },
+          signal: expect.any(AbortSignal)
         }
       )
     })
@@ -70,6 +82,33 @@ describe('Dataverse lookup functions', () => {
       const result = await lookupAccountIdBySbi('sbi-101', 'token')
 
       expect(result).toEqual({ error: 'Account not found' })
+    })
+  })
+
+  describe('timeouts', () => {
+    it('passes request timeout to fetch', async () => {
+      const timeoutSpy = vi.spyOn(AbortSignal, 'timeout')
+      global.fetch = vi.fn(() =>
+        Promise.resolve({
+          json: () => Promise.resolve({ value: [] })
+        })
+      )
+
+      await lookupContactIdByCrn('crn-456', 'token')
+
+      expect(timeoutSpy).toHaveBeenCalledWith(30000)
+    })
+
+    it('propagates timeout error', async () => {
+      const timeoutError = new DOMException(
+        'The operation timed out.',
+        'TimeoutError'
+      )
+      global.fetch = vi.fn().mockRejectedValue(timeoutError)
+
+      await expect(() =>
+        lookupContactIdByCrn('crn-456', 'token')
+      ).rejects.toThrow(timeoutError)
     })
   })
 })

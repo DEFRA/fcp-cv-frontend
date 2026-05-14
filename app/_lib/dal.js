@@ -49,7 +49,10 @@ export async function dalRequest({ query, variables }) {
     body: JSON.stringify({ query, variables })
   }
 
-  const response = await fetch(config.get('dal.url'), req).catch((err) => {
+  const response = await fetch(config.get('dal.url'), {
+    ...req,
+    signal: AbortSignal.timeout(config.get('dal.requestTimeout'))
+  }).catch((err) => {
     logger.warn({ err }, 'DAL request failed')
     throw new Error('DAL request failed')
   })

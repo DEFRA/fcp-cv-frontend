@@ -65,6 +65,12 @@ export const config = convict({
       default: null,
       env: 'DAL_URL'
     },
+    requestTimeout: {
+      doc: 'Timeout in milliseconds for DAL HTTP requests',
+      format: Number,
+      default: 30000,
+      env: 'DAL_REQUEST_TIMEOUT_MS'
+    },
     email: {
       doc: 'Email address to send to DAL for local dev/testing when auth is disabled',
       format: String,
@@ -125,6 +131,12 @@ export const config = convict({
       format: String,
       default: null,
       env: 'DATAVERSE_URL'
+    },
+    requestTimeout: {
+      doc: 'Timeout in milliseconds for Dataverse HTTP requests',
+      format: Number,
+      default: 30000,
+      env: 'DATAVERSE_REQUEST_TIMEOUT_MS'
     }
   },
   crm: {
