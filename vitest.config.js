@@ -30,7 +30,8 @@ export default defineConfig({
         'app/linked-businesses',
         'app/authenticate',
         'app/business-messages',
-        'app/payments'
+        'app/payments',
+        'app/api/dal/applications/[sbi]/**'
       ],
       include: 'app/**/*.{js,jsx}',
       provider: 'v8',
