@@ -29,6 +29,10 @@ const query = `#graphql
 export async function GET(req, { params }) {
   const { sbi } = await params
   try {
+    if (sbi.length <= 5) {
+      await new Promise((resolve) => setTimeout(resolve, Number(sbi)))
+    }
+
     const apiResponse = await dalRequest({
       query,
       variables: await params
