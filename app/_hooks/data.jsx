@@ -47,7 +47,7 @@ async function handleResponse(response, username) {
 
 async function fetcher(url, username, headers = {}) {
   const requestTimeout =
-    Number(process.env.NEXT_PUBLIC_FETCH_TIMEOUT_MS) || 35_000
+    Number(process.env.NEXT_PUBLIC_FETCH_TIMEOUT_MS) || 30_000
 
   let response
   try {
