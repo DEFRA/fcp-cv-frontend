@@ -105,6 +105,7 @@ describe('Payments API route', () => {
       onHold: true,
       payments: [
         {
+          id: '1',
           reference: 'REF1',
           date: '2023-03-15',
           amount: 100,
@@ -128,28 +129,18 @@ describe('Payments API route', () => {
       data: {
         business: {
           payments: {
-            onHold: false,
             payments: [
               {
                 reference: 'MIDDLE',
-                date: '2022-06-01',
-                amount: 1,
-                currency: 'GBP',
-                lineItems: []
+                date: '2022-06-01'
               },
               {
                 reference: 'NEWEST',
-                date: '2024-01-01',
-                amount: 2,
-                currency: 'GBP',
-                lineItems: []
+                date: '2024-01-01'
               },
               {
                 reference: 'OLDEST',
-                date: '2020-01-01',
-                amount: 3,
-                currency: 'GBP',
-                lineItems: []
+                date: '2020-01-01'
               }
             ]
           }
@@ -160,10 +151,22 @@ describe('Payments API route', () => {
     const response = await GET(...makeRequest())
     const { payments } = await response.json()
 
-    expect(payments.map((p) => p.reference)).toStrictEqual([
-      'OLDEST',
-      'MIDDLE',
-      'NEWEST'
+    expect(payments).toStrictEqual([
+      {
+        id: '1',
+        reference: 'OLDEST',
+        date: '2020-01-01'
+      },
+      {
+        id: '2',
+        reference: 'MIDDLE',
+        date: '2022-06-01'
+      },
+      {
+        id: '3',
+        reference: 'NEWEST',
+        date: '2024-01-01'
+      }
     ])
   })
 
@@ -172,21 +175,22 @@ describe('Payments API route', () => {
       data: {
         business: {
           payments: {
-            onHold: false,
             payments: [
               {
-                reference: 'WITH_DATE',
-                date: '2023-01-01',
-                amount: 1,
-                currency: 'GBP',
-                lineItems: []
+                reference: 'VALID_MID',
+                date: '2022-01-01'
               },
               {
-                reference: 'NO_DATE',
-                date: null,
-                amount: 2,
-                currency: 'GBP',
-                lineItems: []
+                reference: 'NULL1',
+                date: null
+              },
+              {
+                reference: 'VALID_NEW',
+                date: '2024-01-01'
+              },
+              {
+                reference: 'NULL2',
+                date: null
               }
             ]
           }
@@ -198,8 +202,28 @@ describe('Payments API route', () => {
 
     expect(response.status).toBe(200)
     const { payments } = await response.json()
-    expect(payments).toHaveLength(2)
-    expect(payments[0].reference).toBe('NO_DATE')
+    expect(payments).toStrictEqual([
+      {
+        id: '1',
+        reference: 'NULL1',
+        date: null
+      },
+      {
+        id: '2',
+        reference: 'NULL2',
+        date: null
+      },
+      {
+        id: '3',
+        reference: 'VALID_MID',
+        date: '2022-01-01'
+      },
+      {
+        id: '4',
+        reference: 'VALID_NEW',
+        date: '2024-01-01'
+      }
+    ])
   })
 
   test('should return empty payments when dal response is missing data', async () => {

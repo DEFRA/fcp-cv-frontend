@@ -16,9 +16,7 @@ const lineItemColumns = [
     header: 'Agreement / Claim No.',
     accessorKey: 'agreementClaimNo',
     cell: (props) => {
-      const [agreementReference, claimNumber] = (props.getValue() ?? '').split(
-        '/'
-      )
+      const [agreementReference, claimNumber] = props.getValue()?.split('/')
       return (
         <span className="tabular-nums">
           <div>{agreementReference}</div>
@@ -42,11 +40,13 @@ const lineItemColumns = [
 export function PaymentsDetails() {
   const { searchParams } = useSearchParams()
   const sbi = searchParams.get('sbi')
-  const paymentRef = searchParams.get('paymentRef')
+  const paymentId = searchParams.get('paymentId')
 
   const { data, isLoading } = useDal(['payments', sbi])
 
-  if (!isLoading && data?.payments?.length === 0) {
+  const payment = data?.payments?.find((p) => p.id === paymentId)
+
+  if (!isLoading && (!data?.payments || data?.payments?.length === 0)) {
     return (
       <div className="m-20 text-2xl font-semibold text-center text-gray-500">
         No payments found
@@ -54,14 +54,18 @@ export function PaymentsDetails() {
     )
   }
 
-  const payment = data?.payments?.find((p) => p.reference === paymentRef)
+  if (!paymentId || !payment) {
+    return (
+      <div className="m-20 text-2xl font-semibold text-center text-gray-500">
+        Select a payment from the table
+      </div>
+    )
+  }
 
-  const summary = payment
-    ? [
-        { dt: 'Amount', dd: formatCurrency(payment.amount) },
-        { dt: 'Date', dd: formatDate(payment.date) }
-      ]
-    : [{ dt: 'Amount' }, { dt: 'Date' }]
+  const summary = [
+    { dt: 'Amount', dd: formatCurrency(payment.amount) },
+    { dt: 'Date', dd: formatDate(payment.date) }
+  ]
 
   return (
     <div className="space-y-6">

@@ -4,6 +4,7 @@ import { renderHook } from 'vitest-browser-react'
 import {
   useSelectOnlyTableRowByCRN,
   useSelectOnlyTableRowByMessageId,
+  useSelectOnlyTableRowByPaymentId,
   useSelectOnlyTableRowBySBI
 } from '@/hooks/select-only-table-row'
 
@@ -56,6 +57,14 @@ describe('useSelectOnlyTableRow Hooks', () => {
       'messageId',
       'msg-12345',
       'Test Message'
+    ],
+    [
+      'useSelectOnlyTableRowByPaymentId',
+      useSelectOnlyTableRowByPaymentId,
+      'id',
+      'paymentId',
+      'pay-12345',
+      'Test Payment'
     ]
   ])('%s', (hookName, hookFn, keyName, paramName, testValue, testName) => {
     it('sets search params when data has exactly one item and param does not exist', async () => {

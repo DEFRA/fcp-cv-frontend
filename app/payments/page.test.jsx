@@ -12,6 +12,7 @@ import { PaymentsList } from './payments-list'
 const mockPayments = {
   payments: [
     {
+      id: '1',
       reference: 'PAY0000001',
       date: '2023-03-15',
       amount: 2500,
@@ -27,6 +28,7 @@ const mockPayments = {
       ]
     },
     {
+      id: '2',
       reference: 'PAY0000002',
       date: '2022-06-01',
       amount: 750.5,
@@ -47,15 +49,13 @@ const mockPayments = {
 
 const defaultUrl = '?id=8b725f88-1562-4d4c-8c21-c185e46fa56c&typename=account'
 
-const defaultWorkerHandlers = (worker) =>
+const defaultWorkerHandlers = (worker, response = mockPayments) =>
   worker.use(
     http.get(
       '/api/dataverse/account/8b725f88-1562-4d4c-8c21-c185e46fa56c',
       () => HttpResponse.json({ sbi: '123456789' })
     ),
-    http.get('/api/dal/payments/123456789', () =>
-      HttpResponse.json(mockPayments)
-    )
+    http.get('/api/dal/payments/123456789', () => HttpResponse.json(response))
   )
 
 const renderPage = () =>
@@ -157,10 +157,6 @@ describe('PaymentsPage tests', () => {
 
       const { getByRole } = await renderPage()
 
-      await expect
-        .element(getByRole('heading', { name: 'PAY0000002' }))
-        .toBeInTheDocument()
-
       await getByRole('cell', { name: 'PAY0000001' }).click()
 
       await expect
@@ -248,7 +244,10 @@ describe('PaymentsPage tests', () => {
   testWithWorker(
     'shows line items table with correct columns and data for auto-selected payment',
     async ({ worker }) => {
-      defaultWorkerHandlers(worker)
+      defaultWorkerHandlers(worker, {
+        payments: [mockPayments.payments[1]],
+        onHold: false
+      })
       window.history.pushState(null, '', defaultUrl)
 
       const { getByRole, getByText } = await renderPage()
@@ -380,14 +379,14 @@ describe('PaymentsDetails component tests', () => {
     )
 
   testWithWorker(
-    'shows payment details when sbi and paymentRef are set',
+    'shows payment details when sbi and paymentId are set',
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/payments/123456789', () =>
           HttpResponse.json(mockPayments)
         )
       )
-      window.history.pushState(null, '', '?sbi=123456789&paymentRef=PAY0000001')
+      window.history.pushState(null, '', '?sbi=123456789&paymentId=1')
 
       const { getByRole } = await renderDetails()
 
@@ -398,23 +397,19 @@ describe('PaymentsDetails component tests', () => {
   )
 
   testWithWorker(
-    'renders without crashing when paymentRef does not match any payment',
+    'renders without crashing when paymentId does not match any payment',
     async ({ worker }) => {
       worker.use(
         http.get('/api/dal/payments/123456789', () =>
           HttpResponse.json(mockPayments)
         )
       )
-      window.history.pushState(
-        null,
-        '',
-        '?sbi=123456789&paymentRef=NONEXISTENT'
-      )
+      window.history.pushState(null, '', '?sbi=123456789&paymentId=NONEXISTENT')
 
-      const { getByRole } = await renderDetails()
+      const { getByText } = await renderDetails()
 
       await expect
-        .element(getByRole('heading', { name: 'Line Items' }))
+        .element(getByText('Select a payment from the table'))
         .toBeInTheDocument()
     }
   )

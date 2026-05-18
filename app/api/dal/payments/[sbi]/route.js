@@ -45,9 +45,12 @@ export async function GET(request, ctx) {
     const apiResponse = await dalRequest({ query, variables })
 
     const paymentsData = apiResponse?.data?.business?.payments ?? {}
-    const payments = (paymentsData.payments ?? []).sort((a, b) =>
-      (a.date ?? '').localeCompare(b.date ?? '')
-    )
+    const payments = (paymentsData.payments ?? [])
+      .toSorted((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
+      .map((payment, index) => ({
+        ...payment,
+        id: (index + 1).toString()
+      }))
 
     const responsePayload = {
       onHold: paymentsData.onHold ?? false,

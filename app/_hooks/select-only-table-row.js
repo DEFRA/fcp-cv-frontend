@@ -39,3 +39,7 @@ export function useSelectOnlyTableRowByParcel(data) {
     { key: 'parcelId', param: 'parcelId' }
   ])
 }
+
+export function useSelectOnlyTableRowByPaymentId(data) {
+  useSelectOnlyTableRow(data, [{ key: 'id', param: 'paymentId' }])
+}
