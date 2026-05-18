@@ -5,10 +5,14 @@ import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
 import { formatCurrency, formatDate } from '@/lib/formatters'
-import { useEffect, useMemo } from 'react'
-import { notification } from '@/components/notification/Notifications.jsx'
+import { useSelectOnlyTableRowByPaymentId } from '@/hooks/select-only-table-row'
+import { useEffect } from 'react'
+import { notification } from '@/components/notification/Notifications'
 
 const columns = [
+  {
+    accessorKey: 'id'
+  },
   {
     header: 'Reference',
     accessorKey: 'reference',
@@ -33,25 +37,17 @@ export function PaymentsList() {
 
   const { searchParams, setSearchParams, unsetSearchParam } = useSearchParams()
   const sbi = searchParams.get('sbi')
-  const selectedReference = searchParams.get('paymentRef')
+  const selectedPaymentId = searchParams.get('paymentId')
 
-  const { data, isLoading, error } = useDal(['payments', sbi])
+  const { data, error, isLoading } = useDal(['payments', sbi])
+
+  useSelectOnlyTableRowByPaymentId(data?.payments)
 
   useEffect(() => {
     if (!isLoading && error?.handleNotification) {
       notification.error(`Business with SBI ${sbi} not found.`)
     }
   }, [data, isLoading, sbi, error])
-
-  const sortedPayments = useMemo(() => {
-    if (!data?.payments) return undefined
-    return [...data.payments].sort((a, b) => a.date.localeCompare(b.date))
-  }, [data])
-
-  useEffect(() => {
-    if (!sortedPayments?.length || selectedReference) return
-    setSearchParams({ paymentRef: sortedPayments[0].reference })
-  }, [sortedPayments, selectedReference, setSearchParams])
 
   return (
     <div className="space-y-4">
@@ -63,14 +59,15 @@ export function PaymentsList() {
       )}
 
       <Table
-        data={error ? [] : sortedPayments}
+        data={error ? [] : data?.payments}
         columns={columns}
-        onRowClick={(row) => setSearchParams({ paymentRef: row.reference })}
-        onClearClick={() => unsetSearchParam('paymentRef')}
+        onRowClick={(row) => setSearchParams({ paymentId: row.id })}
+        onClearClick={() => unsetSearchParam('paymentId')}
         enableSorting={false}
-        selectedRow={selectedReference}
-        selectedRowAccessorKey="reference"
+        selectedRow={selectedPaymentId}
+        selectedRowAccessorKey="id"
         noResultsMessage="No payments found"
+        columnVisibility={{ id: false }}
       />
     </div>
   )
