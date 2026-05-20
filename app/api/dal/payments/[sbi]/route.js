@@ -1,6 +1,7 @@
 import { dalApiResponse, handleApiError } from '@/lib/api.js'
 import { getIPFromToken } from '@/lib/auth'
 import { dalRequest } from '@/lib/dal'
+import { formatCurrency, formatDate } from '@/lib/formatters'
 import { logger } from '@/lib/logger'
 
 const query = `#graphql
@@ -49,7 +50,13 @@ export async function GET(request, ctx) {
       .toSorted((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
       .map((payment, index) => ({
         ...payment,
-        id: (index + 1).toString()
+        id: (index + 1).toString(),
+        amount: formatCurrency(payment.amount, payment.currency),
+        date: formatDate(payment.date),
+        lineItems: payment.lineItems.map((lineItem) => ({
+          ...lineItem,
+          amount: formatCurrency(lineItem.amount, payment.currency)
+        }))
       }))
 
     const responsePayload = {

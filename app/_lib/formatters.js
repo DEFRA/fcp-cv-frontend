@@ -39,11 +39,11 @@ export function formatDateAndTime(input, defaultReturnValue = '') {
   )
 }
 
-export function formatCurrency(amount) {
-  return (
-    new Intl.NumberFormat('en-GB', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(amount) + ' GBP'
-  )
+const numberFormatter = new Intl.NumberFormat('en-GB', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+})
+
+export function formatCurrency(amount, currency) {
+  return `${numberFormatter.format(amount)} ${currency}`
 }
