@@ -4,7 +4,6 @@ import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useDataverseAccountIDToSBI } from '@/hooks/dataverse'
 import { useSearchParams } from '@/hooks/search-params'
-import { formatCurrency, formatDate } from '@/lib/formatters'
 import { useSelectOnlyTableRowByPaymentId } from '@/hooks/select-only-table-row'
 import { useEffect } from 'react'
 import { notification } from '@/components/notification/Notifications'
@@ -20,15 +19,12 @@ const columns = [
   },
   {
     header: 'Date',
-    accessorKey: 'date',
-    cell: (props) => formatDate(props.getValue())
+    accessorKey: 'date'
   },
   {
     header: 'Amount',
     accessorKey: 'amount',
-    cell: (props) => (
-      <span className="tabular-nums">{formatCurrency(props.getValue())}</span>
-    )
+    cell: (props) => <span className="tabular-nums">{props.getValue()}</span>
   }
 ]
 

@@ -14,32 +14,30 @@ const mockPayments = {
     {
       id: '1',
       reference: 'PAY0000001',
-      date: '2023-03-15',
-      amount: 2500,
-      currency: 'GBP',
+      date: '15/03/2024',
+      amount: '2,500.00 GBP',
       lineItems: [
         {
           agreementClaimNo: 'AG00001234/CLM0001',
           scheme: 'Countryside Stewardship',
           marketingYear: '2023',
           description: 'Arable field margins',
-          amount: 1500
+          amount: '1,500.00 GBP'
         }
       ]
     },
     {
       id: '2',
       reference: 'PAY0000002',
-      date: '2022-06-01',
-      amount: 750.5,
-      currency: 'GBP',
+      date: '01/06/2022',
+      amount: '750.50 EUR',
       lineItems: [
         {
           agreementClaimNo: 'AG00009999/CLM0003',
           scheme: 'Basic Payment Scheme',
           marketingYear: '2022',
           description: 'BPS payment',
-          amount: 750.5
+          amount: '750.50 EUR'
         }
       ]
     }
@@ -358,7 +356,7 @@ describe('PaymentsList component tests', () => {
         .element(getByRole('cell', { name: 'PAY0000001' }))
         .toBeInTheDocument()
       await expect
-        .element(getByRole('cell', { name: '750.50 GBP' }))
+        .element(getByRole('cell', { name: '750.50 EUR' }))
         .toBeInTheDocument()
     }
   )

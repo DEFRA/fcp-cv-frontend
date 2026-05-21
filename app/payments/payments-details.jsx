@@ -9,7 +9,6 @@ import {
 import Table from '@/components/table/Table'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
-import { formatCurrency, formatDate } from '@/lib/formatters'
 
 const lineItemColumns = [
   {
@@ -30,10 +29,7 @@ const lineItemColumns = [
   { header: 'Description', accessorKey: 'description' },
   {
     header: 'Amount',
-    accessorKey: 'amount',
-    cell: (props) => (
-      <span className="tabular-nums">{formatCurrency(props.getValue())}</span>
-    )
+    accessorKey: 'amount'
   }
 ]
 
@@ -63,8 +59,8 @@ export function PaymentsDetails() {
   }
 
   const summary = [
-    { dt: 'Amount', dd: formatCurrency(payment.amount) },
-    { dt: 'Date', dd: formatDate(payment.date) }
+    { dt: 'Amount', dd: payment.amount },
+    { dt: 'Date', dd: payment.date }
   ]
 
   return (
