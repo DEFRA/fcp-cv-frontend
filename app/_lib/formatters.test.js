@@ -161,25 +161,25 @@ describe('formatDateAndTime', () => {
 })
 
 describe('formatCurrency', () => {
-  it('formats whole numbers with two decimal places and GBP suffix', () => {
-    expect(formatCurrency(1000)).toBe('1,000.00 GBP')
-    expect(formatCurrency(0)).toBe('0.00 GBP')
-    expect(formatCurrency(1)).toBe('1.00 GBP')
+  it('formats whole numbers with two decimal places and currency suffix', () => {
+    expect(formatCurrency(1000, 'GBP')).toBe('1,000.00 GBP')
+    expect(formatCurrency(0, 'EUR')).toBe('0.00 EUR')
+    expect(formatCurrency(1, 'USD')).toBe('1.00 USD')
   })
 
   it('formats decimal amounts to exactly two decimal places', () => {
-    expect(formatCurrency(750.5)).toBe('750.50 GBP')
-    expect(formatCurrency(1234.99)).toBe('1,234.99 GBP')
-    expect(formatCurrency(0.1)).toBe('0.10 GBP')
+    expect(formatCurrency(750.5, 'GBP')).toBe('750.50 GBP')
+    expect(formatCurrency(1234.99, 'GBP')).toBe('1,234.99 GBP')
+    expect(formatCurrency(0.1, 'GBP')).toBe('0.10 GBP')
   })
 
   it('uses thousands separators for large amounts', () => {
-    expect(formatCurrency(1000000)).toBe('1,000,000.00 GBP')
-    expect(formatCurrency(12345678.9)).toBe('12,345,678.90 GBP')
+    expect(formatCurrency(1000000, 'GBP')).toBe('1,000,000.00 GBP')
+    expect(formatCurrency(12345678.9, 'GBP')).toBe('12,345,678.90 GBP')
   })
 
   it('formats negative amounts', () => {
-    expect(formatCurrency(-500)).toBe('-500.00 GBP')
-    expect(formatCurrency(-1234.56)).toBe('-1,234.56 GBP')
+    expect(formatCurrency(-500, 'GBP')).toBe('-500.00 GBP')
+    expect(formatCurrency(-1234.56, 'GBP')).toBe('-1,234.56 GBP')
   })
 })

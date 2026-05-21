@@ -107,8 +107,8 @@ describe('Payments API route', () => {
         {
           id: '1',
           reference: 'REF1',
-          date: '2023-03-15',
-          amount: 100,
+          date: '15/03/2023',
+          amount: '100.00 GBP',
           currency: 'GBP',
           lineItems: [
             {
@@ -116,7 +116,7 @@ describe('Payments API route', () => {
               scheme: '064',
               marketingYear: '2023',
               description: 'Test line item',
-              amount: 100
+              amount: '100.00 GBP'
             }
           ]
         }
@@ -132,15 +132,24 @@ describe('Payments API route', () => {
             payments: [
               {
                 reference: 'MIDDLE',
-                date: '2022-06-01'
+                date: '2022-06-01',
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
               },
               {
                 reference: 'NEWEST',
-                date: '2024-01-01'
+                date: '2024-01-01',
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
               },
               {
                 reference: 'OLDEST',
-                date: '2020-01-01'
+                date: '2020-01-01',
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
               }
             ]
           }
@@ -155,17 +164,26 @@ describe('Payments API route', () => {
       {
         id: '1',
         reference: 'OLDEST',
-        date: '2020-01-01'
+        date: '01/01/2020',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: []
       },
       {
         id: '2',
         reference: 'MIDDLE',
-        date: '2022-06-01'
+        date: '01/06/2022',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: []
       },
       {
         id: '3',
         reference: 'NEWEST',
-        date: '2024-01-01'
+        date: '01/01/2024',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: []
       }
     ])
   })
@@ -178,19 +196,31 @@ describe('Payments API route', () => {
             payments: [
               {
                 reference: 'VALID_MID',
-                date: '2022-01-01'
+                date: '2022-01-01',
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
               },
               {
                 reference: 'NULL1',
-                date: null
+                date: null,
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
               },
               {
                 reference: 'VALID_NEW',
-                date: '2024-01-01'
+                date: '2024-01-01',
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
               },
               {
                 reference: 'NULL2',
-                date: null
+                date: null,
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
               }
             ]
           }
@@ -206,22 +236,34 @@ describe('Payments API route', () => {
       {
         id: '1',
         reference: 'NULL1',
-        date: null
+        date: '',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: []
       },
       {
         id: '2',
         reference: 'NULL2',
-        date: null
+        date: '',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: []
       },
       {
         id: '3',
         reference: 'VALID_MID',
-        date: '2022-01-01'
+        date: '01/01/2022',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: []
       },
       {
         id: '4',
         reference: 'VALID_NEW',
-        date: '2024-01-01'
+        date: '01/01/2024',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: []
       }
     ])
   })
