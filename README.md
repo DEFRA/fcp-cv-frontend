@@ -97,6 +97,21 @@ Install application dependencies:
 npm install
 ```
 
+### Implicit lifecycle scripts are disabled
+
+Due to the prevalence of NPM supply-chain attacks, scripts that would usually be run alongside the target script have been forcibly disabled with the following setting in `.npmrc`:
+
+```.npmrc
+ignore-scripts=true
+```
+
+Developers will therefore have to run these scripts manually, e.g. to bring up a full CV env:
+
+```shell
+npm run preup
+npm run up
+```
+
 ### Development
 
 To run the `Next.js` server to access the application in `development` mode run:
