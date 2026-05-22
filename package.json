@@ -4,7 +4,8 @@
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {
-    "node": ">=24"
+    "node": ">=24.15.0",
+    "npm": ">=11.12.1"
   },
   "scripts": {
     "preup": "curl https://raw.githubusercontent.com/DEFRA/fcp-dal-api/refs/heads/main/compose.yml -o dal-api-compose.yml",
