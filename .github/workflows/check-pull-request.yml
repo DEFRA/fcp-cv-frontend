@@ -44,7 +44,9 @@ jobs:
       - name: Test code and Create Test Coverage Reports
         run: |
           npm run lint
+          npm run pretest
           npm test
+          npm run posttest
 
       - name: Upload Unit Test Coverage Report
         if: always()
@@ -56,7 +58,9 @@ jobs:
 
       - name: Docker build & test accessibility
         run: |
+          npm run pretest:accessibility:docker
           npm run test:accessibility:docker
+          npm run posttest:accessibility:docker
 
       - name: Upload accessibility test report
         if: always()
