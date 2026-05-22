@@ -1,3 +1,15 @@
+vi.mock('next/headers', () => ({
+  headers: () => ({
+    get: () => 'mocked-token'
+  })
+}))
+vi.mock('@/lib/auth', () => ({
+  getEmailFromToken: () => 'test@example.com'
+}))
+vi.mock('@/lib/dal', () => ({
+  dalRequest: vi.fn()
+}))
+
 import { dalRequest } from '@/lib/dal'
 import { NextRequest } from 'next/server.js'
 import { vi } from 'vitest'
@@ -38,20 +50,6 @@ const mockLandResponse = {
 }
 
 describe('Land Parcel API route', () => {
-  beforeAll(() => {
-    vi.mock('next/headers', () => ({
-      headers: () => ({
-        get: () => 'mocked-token'
-      })
-    }))
-    vi.mock('@/lib/auth', () => ({
-      getEmailFromToken: () => 'test@example.com'
-    }))
-    vi.mock('@/lib/dal', () => ({
-      dalRequest: vi.fn()
-    }))
-  })
-
   test('makes a dal request with sbi, sheetId and parcelId params', async () => {
     vi.mocked(dalRequest).mockResolvedValue(mockLandResponse)
     const response = await GET(

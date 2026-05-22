@@ -1,3 +1,19 @@
+vi.mock('next/headers', () => ({
+  headers: () => ({
+    get: () => 'mocked-token'
+  })
+}))
+vi.mock('@/lib/auth', () => ({
+  getEmailFromToken: vi.fn().mockResolvedValue('test@example.com'),
+  getIPFromToken: vi.fn().mockResolvedValue('203.0.113.1')
+}))
+vi.mock('@/lib/dal', () => ({
+  dalRequest: vi.fn()
+}))
+vi.mock('@/lib/logger', () => ({
+  logger: { warn: vi.fn() }
+}))
+
 import { dalRequest } from '@/lib/dal'
 import { NextRequest } from 'next/server.js'
 import { vi } from 'vitest'
@@ -10,24 +26,6 @@ const makeRequest = ({ sbi = 'sbiParam' } = {}) => [
 ]
 
 describe('Payments API route', () => {
-  beforeAll(() => {
-    vi.mock('next/headers', () => ({
-      headers: () => ({
-        get: () => 'mocked-token'
-      })
-    }))
-    vi.mock('@/lib/auth', () => ({
-      getEmailFromToken: vi.fn().mockResolvedValue('test@example.com'),
-      getIPFromToken: vi.fn().mockResolvedValue('203.0.113.1')
-    }))
-    vi.mock('@/lib/dal', () => ({
-      dalRequest: vi.fn()
-    }))
-    vi.mock('@/lib/logger', () => ({
-      logger: { warn: vi.fn() }
-    }))
-  })
-
   beforeEach(() => {
     vi.mocked(dalRequest).mockReset()
   })

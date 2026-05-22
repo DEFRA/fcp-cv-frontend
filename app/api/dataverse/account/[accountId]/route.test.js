@@ -1,3 +1,7 @@
+vi.mock('next/headers', () => ({
+  headers: vi.fn().mockReturnValue({ get: () => 'mocked-token' })
+}))
+
 import { NextRequest } from 'next/server.js'
 import { expect, test, vi } from 'vitest'
 
@@ -17,9 +21,6 @@ describe('Dataverse Account API route', () => {
   beforeAll(() => {
     vi.stubGlobal('fetch', vi.fn())
     vi.mocked(global.fetch).mockResolvedValue(happyResponse)
-    vi.mock('next/headers', () => ({
-      headers: vi.fn().mockReturnValue({ get: () => 'mocked-token' })
-    }))
   })
 
   test('should make dataverse request with accountId param', async () => {
