@@ -1,25 +1,21 @@
+vi.mock('@/lib/dataverse', () => ({
+  lookupAccountIdBySbi: vi.fn()
+}))
+vi.mock('@/lib/crm', () => ({
+  getCrmAccountUrl: vi.fn()
+}))
+vi.mock('next/headers', () => ({
+  headers: () => ({
+    get: () => 'mocked-token'
+  })
+}))
+
 import { NextRequest } from 'next/server.js'
 import { vi } from 'vitest'
 
 import { GET } from './route'
 
 describe('Dataverse Account CRM URL API route', () => {
-  beforeAll(() => {
-    vi.mock('@/lib/dataverse', () => ({
-      lookupAccountIdBySbi: vi.fn()
-    }))
-
-    vi.mock('@/lib/crm', () => ({
-      getCrmAccountUrl: vi.fn()
-    }))
-
-    vi.mock('next/headers', () => ({
-      headers: () => ({
-        get: () => 'mocked-token'
-      })
-    }))
-  })
-
   test('should lookup account by sbi and return crm url', async () => {
     const { lookupAccountIdBySbi } = await import('@/lib/dataverse')
     const { getCrmAccountUrl } = await import('@/lib/crm')

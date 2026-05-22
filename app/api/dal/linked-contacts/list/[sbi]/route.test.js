@@ -1,3 +1,15 @@
+vi.mock('next/headers', () => ({
+  headers: () => ({
+    get: () => 'mocked-token'
+  })
+}))
+vi.mock('@/lib/auth', () => ({
+  getEmailFromToken: () => 'test@example.com'
+}))
+vi.mock('@/lib/dal', () => ({
+  dalRequest: vi.fn()
+}))
+
 import { dalRequest } from '@/lib/dal'
 import { NextRequest } from 'next/server.js'
 import { vi } from 'vitest'
@@ -5,20 +17,6 @@ import { vi } from 'vitest'
 import { GET } from './route'
 
 describe('Linked Contacts List API route', () => {
-  beforeAll(() => {
-    vi.mock('next/headers', () => ({
-      headers: () => ({
-        get: () => 'mocked-token'
-      })
-    }))
-    vi.mock('@/lib/auth', () => ({
-      getEmailFromToken: () => 'test@example.com'
-    }))
-    vi.mock('@/lib/dal', () => ({
-      dalRequest: vi.fn()
-    }))
-  })
-
   test('should make dal request with sbi param', async () => {
     vi.mocked(dalRequest).mockResolvedValue({ data: {} })
     const response = await GET(new NextRequest('http://localhost'), {
