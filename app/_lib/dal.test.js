@@ -30,6 +30,7 @@ vi.mock('@/config', () => ({
       const values = {
         logLevel: 'info',
         'dal.url': 'http://dal/graphql',
+        'dal.requestTimeout': 30000,
         'dal.tokenGeneration.scope': 'test.scope',
         'dal.tokenGeneration.clientId': 'client-id',
         'dal.tokenGeneration.authority': 'authority',
@@ -87,7 +88,8 @@ describe('dalRequest', () => {
         'content-type': 'application/json',
         email: 'test@example.com',
         authorization: 'Bearer mock-access-token'
-      }
+      },
+      signal: expect.any(AbortSignal)
     })
 
     expect(response).toEqual({ message: 'Test response' })
@@ -97,7 +99,10 @@ describe('dalRequest', () => {
     const { config } = await import('@/config')
     config.get.mockImplementation((key) => {
       if (key === 'dal.tokenGeneration.disabled') return true
-      const values = { 'dal.url': 'http://dal/graphql' }
+      const values = {
+        'dal.url': 'http://dal/graphql',
+        'dal.requestTimeout': 30000
+      }
       return values[key]
     })
 
@@ -113,7 +118,8 @@ describe('dalRequest', () => {
         'content-type': 'application/json',
         email: 'test@example.com',
         authorization: ''
-      }
+      },
+      signal: expect.any(AbortSignal)
     })
   })
 
@@ -210,6 +216,31 @@ describe('dalRequest', () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       expect.objectContaining(new Error('DAL request failed')),
+      'DAL request failed'
+    )
+  })
+
+  test('passes request timeout to fetch', async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, 'timeout')
+
+    await dalRequest({ query: '', variables: {} })
+
+    expect(timeoutSpy).toHaveBeenCalledWith(30000)
+  })
+
+  test('throws generic error when fetch times out', async () => {
+    const timeoutError = new DOMException(
+      'The operation timed out.',
+      'TimeoutError'
+    )
+    fetch.mockRejectedValueOnce(timeoutError)
+
+    await expect(() =>
+      dalRequest({ query: '', variables: {} })
+    ).rejects.toThrow('DAL request failed')
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ err: timeoutError }),
       'DAL request failed'
     )
   })

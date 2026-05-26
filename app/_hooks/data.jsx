@@ -46,9 +46,15 @@ async function handleResponse(response, username) {
 }
 
 async function fetcher(url, username, headers = {}) {
+  const requestTimeout =
+    Number(process.env.NEXT_PUBLIC_FETCH_TIMEOUT_MS) || 30_000
+
   let response
   try {
-    response = await fetch(url, { headers })
+    response = await fetch(url, {
+      headers,
+      signal: AbortSignal.timeout(requestTimeout)
+    })
   } catch (error) {
     notification.error(
       <span>

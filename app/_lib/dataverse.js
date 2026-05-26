@@ -15,7 +15,8 @@ async function lookupEntity(
     {
       headers: {
         Authorization: `Bearer ${accessToken}`
-      }
+      },
+      signal: AbortSignal.timeout(config.get('dataverse.requestTimeout'))
     }
   )
 

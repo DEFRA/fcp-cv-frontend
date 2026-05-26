@@ -65,7 +65,8 @@ describe('useDal and useDataverse Hooks', () => {
         headers: {
           'x-msal-access-token': 'fake-access-token',
           'x-msal-id-token': 'fake-id-token'
-        }
+        },
+        signal: expect.any(AbortSignal)
       })
     })
 
@@ -76,7 +77,8 @@ describe('useDal and useDataverse Hooks', () => {
         headers: {
           'x-msal-access-token': 'fake-access-token',
           'x-msal-id-token': 'fake-id-token'
-        }
+        },
+        signal: expect.any(AbortSignal)
       })
     })
 
@@ -109,7 +111,8 @@ describe('useDal and useDataverse Hooks', () => {
       await renderHook(() => useDal(['linked-contacts']))
 
       expect(fetchSpy).toHaveBeenCalledWith('/api/dal/linked-contacts', {
-        headers: {}
+        headers: {},
+        signal: expect.any(AbortSignal)
       })
     })
 
@@ -117,7 +120,8 @@ describe('useDal and useDataverse Hooks', () => {
       await renderHook(() => useDal(['linked-contacts']))
 
       expect(fetchSpy).toHaveBeenCalledWith('/api/dal/linked-contacts', {
-        headers: {}
+        headers: {},
+        signal: expect.any(AbortSignal)
       })
     })
 
@@ -125,8 +129,43 @@ describe('useDal and useDataverse Hooks', () => {
       await renderHook(() => useDataverse(['account']))
 
       expect(fetchSpy).toHaveBeenCalledWith('/api/dataverse/account', {
-        headers: {}
+        headers: {},
+        signal: expect.any(AbortSignal)
       })
+    })
+
+    it('passes timeout signal to fetch', async () => {
+      const timeoutSpy = vi.spyOn(AbortSignal, 'timeout')
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      expect(timeoutSpy).toHaveBeenCalledWith(35000)
+    })
+
+    it('shows error notification when fetch times out', async () => {
+      const timeoutError = new DOMException(
+        'The operation timed out.',
+        'TimeoutError'
+      )
+      fetchSpy.mockRejectedValue(timeoutError)
+
+      const { result } = await renderHook(() => useDal(['linked-contacts']))
+
+      expect(result.current.error).toStrictEqual(timeoutError)
+      expect(notification.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'span',
+          props: expect.objectContaining({
+            children: expect.arrayContaining([
+              'An error has occurred. Please report this if it continues to occur.',
+              expect.objectContaining({
+                type: ButtonLink,
+                props: expect.objectContaining({ children: 'Click to retry.' })
+              })
+            ])
+          })
+        })
+      )
     })
 
     it('request error', async () => {
