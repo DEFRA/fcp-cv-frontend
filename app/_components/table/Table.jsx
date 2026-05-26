@@ -209,6 +209,7 @@ export default function Table({
   defaultSortDirection = 'asc',
   noResultsMessage = 'No results found'
 }) {
+  'use no memo' // useReactTable returns functions incompatible with React Compiler memoisation
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState(() => {
     if (enableSorting) {
@@ -235,6 +236,7 @@ export default function Table({
     state.sorting = sorting
   }
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable is incompatible with React Compiler; component is opted out via "use no memo"
   const table = useReactTable({
     data: data || skeletonData,
     columns,
