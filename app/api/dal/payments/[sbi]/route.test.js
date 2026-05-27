@@ -79,13 +79,14 @@ describe('Payments API route', () => {
             onHold: true,
             payments: [
               {
-                reference: 'REF1',
+                reference: 'PY-REF1',
                 date: '2023-03-15',
                 amount: 100,
                 currency: 'GBP',
                 lineItems: [
                   {
-                    agreementClaimNo: 'AG001/CLM001',
+                    agreementNumber: 'AG001',
+                    claimReferenceNumber: 'CLM001',
                     scheme: '064',
                     marketingYear: '2023',
                     description: 'Test line item',
@@ -106,7 +107,7 @@ describe('Payments API route', () => {
       payments: [
         {
           id: '1',
-          reference: 'REF1',
+          reference: 'PY-REF1',
           date: '15/03/2023',
           amount: '100.00 GBP',
           currency: 'GBP',
@@ -124,28 +125,28 @@ describe('Payments API route', () => {
     })
   })
 
-  test('should sort payments by date ascending', async () => {
+  test('should sort payments by date descending', async () => {
     vi.mocked(dalRequest).mockResolvedValue({
       data: {
         business: {
           payments: {
             payments: [
               {
-                reference: 'MIDDLE',
+                reference: 'PY-MIDDLE',
                 date: '2022-06-01',
                 amount: 100,
                 currency: 'GBP',
                 lineItems: []
               },
               {
-                reference: 'NEWEST',
+                reference: 'PY-NEWEST',
                 date: '2024-01-01',
                 amount: 100,
                 currency: 'GBP',
                 lineItems: []
               },
               {
-                reference: 'OLDEST',
+                reference: 'PY-OLDEST',
                 date: '2020-01-01',
                 amount: 100,
                 currency: 'GBP',
@@ -163,15 +164,15 @@ describe('Payments API route', () => {
     expect(payments).toStrictEqual([
       {
         id: '1',
-        reference: 'OLDEST',
-        date: '01/01/2020',
+        reference: 'PY-NEWEST',
+        date: '01/01/2024',
         amount: '100.00 GBP',
         currency: 'GBP',
         lineItems: []
       },
       {
         id: '2',
-        reference: 'MIDDLE',
+        reference: 'PY-MIDDLE',
         date: '01/06/2022',
         amount: '100.00 GBP',
         currency: 'GBP',
@@ -179,8 +180,8 @@ describe('Payments API route', () => {
       },
       {
         id: '3',
-        reference: 'NEWEST',
-        date: '01/01/2024',
+        reference: 'PY-OLDEST',
+        date: '01/01/2020',
         amount: '100.00 GBP',
         currency: 'GBP',
         lineItems: []
@@ -195,28 +196,28 @@ describe('Payments API route', () => {
           payments: {
             payments: [
               {
-                reference: 'VALID_MID',
+                reference: 'PY-VALID_MID',
                 date: '2022-01-01',
                 amount: 100,
                 currency: 'GBP',
                 lineItems: []
               },
               {
-                reference: 'NULL1',
+                reference: 'PY-NULL1',
                 date: null,
                 amount: 100,
                 currency: 'GBP',
                 lineItems: []
               },
               {
-                reference: 'VALID_NEW',
+                reference: 'PY-VALID_NEW',
                 date: '2024-01-01',
                 amount: 100,
                 currency: 'GBP',
                 lineItems: []
               },
               {
-                reference: 'NULL2',
+                reference: 'PY-NULL2',
                 date: null,
                 amount: 100,
                 currency: 'GBP',
@@ -234,36 +235,78 @@ describe('Payments API route', () => {
     const { payments } = await response.json()
     expect(payments).toStrictEqual([
       {
-        id: '1',
-        reference: 'NULL1',
-        date: '',
-        amount: '100.00 GBP',
-        currency: 'GBP',
-        lineItems: []
-      },
-      {
-        id: '2',
-        reference: 'NULL2',
-        date: '',
-        amount: '100.00 GBP',
-        currency: 'GBP',
-        lineItems: []
-      },
-      {
-        id: '3',
-        reference: 'VALID_MID',
-        date: '01/01/2022',
-        amount: '100.00 GBP',
-        currency: 'GBP',
-        lineItems: []
-      },
-      {
-        id: '4',
-        reference: 'VALID_NEW',
+        reference: 'PY-VALID_NEW',
         date: '01/01/2024',
         amount: '100.00 GBP',
         currency: 'GBP',
-        lineItems: []
+        lineItems: [],
+        id: '1'
+      },
+      {
+        reference: 'PY-VALID_MID',
+        date: '01/01/2022',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: [],
+        id: '2'
+      },
+      {
+        reference: 'PY-NULL1',
+        date: '',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: [],
+        id: '3'
+      },
+      {
+        reference: 'PY-NULL2',
+        date: '',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: [],
+        id: '4'
+      }
+    ])
+  })
+
+  test("should filter out payments when reference doesn't begin with PY", async () => {
+    vi.mocked(dalRequest).mockResolvedValue({
+      data: {
+        business: {
+          payments: {
+            payments: [
+              {
+                reference: 'Future payment',
+                date: '2022-01-01',
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
+              },
+              {
+                reference: 'PY-VALID',
+                date: '2022-01-01',
+                amount: 100,
+                currency: 'GBP',
+                lineItems: []
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    const response = await GET(...makeRequest())
+
+    expect(response.status).toBe(200)
+    const { payments } = await response.json()
+    expect(payments).toStrictEqual([
+      {
+        reference: 'PY-VALID',
+        date: '01/01/2022',
+        amount: '100.00 GBP',
+        currency: 'GBP',
+        lineItems: [],
+        id: '2'
       }
     ])
   })

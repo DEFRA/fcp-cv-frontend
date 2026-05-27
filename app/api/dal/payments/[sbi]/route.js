@@ -16,7 +16,8 @@ const query = `#graphql
           amount
           currency
           lineItems {
-            agreementClaimNo
+            agreementNumber
+            claimReferenceNumber
             scheme
             marketingYear
             description
@@ -47,17 +48,21 @@ export async function GET(request, ctx) {
 
     const paymentsData = apiResponse?.data?.business?.payments ?? {}
     const payments = (paymentsData.payments ?? [])
-      .toSorted((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
+      .toSorted((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
       .map((payment, index) => ({
         ...payment,
         id: (index + 1).toString(),
         amount: formatCurrency(payment.amount, payment.currency),
         date: formatDate(payment.date),
-        lineItems: payment.lineItems.map((lineItem) => ({
-          ...lineItem,
-          amount: formatCurrency(lineItem.amount, payment.currency)
-        }))
+        lineItems: payment.lineItems.map(
+          ({ agreementNumber, claimReferenceNumber, ...lineItem }) => ({
+            ...lineItem,
+            agreementClaimNo: `${agreementNumber}/${claimReferenceNumber}`,
+            amount: formatCurrency(lineItem.amount, payment.currency)
+          })
+        )
       }))
+      .filter((payment) => payment.reference?.startsWith('PY'))
 
     const responsePayload = {
       onHold: paymentsData.onHold ?? false,
