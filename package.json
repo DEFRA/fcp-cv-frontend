@@ -60,6 +60,7 @@
     "prettier": "^3.7.4",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17",
+    "tmp": "0.2.6",
     "vitest": "^4.0.16",
     "vitest-browser-react": "^2.0.2"
   },
