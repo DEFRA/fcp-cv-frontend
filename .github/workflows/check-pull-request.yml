@@ -44,9 +44,7 @@ jobs:
       - name: Test code and Create Test Coverage Reports
         run: |
           npm run lint
-          npm run pretest
           npm test
-          npm run posttest
 
       - name: Upload Unit Test Coverage Report
         if: always()

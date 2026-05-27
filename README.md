@@ -105,12 +105,15 @@ Due to the prevalence of NPM supply-chain attacks, scripts that would usually be
 ignore-scripts=true
 ```
 
-Developers will therefore have to run these scripts manually, e.g. to bring up a full CV env:
+This disables any scripts run during install, as well as `pre` and `post` prefixed scripts in `package.json`
 
-```shell
-npm run preup
-npm run up
-```
+There are a handful of scripts that are required to be run to setup the environment:
+
+- chromium for playwright (`scripts/run-tests.sh`)
+- chromium for axe (`scripts/run-accessibility-tests.sh`)
+
+These installations have been explicitly added to the appropriate scripts (shown above). This significantly reduces the attack surface as no unexpected scripts will be executed.
+This, combined with the 7 day minimum age of 3rd party libraries, means that our exposure will be limited and any investigation will be limited to chromium/axe/playwight compromises.
 
 ### Development
 
