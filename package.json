@@ -8,19 +8,17 @@
     "npm": ">=11.12.1"
   },
   "scripts": {
-    "preup": "curl https://raw.githubusercontent.com/DEFRA/fcp-dal-api/refs/heads/main/compose.yml -o dal-api-compose.yml",
-    "up": "docker compose build && docker compose -f dal-api-compose.yml -f compose.yml -p fcp-cv up --pull always --quiet-pull --no-attach mongodb",
+    "up": "./scripts/launch-full-docker-environment.sh",
+    "docker:down": "docker compose -p fcp-cv down -v --remove-orphans",
     "build": "next build",
     "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --log-level warn --write .",
     "start": "next start",
-    "pretest": "[ ! ${CI} ] || npx playwright install chromium --with-deps --only-shell",
-    "test": "vitest --coverage --reporter=blob --reporter=dot run && HEADLESS=true vitest --config=vitest.browser.config.js --coverage --reporter=blob --reporter=dot run",
-    "posttest": "vitest --config=vitest.merge.config.js --mergeReports coverage/merge --coverage run",
+    "test": "./scripts/run-tests.sh",
     "test:server": "vitest --coverage --coverage.reporter=text",
     "test:browser": "vitest --config=vitest.browser.config.js --coverage --coverage.reporter=text --coverage.reporter=html",
-    "test:accessibility": "axe ${CV_URL:-http://localhost:3000}",
+    "test:accessibility": "./scripts/run-accessibility-tests.sh",
     "pretest:accessibility:docker": "npm run up -- -d",
     "test:accessibility:docker": "docker compose -f compose.accessibility.yaml -p fcp-cv run --quiet-pull --pull always --rm accessibility",
     "posttest:accessibility:docker": "docker compose -p fcp-cv down -v --remove-orphans"
