@@ -8,8 +8,8 @@
     "npm": ">=11.12.1"
   },
   "scripts": {
+    "postinstall": "./scripts/post-install.sh",
     "up": "./scripts/launch-full-docker-environment.sh",
-    "docker:down": "docker compose -p fcp-cv down -v --remove-orphans",
     "build": "next build",
     "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
@@ -18,7 +18,7 @@
     "test": "./scripts/run-tests.sh",
     "test:server": "vitest --coverage --coverage.reporter=text",
     "test:browser": "vitest --config=vitest.browser.config.js --coverage --coverage.reporter=text --coverage.reporter=html",
-    "test:accessibility": "./scripts/run-accessibility-tests.sh",
+    "test:accessibility": "axe ${CV_URL:-http://localhost:3000}",
     "pretest:accessibility:docker": "npm run up -- -d",
     "test:accessibility:docker": "docker compose -f compose.accessibility.yaml -p fcp-cv run --quiet-pull --pull always --rm accessibility",
     "posttest:accessibility:docker": "docker compose -p fcp-cv down -v --remove-orphans"
