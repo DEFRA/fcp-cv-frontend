@@ -1,4 +1,5 @@
 import { config } from '@/config'
+import { metrics } from '@/lib/metrics'
 
 const dataverseUrl = config.get('dataverse.url')
 
@@ -10,6 +11,7 @@ async function lookupEntity(
   accessToken,
   notFoundMessage = 'Entity not found'
 ) {
+  const start = Date.now()
   const response = await fetch(
     `${dataverseUrl}/${entityType}?$filter=${filterField} eq '${filterValue}'&$select=${idField}`,
     {
@@ -19,6 +21,12 @@ async function lookupEntity(
       signal: AbortSignal.timeout(config.get('dataverse.requestTimeout'))
     }
   )
+
+  await metrics.millis('UpstreamRequestTime', Date.now() - start, {
+    Service: 'dataverse',
+    Operation: entityType,
+    StatusCode: String(response.status)
+  })
 
   const data = await response.json()
 

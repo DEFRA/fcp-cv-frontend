@@ -1,6 +1,6 @@
 {
   "name": "fcp-cv-frontend",
-  "version": "0.62.0",
+  "version": "0.63.0",
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {
@@ -31,6 +31,7 @@
     "@azure/msal-node": "5.0.6",
     "@azure/msal-react": "^3.0.25",
     "@date-fns/tz": "1.4.1",
+    "@defra/cdp-metrics": "0.6.0",
     "@defra/hapi-tracing": "1.30.0",
     "@elastic/ecs-pino-format": "^1.5.0",
     "@headlessui/react": "^2.2.9",

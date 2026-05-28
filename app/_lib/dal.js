@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
 import { summariseErrors } from '@/lib/api.js'
+import { extractOperationName, metrics } from '@/lib/metrics'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
 
@@ -42,6 +43,7 @@ async function getAccessToken() {
 export async function dalRequest({ query, variables }) {
   const email = await getEmailFromToken(await headers())
   const authorization = DAL_AUTH_DISABLED ? '' : await getAccessToken()
+  const operation = extractOperationName(query)
 
   const req = {
     method: 'POST',
@@ -49,12 +51,19 @@ export async function dalRequest({ query, variables }) {
     body: JSON.stringify({ query, variables })
   }
 
+  const start = Date.now()
   const response = await fetch(config.get('dal.url'), {
     ...req,
     signal: AbortSignal.timeout(config.get('dal.requestTimeout'))
   }).catch((err) => {
     logger.warn({ err }, 'DAL request failed')
     throw new Error('DAL request failed')
+  })
+
+  await metrics.millis('UpstreamRequestTime', Date.now() - start, {
+    Service: 'dal',
+    Operation: operation ?? 'unknown',
+    StatusCode: String(response.status)
   })
 
   if (!response.ok) {
