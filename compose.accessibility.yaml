@@ -2,7 +2,6 @@ services:
   accessibility:
     platform: linux/amd64
     image: defradigital/ffc-axe
-    shm_size: '2gb'
     command: >
       axe --dir=/home/node/test-output -s axe.json
         --report=/home/node/test-output --format=junit

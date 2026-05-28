@@ -118,6 +118,23 @@ that you understand what will be run. To run this script, execute the following:
 npm run postinstall
 ```
 
+#### 3rd party libraries must be at least 7 days old before they can be installed
+
+The `.npmrc` setting below prevents libraries that have been released in the past 7 days from being installed.
+
+```.npmrc
+min-release-age=7
+```
+
+This gives the npm community time to detect a compromised release before this repo consumes it.
+
+This does create a potential issue. If `npm audit` identifies an issue that must be fixed, and the patched library
+has been released less than 7 days ago, then you will need to investigate the library in question:
+
+- Look at the published release
+- Verify that it's safe
+- Run `npm install {your-dependency}@{version-number} --min-release-age=0` (including `--save-dev` if it's a dev only dependency)
+
 ### Development
 
 To run the `Next.js` server to access the application in `development` mode run:
