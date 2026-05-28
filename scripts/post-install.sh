@@ -3,6 +3,9 @@ set -euo pipefail
 
 export PATH="./node_modules/.bin:$PATH"
 
+# Configure git hooks path — no-op in CI (Husky detects CI env var automatically)
+husky
+
 # Install Playwright Chromium — required for browser tests, always (not just CI)
 # If already installed locally then no attempt is made to re-install (so not a resource drain)
 playwright install chromium --only-shell --with-deps
