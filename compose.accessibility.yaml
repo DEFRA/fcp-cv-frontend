@@ -2,10 +2,11 @@ services:
   accessibility:
     platform: linux/amd64
     image: defradigital/ffc-axe
+    shm_size: '2gb'
     command: >
       axe --dir=/home/node/test-output -s axe.json
         --report=/home/node/test-output --format=junit
-        --chrome-options="no-sandbox,disable-setuid-sandbox,disable-dev-shm-usage"
+        --chrome-options="no-sandbox,disable-setuid-sandbox,disable-dev-shm-usage,disable-gpu,no-zygote,single-process"
         --chromedriver-path=/usr/bin/chromedriver --exit
         ${CV_URL:-http://fcp-cv-frontend:3000}
     volumes:
