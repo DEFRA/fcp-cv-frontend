@@ -6,9 +6,12 @@ export PATH="./node_modules/.bin:$PATH"
 # Configure git hooks path — no-op in CI (Husky detects CI env var automatically)
 husky
 
-# Install Playwright Chromium — required for browser tests, always (not just CI)
-# If already installed locally then no attempt is made to re-install (so not a resource drain)
-playwright install chromium --only-shell --with-deps
+# Install Playwright Chromium — headless-only on CI, full build locally
+if [ "${CI:-false}" = "true" ]; then
+  playwright install chromium --only-shell --with-deps
+else
+  playwright install chromium --with-deps
+fi
 
 # Install chromedriver if not already present — no-op if binary already exists.
 # Set SKIP_CHROMEDRIVER_INSTALL=true to bypass entirely (e.g. in publish-hotfix, where accessibility tests are not run).
