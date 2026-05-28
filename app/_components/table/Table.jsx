@@ -236,7 +236,6 @@ export default function Table({
     state.sorting = sorting
   }
 
-  // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable is incompatible with React Compiler; component is opted out via "use no memo"
   const table = useReactTable({
     data: data || skeletonData,
     columns,
