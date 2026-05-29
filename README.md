@@ -111,8 +111,9 @@ ignore-scripts=true
 
 All required post install steps have been gathered into a `postinstall` script. This script contains calls to commands
 that would have been run by 3rd party library installers, if `ignore-scripts` had not been set. These commands in this
-file have been limited to those that are required for our build process. It would still be prudent to examine this script, prior to running to ensure
-that you understand what will be run. To run this script, execute the following:
+file have been limited to those that are required for our build process. It would still be prudent to examine this script,
+prior to running to ensure that you understand what will be run (you will be prompted to confirm at each step). To run
+this script, execute the following:
 
 ```bash
 npm run postinstall
