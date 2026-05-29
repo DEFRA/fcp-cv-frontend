@@ -22,11 +22,7 @@ vi.mock('@/lib/auth', () => ({
   getEmailFromToken: vi.fn(() => 'test@example.com')
 }))
 vi.mock('@/lib/logger', () => ({
-  logger: { warn: vi.fn(), info: vi.fn() }
-}))
-vi.mock('@/lib/metrics', async (importOriginal) => ({
-  ...(await importOriginal()),
-  metrics: { millis: vi.fn() }
+  logger: { warn: vi.fn() }
 }))
 vi.mock('@/config', () => ({
   config: {
