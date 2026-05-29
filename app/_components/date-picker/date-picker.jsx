@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useState } from 'react'
+import { useId, useState } from 'react'
 
 const MIN_DATE = '2015-01-01'
 
@@ -16,11 +16,8 @@ export function DatePicker({
   min = MIN_DATE
 }) {
   const inputId = useId()
-  const [inputValue, setInputValue] = useState(value)
-
-  useEffect(() => {
-    setInputValue(value)
-  }, [value])
+  const [pendingValue, setPendingValue] = useState(null)
+  const inputValue = pendingValue ?? value
 
   const max = todayISO()
 
@@ -31,9 +28,10 @@ export function DatePicker({
 
   const commit = (dateStr) => {
     if (isValid(dateStr)) {
+      setPendingValue(null)
       onChange(dateStr)
     } else {
-      setInputValue(value)
+      setPendingValue(null)
       if (dateStr && onInvalidDate) {
         if (dateStr < min) {
           onInvalidDate('below', min)
@@ -56,7 +54,7 @@ export function DatePicker({
         value={inputValue}
         min={min}
         max={max}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={(e) => setPendingValue(e.target.value)}
         onBlur={(e) => commit(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') commit(e.target.value)

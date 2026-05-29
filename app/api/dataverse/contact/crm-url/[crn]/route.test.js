@@ -1,25 +1,21 @@
+vi.mock('@/lib/dataverse', () => ({
+  lookupContactIdByCrn: vi.fn()
+}))
+vi.mock('@/lib/crm', () => ({
+  getCrmContactUrl: vi.fn()
+}))
+vi.mock('next/headers', () => ({
+  headers: () => ({
+    get: () => 'mocked-token'
+  })
+}))
+
 import { NextRequest } from 'next/server.js'
 import { vi } from 'vitest'
 
 import { GET } from './route'
 
 describe('Dataverse Contact CRM URL API route', () => {
-  beforeAll(() => {
-    vi.mock('@/lib/dataverse', () => ({
-      lookupContactIdByCrn: vi.fn()
-    }))
-
-    vi.mock('@/lib/crm', () => ({
-      getCrmContactUrl: vi.fn()
-    }))
-
-    vi.mock('next/headers', () => ({
-      headers: () => ({
-        get: () => 'mocked-token'
-      })
-    }))
-  })
-
   test('should lookup contact by crn and return crm url', async () => {
     const { lookupContactIdByCrn } = await import('@/lib/dataverse')
     const { getCrmContactUrl } = await import('@/lib/crm')

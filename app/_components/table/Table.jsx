@@ -209,6 +209,7 @@ export default function Table({
   defaultSortDirection = 'asc',
   noResultsMessage = 'No results found'
 }) {
+  'use no memo' // useReactTable returns functions incompatible with React Compiler memoisation
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState(() => {
     if (enableSorting) {

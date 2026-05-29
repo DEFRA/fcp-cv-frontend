@@ -91,11 +91,50 @@ The only other service required by the app is the Dataverse for the associated C
 
 ### Setup
 
-Install application dependencies:
+#### Install application dependencies
+
+Run the npm install command
 
 ```bash
 npm install
 ```
+
+#### Implicit lifecycle scripts are disabled
+
+Due to the prevalence of NPM supply-chain attacks, scripts that would usually be run during npm install (and also
+pre/post scripts that are run alongside the target script) have been forcibly disabled with the following
+setting in `.npmrc`:
+
+```.npmrc
+ignore-scripts=true
+```
+
+All required post install steps have been gathered into a `postinstall` script. This script contains calls to commands
+that would have been run by 3rd party library installers, if `ignore-scripts` had not been set. These commands in this
+file have been limited to those that are required for our build process. It would still be prudent to examine this script,
+prior to running to ensure that you understand what will be run (you will be prompted to confirm at each step). To run
+this script, execute the following:
+
+```bash
+npm run postinstall
+```
+
+#### 3rd party libraries must be at least 7 days old before they can be installed
+
+The `.npmrc` setting below prevents libraries that have been released in the past 7 days from being installed.
+
+```.npmrc
+min-release-age=7
+```
+
+This gives the npm community time to detect a compromised release before this repo consumes it.
+
+This does create a potential issue. If `npm audit` identifies an issue that must be fixed, and the patched library
+has been released less than 7 days ago, then you will need to investigate the library in question:
+
+- Look at the published release
+- Verify that it's safe
+- Run `npm install {your-dependency}@{version-number} --min-release-age=0` (including `--save-dev` if it's a dev only dependency)
 
 ### Development
 

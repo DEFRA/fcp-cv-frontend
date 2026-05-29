@@ -17,6 +17,7 @@ EXPOSE ${PORT} ${PORT_DEBUG}
 USER node
 
 COPY --chown=node:node package*.json ./
+COPY --chown=node:node .npmrc ./
 RUN npm ci
 
 COPY --chown=node:node \

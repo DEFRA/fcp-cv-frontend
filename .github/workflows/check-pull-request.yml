@@ -30,6 +30,7 @@ jobs:
       - run: |
           npm audit --omit=dev
           npm ci
+          npm run postinstall
 
       - name: Verify semantic version bump
         run: |
@@ -56,7 +57,9 @@ jobs:
 
       - name: Docker build & test accessibility
         run: |
+          npm run pretest:accessibility:docker
           npm run test:accessibility:docker
+          npm run posttest:accessibility:docker
 
       - name: Upload accessibility test report
         if: always()
