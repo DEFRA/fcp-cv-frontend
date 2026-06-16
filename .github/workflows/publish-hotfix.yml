@@ -12,6 +12,7 @@ env:
   AWS_REGION: eu-west-2
   AWS_ACCOUNT_ID: '094954420758'
   SKIP_CHROMEDRIVER_INSTALL: true
+  CUSTOM_TAG: 0.63.5
 
 jobs:
   build:
