@@ -29,9 +29,11 @@ describe('getIPFromToken', () => {
 
     const headers = { get: vi.fn(() => null) }
 
-    await expect(getIPFromToken(headers)).rejects.toThrow(
-      'Authorisation failure: no token provided'
-    )
+    await expect(getIPFromToken(headers)).rejects.toMatchObject({
+      message: 'Authorisation failure: no token provided',
+      status: 401,
+      statusText: 'Unauthorized'
+    })
   })
 
   test('returns ipaddr from verified token', async () => {
@@ -55,9 +57,11 @@ describe('getIPFromToken', () => {
 
     jose.jwtVerify.mockResolvedValue({ payload: {} })
 
-    await expect(getIPFromToken(headers)).rejects.toThrow(
-      'Authorisation failure: no ipaddr in token'
-    )
+    await expect(getIPFromToken(headers)).rejects.toMatchObject({
+      message: 'Authorisation failure: no ipaddr in token',
+      status: 403,
+      statusText: 'Forbidden'
+    })
   })
 
   test('throws if jwtVerify rejects', async () => {
@@ -69,9 +73,11 @@ describe('getIPFromToken', () => {
 
     jose.jwtVerify.mockRejectedValue(new Error('invalid signature'))
 
-    await expect(getIPFromToken(headers)).rejects.toThrow(
-      'Authorisation failure: token verification failed'
-    )
+    await expect(getIPFromToken(headers)).rejects.toMatchObject({
+      message: 'Authorisation failure: token verification failed',
+      status: 401,
+      statusText: 'Unauthorized'
+    })
   })
 })
 
@@ -118,9 +124,11 @@ describe('getEmailFromToken', () => {
 
     const headers = { get: vi.fn(() => null) }
 
-    await expect(getEmailFromToken(headers)).rejects.toThrow(
-      'Authorisation failure: no token provided'
-    )
+    await expect(getEmailFromToken(headers)).rejects.toMatchObject({
+      message: 'Authorisation failure: no token provided',
+      status: 401,
+      statusText: 'Unauthorized'
+    })
   })
 
   // Token verifies successfully, but no email (or fallbacks) in payload and
@@ -134,9 +142,12 @@ describe('getEmailFromToken', () => {
 
     jose.jwtVerify.mockResolvedValue({ payload: {} })
 
-    await expect(getEmailFromToken(headers)).rejects.toThrow(
-      'Authorisation failure: no email in token'
-    )
+    await expect(getEmailFromToken(headers)).rejects.toMatchObject({
+      message: 'Authorisation failure: no email in token',
+      status: 403,
+      statusText: 'Forbidden'
+    })
+
     expect(jose.jwtVerify).toHaveBeenCalled()
   })
 
@@ -191,9 +202,12 @@ describe('getEmailFromToken', () => {
 
     jose.jwtVerify.mockRejectedValue(new Error('invalid signature'))
 
-    await expect(getEmailFromToken(headers)).rejects.toThrow(
-      'Authorisation failure: token verification failed'
-    )
+    await expect(getEmailFromToken(headers)).rejects.toMatchObject({
+      message: 'Authorisation failure: token verification failed',
+      status: 401,
+      statusText: 'Unauthorized'
+    })
+
     expect(jose.jwtVerify).toHaveBeenCalled()
   })
 

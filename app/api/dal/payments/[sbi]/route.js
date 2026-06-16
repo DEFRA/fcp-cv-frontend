@@ -2,7 +2,6 @@ import { dalApiResponse, handleApiError } from '@/lib/api.js'
 import { getIPFromToken } from '@/lib/auth'
 import { dalRequest } from '@/lib/dal'
 import { formatCurrency, formatDate } from '@/lib/formatters'
-import { logger } from '@/lib/logger'
 
 const query = `#graphql
   query BusinessCustomer($sbi: ID!, $userIP: String!) {
@@ -29,20 +28,11 @@ const query = `#graphql
   }
 `
 
-async function resolveUserIP(request) {
-  try {
-    return await getIPFromToken(request.headers)
-  } catch {
-    logger.warn('Unable to resolve user IP address from MSAL access token')
-    throw new Error('Unable to resolve user IP address from MSAL access token')
-  }
-}
-
 export async function GET(request, ctx) {
   const { sbi } = await ctx.params
 
   try {
-    const userIP = await resolveUserIP(request)
+    const userIP = await getIPFromToken(request.headers)
     const variables = { sbi, userIP }
     const apiResponse = await dalRequest({ query, variables })
 

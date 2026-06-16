@@ -1,4 +1,4 @@
-import { dalRequest } from '@/lib/dal'
+import { dalRequest, HttpError } from '@/lib/dal'
 import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
@@ -147,7 +147,7 @@ describe('dalRequest', () => {
     ).rejects.toThrow('DAL token retrieval failed')
   })
 
-  test('throws DalResponseError and logs warning on unsuccessful response', async () => {
+  test('throws HttpError and logs warning on unsuccessful response', async () => {
     fetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
@@ -165,7 +165,7 @@ describe('dalRequest', () => {
     await expect(() =>
       dalRequest({ query: '', variables: {} })
     ).rejects.toMatchObject({
-      message: 'Internal Server Error',
+      message: 'DAL request unsuccessful',
       status: 500,
       statusText: 'Internal Server Error'
     })
@@ -192,7 +192,7 @@ describe('dalRequest', () => {
     [502, 'Bad Gateway'],
     [503, 'Service Unavailable']
   ])(
-    'throws DalResponseError with correct status and message for %i responses',
+    'throws HttpError with correct status and message for %i responses',
     async (status, statusText) => {
       fetch.mockResolvedValueOnce({
         ok: false,
@@ -203,7 +203,9 @@ describe('dalRequest', () => {
 
       await expect(() =>
         dalRequest({ query: '', variables: {} })
-      ).rejects.toMatchObject({ message: statusText, status, statusText })
+      ).rejects.toMatchObject(
+        new HttpError('DAL request unsuccessful', status, statusText)
+      )
     }
   )
 
@@ -212,7 +214,9 @@ describe('dalRequest', () => {
 
     await expect(() =>
       dalRequest({ query: '', variables: {} })
-    ).rejects.toThrow(new Error('DAL request failed'))
+    ).rejects.toThrow(
+      new Error('DAL request failed, caused by: Network failure')
+    )
 
     expect(logger.warn).toHaveBeenCalledWith(
       expect.objectContaining(new Error('DAL request failed')),
@@ -228,20 +232,47 @@ describe('dalRequest', () => {
     expect(timeoutSpy).toHaveBeenCalledWith(30000)
   })
 
-  test('throws generic error when fetch times out', async () => {
-    const timeoutError = new DOMException(
-      'The operation timed out.',
-      'TimeoutError'
-    )
-    fetch.mockRejectedValueOnce(timeoutError)
+  test.each([
+    ['TimeoutError', 'The operation timed out.'],
+    ['AbortError', 'The operation was aborted.']
+  ])(
+    'throws a 504 HttpError when fetch rejects with a %s',
+    async (name, message) => {
+      fetch.mockRejectedValueOnce(new DOMException(message, name))
 
-    await expect(() =>
-      dalRequest({ query: '', variables: {} })
-    ).rejects.toThrow('DAL request failed')
+      await expect(() =>
+        dalRequest({ query: '', variables: {} })
+      ).rejects.toMatchObject(
+        new HttpError(
+          `Upstream request timed out: ${message}`,
+          504,
+          'Gateway Timeout'
+        )
+      )
 
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.objectContaining({ err: timeoutError }),
-      'DAL request failed'
+      expect(logger.warn).not.toHaveBeenCalled()
+    }
+  )
+
+  test('re-throws an HttpError from fetch without wrapping it', async () => {
+    const httpError = new HttpError('boom', 418, "I'm a teapot")
+    fetch.mockRejectedValueOnce(httpError)
+
+    await expect(() => dalRequest({ query: '', variables: {} })).rejects.toBe(
+      httpError
     )
+
+    expect(logger.warn).not.toHaveBeenCalled()
+  })
+})
+
+describe('HttpError', () => {
+  test('creates an error with message, status, and statusText', () => {
+    const error = new HttpError('Test error', 400, 'Bad Request')
+
+    expect(error.name).toBe('HttpError')
+    expect(error.message).toBe('Test error')
+    expect(error.status).toBe(400)
+    expect(error.statusText).toBe('Bad Request')
   })
 })
