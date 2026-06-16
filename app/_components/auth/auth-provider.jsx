@@ -7,9 +7,14 @@ import { createContext, useContext, useState } from 'react'
 
 const context = createContext({ isDisabled: false, authenticationRequest: {} })
 
+// Create a single instance of PublicClientApplication to re-use during as SSR
+const ssrPublicClientApplication = new PublicClientApplication({})
+
 export function AuthProvider({ children, config }) {
-  const [instance] = useState(() =>
-    config.disabled
+  const [instance] = useState(() => {
+    if (typeof window === 'undefined') return ssrPublicClientApplication
+
+    return config.disabled
       ? null
       : new PublicClientApplication({
           auth: {
@@ -21,7 +26,7 @@ export function AuthProvider({ children, config }) {
             cacheLocation: 'localStorage'
           }
         })
-  )
+  })
 
   return (
     <context.Provider
