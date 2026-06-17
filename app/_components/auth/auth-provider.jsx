@@ -8,7 +8,7 @@ import { createContext, useContext, useState } from 'react'
 const context = createContext({ isDisabled: false, authenticationRequest: {} })
 
 // Create a single instance of PublicClientApplication to re-use during as SSR.
-// Without this, each server render will would create a new PublicClientApplication instance 
+// Without this, each server render will would create a new PublicClientApplication instance
 // and a slow leak in memory usage on the server.
 const ssrPublicClientApplication = new PublicClientApplication({})
 
