@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { metrics } from '@/lib/metrics'
 
-export async function middleware() {
+export async function proxy() {
   const start = Date.now()
   const res = await NextResponse.next()
   await metrics.millis('BffRequestTime', Date.now() - start, {
@@ -12,6 +12,5 @@ export async function middleware() {
 }
 
 export const config = {
-  runtime: 'nodejs',
   matcher: '/api/:path*'
 }
