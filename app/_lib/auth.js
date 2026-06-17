@@ -79,8 +79,10 @@ export async function getIPFromToken(headers) {
   return payload.ipaddr
 }
 
+const overrideEmail = config.get('dal.email')
+
 export async function getEmailFromToken(headers) {
-  if (clientAuthConfig.disabled) return config.get('dal.email')
+  if (clientAuthConfig.disabled) return overrideEmail
 
   const token = headers.get('x-msal-id-token')
   const payload = await verifyToken(token, {
@@ -89,6 +91,7 @@ export async function getEmailFromToken(headers) {
   })
 
   const email =
+    overrideEmail ??
     payload?.email ??
     payload?.preferred_username ??
     payload?.verified_primary_email?.[0]
