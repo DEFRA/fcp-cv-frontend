@@ -10,7 +10,10 @@ export function useSearchParams() {
     setSearchParams(entries) {
       const params = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(entries)) {
-        params.set(key, value)
+        const _value = `${value}`
+        if (_value && _value !== 'undefined' && _value !== 'null') {
+          params.set(key, _value)
+        }
       }
       window.history.pushState(null, '', `?${params.toString()}`)
     },
