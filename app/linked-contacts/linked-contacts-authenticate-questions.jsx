@@ -1,20 +1,20 @@
+import { ButtonLink } from '@/components/button-link/ButtonLink'
 import {
   KeyValueList,
   KeyValueListContent,
   KeyValueListItem
 } from '@/components/key-value-list-v2/key-value-list'
+import { notification } from '@/components/notification/Notifications.jsx'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
-import { ButtonLink } from '@/components/button-link/ButtonLink'
 import { Transition } from '@headlessui/react'
 import { useEffect, useState } from 'react'
-import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultItems = [
   { dt: 'Date of Birth' },
   { dt: 'Memorable Date' },
-  { dt: 'Memorable Location' },
   { dt: 'Memorable Event' },
+  { dt: 'Memorable Location' },
   { dt: 'Updated At' }
 ]
 

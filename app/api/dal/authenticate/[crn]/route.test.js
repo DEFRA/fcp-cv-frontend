@@ -62,12 +62,12 @@ describe('Authenticate API route', () => {
         dt: 'Memorable Date'
       },
       {
-        dd: 'Stoltenberg-under-Bechtelar',
-        dt: 'Memorable Location'
-      },
-      {
         dd: 'aureus',
         dt: 'Memorable Event'
+      },
+      {
+        dd: 'Stoltenberg-under-Bechtelar',
+        dt: 'Memorable Location'
       },
       {
         dd: '31/12/2024 14:34',
@@ -88,8 +88,8 @@ describe('Authenticate API route', () => {
     expect(response.status).toBe(200)
     expect(await response.json()).toStrictEqual([
       { dt: 'Memorable Date', dd: '(Not set)' },
-      { dt: 'Memorable Location', dd: '(Not set)' },
       { dt: 'Memorable Event', dd: '(Not set)' },
+      { dt: 'Memorable Location', dd: '(Not set)' },
       { dt: 'Updated At', dd: '(Not set)' }
     ])
   })

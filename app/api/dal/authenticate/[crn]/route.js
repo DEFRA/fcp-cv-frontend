@@ -1,6 +1,6 @@
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 import { dalRequest } from '@/lib/dal'
 import { formatDateAndTime } from '@/lib/formatters'
-import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
   query CVAuthenticate($crn: ID!) {
@@ -29,12 +29,12 @@ export async function GET(req, { params }) {
         dd: authenticationQuestions?.memorableDate || '(Not set)'
       },
       {
-        dt: 'Memorable Location',
-        dd: authenticationQuestions?.memorableLocation || '(Not set)'
-      },
-      {
         dt: 'Memorable Event',
         dd: authenticationQuestions?.memorableEvent || '(Not set)'
+      },
+      {
+        dt: 'Memorable Location',
+        dd: authenticationQuestions?.memorableLocation || '(Not set)'
       },
       {
         dt: 'Updated At',
