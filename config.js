@@ -116,15 +116,6 @@ export const config = convict({
       }
     }
   },
-  iframeMessenger: {
-    crmOrigin: {
-      doc: 'The origin of the CRM instance',
-      format: String,
-      default: null,
-      env: 'IFRAME_MESSENGER_CRM_ORIGIN',
-      nullable: true
-    }
-  },
   dataverse: {
     url: {
       doc: 'URL for Dataverse',
