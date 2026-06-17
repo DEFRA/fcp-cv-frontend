@@ -2,10 +2,8 @@ export const dynamic = 'force-dynamic'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
 import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary'
-import { IframeMessenger } from '@/components/iframe-messenger/IframeMessenger'
 import { Main } from '@/components/main/main'
 import Notifications from '@/components/notification/Notifications'
-import { config } from '@/config'
 import { clientAuthConfig } from '@/lib/auth'
 import './globals.css'
 
@@ -21,9 +19,6 @@ export default function RootLayout({ children }) {
           <AuthProvider config={clientAuthConfig}>
             <Main>{children}</Main>
             <Notifications />
-            <IframeMessenger
-              crmOrigin={config.get('iframeMessenger.crmOrigin')}
-            />
           </AuthProvider>
         </ErrorBoundary>
       </body>
