@@ -7,7 +7,8 @@ vi.mock('@/lib/auth', () => ({
   getEmailFromToken: vi.fn().mockResolvedValue('test@example.com'),
   getIPFromToken: vi.fn().mockResolvedValue('203.0.113.1')
 }))
-vi.mock('@/lib/dal', () => ({
+vi.mock('@/lib/dal', async (importOriginal) => ({
+  ...(await importOriginal()),
   dalRequest: vi.fn()
 }))
 vi.mock('@/lib/logger', () => ({
@@ -44,19 +45,31 @@ describe('Payments API route', () => {
     )
   })
 
-  test('should return 500 and warn when IP cannot be resolved from token', async () => {
+  test('should return 500 when IP resolution throws an unexpected error', async () => {
     const { getIPFromToken } = await import('@/lib/auth')
-    const { logger } = await import('@/lib/logger')
     vi.mocked(getIPFromToken).mockRejectedValueOnce(
-      new Error('Authorisation failure: no access token provided')
+      new Error('unexpected failure')
     )
 
     const response = await GET(...makeRequest())
 
     expect(response.status).toBe(500)
-    expect(logger.warn).toHaveBeenCalledWith(
-      'Unable to resolve user IP address from MSAL access token'
+  })
+
+  test('should preserve the HttpError status when IP resolution is unauthorised', async () => {
+    const { getIPFromToken } = await import('@/lib/auth')
+    const { HttpError } = await import('@/lib/http-error')
+    vi.mocked(getIPFromToken).mockRejectedValueOnce(
+      new HttpError(
+        'Authorisation failure: no ipaddr in token',
+        403,
+        'Forbidden'
+      )
     )
+
+    const response = await GET(...makeRequest())
+
+    expect(response.status).toBe(403)
   })
 
   test('should return default payload when no payments data', async () => {

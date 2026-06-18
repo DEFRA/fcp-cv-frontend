@@ -1,10 +1,10 @@
 import { config } from '@/config'
+import { summariseErrors } from '@/lib/api.js'
 import { getEmailFromToken } from '@/lib/auth'
+import { HttpError } from '@/lib/http-error'
 import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
-import { summariseErrors } from '@/lib/api.js'
-import { extractOperationName, metrics } from '@/lib/metrics'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
 
@@ -32,18 +32,13 @@ async function getAccessToken() {
   } catch (err) {
     logger.warn({ err }, 'DAL token retrieval failed')
 
-    const cleanError = new Error('DAL token retrieval failed')
-    cleanError.status = 401
-    cleanError.statusText = 'Unauthorized'
-
-    throw cleanError
+    throw new HttpError('DAL token retrieval failed', 401, 'Unauthorized')
   }
 }
 
 export async function dalRequest({ query, variables }) {
   const email = await getEmailFromToken(await headers())
   const authorization = DAL_AUTH_DISABLED ? '' : await getAccessToken()
-  const operation = extractOperationName(query)
 
   const req = {
     method: 'POST',
@@ -51,19 +46,22 @@ export async function dalRequest({ query, variables }) {
     body: JSON.stringify({ query, variables })
   }
 
-  const start = Date.now()
   const response = await fetch(config.get('dal.url'), {
     ...req,
     signal: AbortSignal.timeout(config.get('dal.requestTimeout'))
   }).catch((err) => {
-    logger.warn({ err }, 'DAL request failed')
-    throw new Error('DAL request failed')
-  })
+    if (err.name === 'HttpError') {
+      throw err
+    } else if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      throw new HttpError(
+        `Upstream request timed out: ${err.message}`,
+        504,
+        'Gateway Timeout'
+      )
+    }
 
-  await metrics.millis('UpstreamRequestTime', Date.now() - start, {
-    Service: 'dal',
-    Operation: operation ?? 'unknown',
-    StatusCode: String(response.status)
+    logger.warn({ err }, 'DAL request failed')
+    throw new Error(`DAL request failed, caused by: ${err.message}`)
   })
 
   if (!response.ok) {
@@ -78,16 +76,12 @@ export async function dalRequest({ query, variables }) {
       'DAL request unsuccessful'
     )
 
-    throw new DalResponseError(response.status, response.statusText)
+    throw new HttpError(
+      'DAL request unsuccessful',
+      response.status,
+      response.statusText
+    )
   }
 
   return response.json()
-}
-
-class DalResponseError extends Error {
-  constructor(status, statusText) {
-    super(statusText)
-    this.status = status
-    this.statusText = statusText
-  }
 }

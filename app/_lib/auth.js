@@ -1,6 +1,7 @@
 import { createRemoteJWKSet, decodeJwt, jwtVerify } from 'jose'
 
 import { config } from '@/config'
+import { HttpError } from '@/lib/http-error'
 import { logger } from '@/lib/logger'
 
 export const clientAuthConfig = {
@@ -32,7 +33,12 @@ function getRemoteJWKSet() {
 }
 
 async function verifyToken(token, { issuer, audience }) {
-  if (!token) throw new Error('Authorisation failure: no token provided')
+  if (!token)
+    throw new HttpError(
+      'Authorisation failure: no token provided',
+      401,
+      'Unauthorized'
+    )
 
   try {
     const { payload } = await jwtVerify(token, getRemoteJWKSet(), {
@@ -61,7 +67,11 @@ async function verifyToken(token, { issuer, audience }) {
         })
       }
     })
-    throw new Error('Authorisation failure: token verification failed')
+    throw new HttpError(
+      'Authorisation failure: token verification failed',
+      401,
+      'Unauthorized'
+    )
   }
 }
 
@@ -75,7 +85,11 @@ export async function getIPFromToken(headers) {
   })
 
   if (!payload.ipaddr)
-    throw new Error('Authorisation failure: no ipaddr in token')
+    throw new HttpError(
+      'Authorisation failure: no ipaddr in token',
+      403,
+      'Forbidden'
+    )
   return payload.ipaddr
 }
 
@@ -96,6 +110,11 @@ export async function getEmailFromToken(headers) {
     payload?.preferred_username ??
     payload?.verified_primary_email?.[0]
 
-  if (!email) throw new Error('Authorisation failure: no email in token')
+  if (!email)
+    throw new HttpError(
+      'Authorisation failure: no email in token',
+      403,
+      'Forbidden'
+    )
   return email
 }

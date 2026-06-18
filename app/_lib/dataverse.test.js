@@ -14,10 +14,6 @@ vi.mock('@/config', () => ({
   }
 }))
 
-vi.mock('@/lib/metrics', () => ({
-  metrics: { millis: vi.fn() }
-}))
-
 describe('Dataverse lookup functions', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
