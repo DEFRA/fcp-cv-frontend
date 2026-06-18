@@ -1,6 +1,7 @@
 import { config } from '@/config'
 import { summariseErrors } from '@/lib/api.js'
 import { getEmailFromToken } from '@/lib/auth'
+import { HttpError } from '@/lib/http-error'
 import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { headers } from 'next/headers'
@@ -85,11 +86,4 @@ export async function dalRequest({ query, variables }) {
   return response.json()
 }
 
-export class HttpError extends Error {
-  constructor(message, status, statusText) {
-    super(message)
-    this.name = 'HttpError'
-    this.status = status
-    this.statusText = statusText
-  }
-}
+export { HttpError }

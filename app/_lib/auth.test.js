@@ -12,6 +12,7 @@ describe('getIPFromToken', () => {
     vi.resetAllMocks()
     vi.resetModules()
     vi.unstubAllEnvs()
+    vi.stubEnv('USER_AUTH_DISABLED', 'false')
   })
 
   test('returns 127.0.0.1 when auth disabled', async () => {
@@ -86,6 +87,7 @@ describe('getEmailFromToken', () => {
     vi.resetAllMocks()
     vi.resetModules()
     vi.unstubAllEnvs()
+    vi.stubEnv('USER_AUTH_DISABLED', 'false')
   })
 
   // Auth disabled: immediately returns the email from DAL_EMAIL config.

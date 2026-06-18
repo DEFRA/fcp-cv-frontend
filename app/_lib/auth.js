@@ -1,7 +1,7 @@
 import { createRemoteJWKSet, decodeJwt, jwtVerify } from 'jose'
 
 import { config } from '@/config'
-import { HttpError } from '@/lib/dal'
+import { HttpError } from '@/lib/http-error'
 import { logger } from '@/lib/logger'
 
 export const clientAuthConfig = {
