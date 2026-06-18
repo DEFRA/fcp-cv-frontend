@@ -58,7 +58,7 @@ describe('Payments API route', () => {
 
   test('should preserve the HttpError status when IP resolution is unauthorised', async () => {
     const { getIPFromToken } = await import('@/lib/auth')
-    const { HttpError } = await import('@/lib/dal')
+    const { HttpError } = await import('@/lib/http-error')
     vi.mocked(getIPFromToken).mockRejectedValueOnce(
       new HttpError(
         'Authorisation failure: no ipaddr in token',

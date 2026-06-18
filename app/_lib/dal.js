@@ -85,5 +85,3 @@ export async function dalRequest({ query, variables }) {
 
   return response.json()
 }
-
-export { HttpError }

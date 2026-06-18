@@ -1,4 +1,5 @@
-import { dalRequest, HttpError } from '@/lib/dal'
+import { dalRequest } from '@/lib/dal'
+import { HttpError } from '@/lib/http-error'
 import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
@@ -263,16 +264,5 @@ describe('dalRequest', () => {
     )
 
     expect(logger.warn).not.toHaveBeenCalled()
-  })
-})
-
-describe('HttpError', () => {
-  test('creates an error with message, status, and statusText', () => {
-    const error = new HttpError('Test error', 400, 'Bad Request')
-
-    expect(error.name).toBe('HttpError')
-    expect(error.message).toBe('Test error')
-    expect(error.status).toBe(400)
-    expect(error.statusText).toBe('Bad Request')
   })
 })
