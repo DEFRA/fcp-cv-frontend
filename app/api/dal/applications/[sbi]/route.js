@@ -1,9 +1,9 @@
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 import { dalRequest } from '@/lib/dal'
 import { formatDate, formatDateAndTime } from '@/lib/formatters'
-import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
-  query CVCountyParishHoldings($sbi: ID!) {
+  query CVCountyParishHoldings($sbi: BigInt) {
     business(sbi: $sbi) {
       applications {
         sbi

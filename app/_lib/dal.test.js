@@ -62,6 +62,15 @@ beforeEach(() => {
   })
 })
 
+const dummyRequest = {
+  query: 'query Test($sbi: ID!) { business(sbi: $sbi) { sbi } }',
+  variables: { sbi: 'sbi' }
+}
+const sampleRequest = {
+  query: 'query Business($sbi: BigInt!) { business(sbi: $sbi) { sbi } }',
+  variables: { sbi: '123456789' }
+}
+
 describe('dalRequest', () => {
   test('client is only created once', async () => {
     await dalRequest({ query: '', variables: {} })
@@ -134,6 +143,43 @@ describe('dalRequest', () => {
 
     const fetchCall = fetch.mock.calls[0]
     expect(JSON.parse(fetchCall[1].body)).toEqual(request)
+  })
+
+  test('rejects variables that do not match the schema types', async () => {
+    const request = {
+      query: 'query Test($count: Int!) { __typename }',
+      variables: { count: 'abc' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test('rejects invalid BigInt variables for the DAL schema', async () => {
+    const request = {
+      query: 'query Test($sbi: BigInt!) { __typename }',
+      variables: { sbi: 'abc' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test('rejects invalid BigInt variables, e.g. "undefined" for the DAL schema', async () => {
+    const request = {
+      query: 'query Test($sbi: BigInt!) { __typename }',
+      variables: { sbi: 'undefined' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+    expect(fetch).not.toHaveBeenCalled()
   })
 
   test('returns parsed JSON response', async () => {

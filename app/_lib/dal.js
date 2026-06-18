@@ -4,9 +4,97 @@ import { getEmailFromToken } from '@/lib/auth'
 import { HttpError } from '@/lib/http-error'
 import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
+import {
+  buildASTSchema,
+  buildClientSchema,
+  getOperationAST,
+  getVariableValues,
+  introspectionFromSchema,
+  parse
+} from 'graphql'
+import { GraphQLBigInt } from 'graphql-scalars'
 import { headers } from 'next/headers'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
+
+let clientSchema = null
+function getClientSchema() {
+  if (!clientSchema) {
+    const schemaSource = readFileSync(
+      new URL('./dal-schema.graphql', import.meta.url),
+      'utf8'
+    )
+    const schemaDocument = parse(schemaSource)
+    const schema = buildASTSchema(schemaDocument)
+
+    const bigIntType = schema.getType('BigInt')
+    if (bigIntType) {
+      bigIntType.serialize = GraphQLBigInt.serialize
+      bigIntType.parseValue = GraphQLBigInt.parseValue
+      bigIntType.parseLiteral = GraphQLBigInt.parseLiteral
+    }
+
+    clientSchema = buildClientSchema(introspectionFromSchema(schema))
+
+    const clientBigIntType = clientSchema.getType('BigInt')
+    if (clientBigIntType) {
+      clientBigIntType.serialize = GraphQLBigInt.serialize
+      clientBigIntType.parseValue = GraphQLBigInt.parseValue
+      clientBigIntType.parseLiteral = GraphQLBigInt.parseLiteral
+    }
+  }
+
+  return clientSchema
+}
+
+function validateVariables({ query, variables }) {
+  let document
+  try {
+    document = parse(query)
+  } catch (err) {
+    logger.warn(
+      {
+        err,
+        tenant: {
+          message: JSON.stringify({ query, variables })
+        }
+      },
+      'DAL request variable validation failed: could not parse query'
+    )
+
+    return variables
+  }
+
+  const operation = getOperationAST(document)
+  if (!operation?.variableDefinitions?.length) {
+    return variables
+  }
+
+  const { errors, coerced } = getVariableValues(
+    getClientSchema(),
+    operation.variableDefinitions,
+    variables ?? {}
+  )
+  if (errors?.length) {
+    const errorMessage = errors.map((error) => error.message).join('; ')
+    logger.warn(
+      {
+        err: new Error(errorMessage),
+        query,
+        variables
+      },
+      'DAL request variable validation failed'
+    )
+
+    throw new HttpError(
+      'DAL request failed: invalid variables',
+      400,
+      'Bad Request'
+    )
+  }
+
+  return coerced
+}
 
 let client = null
 function getClient() {

@@ -4,7 +4,7 @@ import { dalRequest } from '@/lib/dal'
 import { formatCurrency, formatDate } from '@/lib/formatters'
 
 const query = `#graphql
-  query BusinessCustomer($sbi: ID!, $userIP: String!) {
+  query BusinessCustomer($sbi: BigInt, $userIP: String!) {
     business(sbi: $sbi) {
       sbi
       payments(userIP: $userIP) {

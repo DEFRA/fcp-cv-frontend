@@ -1,9 +1,9 @@
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 import { dalRequest } from '@/lib/dal'
 import { formatDate } from '@/lib/formatters'
-import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
-  query BusinessLandParcelCovers($sbi: ID!, $date: Date, $sheetId: ID!, $parcelId: ID!) {
+  query BusinessLandParcelCovers($sbi: BigInt, $date: Date, $sheetId: ID!, $parcelId: ID!) {
     business(sbi: $sbi) {
       land {
         parcel(date: $date, sheetId: $sheetId, parcelId: $parcelId) {
