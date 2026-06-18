@@ -12,6 +12,7 @@
     "up": "./scripts/launch-full-docker-environment.sh",
     "build": "next build",
     "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
+    "debug": "next dev -p ${PORT:-3200} --inspect | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --log-level warn --write .",
     "start": "next start",
