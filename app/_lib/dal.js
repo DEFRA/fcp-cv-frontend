@@ -1,12 +1,80 @@
+import { readFileSync } from 'node:fs'
+
 import { config } from '@/config'
 import { summariseErrors } from '@/lib/api.js'
 import { getEmailFromToken } from '@/lib/auth'
 import { HttpError } from '@/lib/http-error'
 import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
+import {
+  buildASTSchema,
+  getOperationAST,
+  getVariableValues,
+  parse
+} from 'graphql'
+import { GraphQLBigInt } from 'graphql-scalars'
 import { headers } from 'next/headers'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
+
+const schemaSource = readFileSync(
+  new URL('./dal-schema.graphql', import.meta.url),
+  'utf8'
+)
+const dalSchema = buildASTSchema(parse(schemaSource))
+const bigIntType = dalSchema.getType('BigInt')
+bigIntType.serialize = GraphQLBigInt.serialize
+bigIntType.parseValue = GraphQLBigInt.parseValue
+bigIntType.parseLiteral = GraphQLBigInt.parseLiteral
+
+function validateVariables({ query, variables }) {
+  let document
+  try {
+    document = parse(query)
+  } catch (err) {
+    logger.warn(
+      {
+        err,
+        tenant: {
+          message: JSON.stringify({ query, variables })
+        }
+      },
+      'DAL request variable validation failed: could not parse query'
+    )
+
+    return variables
+  }
+
+  const operation = getOperationAST(document)
+  if (!operation?.variableDefinitions?.length) {
+    return variables
+  }
+
+  const { errors, coerced } = getVariableValues(
+    dalSchema,
+    operation.variableDefinitions,
+    variables ?? {}
+  )
+  if (errors?.length) {
+    const errorMessage = errors.map((error) => error.message).join('; ')
+    logger.warn(
+      {
+        err: new Error(errorMessage),
+        query,
+        variables
+      },
+      'DAL request variable validation failed'
+    )
+
+    throw new HttpError(
+      'DAL request failed: invalid variables',
+      400,
+      'Bad Request'
+    )
+  }
+
+  return coerced
+}
 
 let client = null
 function getClient() {
@@ -39,11 +107,12 @@ async function getAccessToken() {
 export async function dalRequest({ query, variables }) {
   const email = await getEmailFromToken(await headers())
   const authorization = DAL_AUTH_DISABLED ? '' : await getAccessToken()
+  const coercedVariables = validateVariables({ query, variables })
 
   const req = {
     method: 'POST',
     headers: { 'content-type': 'application/json', email, authorization },
-    body: JSON.stringify({ query, variables })
+    body: JSON.stringify({ query, variables: coercedVariables })
   }
 
   const response = await fetch(config.get('dal.url'), {

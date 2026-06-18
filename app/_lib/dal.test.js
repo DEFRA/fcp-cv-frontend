@@ -62,6 +62,15 @@ beforeEach(() => {
   })
 })
 
+const dummyRequest = {
+  query: 'query Test($sbi: ID!) { business(sbi: $sbi) { sbi } }',
+  variables: { sbi: '123456789' }
+}
+const sampleRequest = {
+  query: 'query Business($sbi: ID!) { business(sbi: $sbi) { sbi } }',
+  variables: { sbi: 'sbi' }
+}
+
 describe('dalRequest', () => {
   test('client is only created once', async () => {
     await dalRequest({ query: '', variables: {} })
@@ -71,12 +80,7 @@ describe('dalRequest', () => {
   })
 
   test('makes DAL request with generated access token', async () => {
-    const request = {
-      query: 'query Test {}',
-      variables: { a: 1 }
-    }
-
-    const response = await dalRequest(request)
+    const response = await dalRequest(dummyRequest)
 
     expect(acquireTokenByClientCredential).toHaveBeenCalledWith({
       scopes: ['test.scope']
@@ -84,7 +88,7 @@ describe('dalRequest', () => {
 
     expect(fetch).toHaveBeenCalledWith('http://dal/graphql', {
       method: 'POST',
-      body: JSON.stringify(request),
+      body: JSON.stringify(dummyRequest),
       headers: {
         'content-type': 'application/json',
         email: 'test@example.com',
@@ -126,7 +130,7 @@ describe('dalRequest', () => {
 
   test('passes variables and query correctly', async () => {
     const request = {
-      query: 'query Users { users { id } }',
+      query: 'query Test($limit: Int) { __typename }',
       variables: { limit: 10 }
     }
 
@@ -136,16 +140,53 @@ describe('dalRequest', () => {
     expect(JSON.parse(fetchCall[1].body)).toEqual(request)
   })
 
+  test('rejects variables that do not match the schema types', async () => {
+    const request = {
+      query: 'query Test($count: Int!) { __typename }',
+      variables: { count: 'abc' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test('rejects invalid BigInt variables for the DAL schema', async () => {
+    const request = {
+      query: 'query Test($sbi: BigInt!) { __typename }',
+      variables: { sbi: 'abc' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test('rejects invalid BigInt variables, e.g. "undefined" for the DAL schema', async () => {
+    const request = {
+      query: 'query Test($sbi: BigInt!) { __typename }',
+      variables: { sbi: 'undefined' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
   test('returns parsed JSON response', async () => {
-    const result = await dalRequest({ query: '', variables: {} })
+    const result = await dalRequest(dummyRequest)
     expect(result).toEqual({ message: 'Test response' })
   })
 
   test('handles errors during token retrieval', async () => {
     acquireTokenByClientCredential.mockRejectedValue(new Error('Token error'))
-    await expect(() =>
-      dalRequest({ query: '', variables: {} })
-    ).rejects.toThrow('DAL token retrieval failed')
+    await expect(() => dalRequest(dummyRequest)).rejects.toThrow(
+      'DAL token retrieval failed'
+    )
   })
 
   test('throws HttpError and logs warning on unsuccessful response', async () => {
@@ -163,9 +204,7 @@ describe('dalRequest', () => {
       })
     })
 
-    await expect(() =>
-      dalRequest({ query: '', variables: {} })
-    ).rejects.toMatchObject({
+    await expect(() => dalRequest(dummyRequest)).rejects.toMatchObject({
       message: 'DAL request unsuccessful',
       status: 500,
       statusText: 'Internal Server Error'
@@ -177,7 +216,7 @@ describe('dalRequest', () => {
           `${JSON.stringify({ field: 'This is an error that should be stringified' })}\n${JSON.stringify(['Stack', 'should', 'be', 'stringified'])}`
         ),
         req: expect.objectContaining({
-          body: JSON.stringify({ query: '', variables: {} })
+          body: JSON.stringify(dummyRequest)
         }),
         res: expect.objectContaining({ status: 500 })
       }),
@@ -202,9 +241,7 @@ describe('dalRequest', () => {
         json: async () => ({})
       })
 
-      await expect(() =>
-        dalRequest({ query: '', variables: {} })
-      ).rejects.toMatchObject(
+      await expect(() => dalRequest(dummyRequest)).rejects.toMatchObject(
         new HttpError('DAL request unsuccessful', status, statusText)
       )
     }
@@ -213,9 +250,7 @@ describe('dalRequest', () => {
   test('throws generic error when fetch fails due to a network error', async () => {
     fetch.mockRejectedValueOnce(new Error('Network failure'))
 
-    await expect(() =>
-      dalRequest({ query: '', variables: {} })
-    ).rejects.toThrow(
+    await expect(() => dalRequest(dummyRequest)).rejects.toThrow(
       new Error('DAL request failed, caused by: Network failure')
     )
 
@@ -228,7 +263,7 @@ describe('dalRequest', () => {
   test('passes request timeout to fetch', async () => {
     const timeoutSpy = vi.spyOn(AbortSignal, 'timeout')
 
-    await dalRequest({ query: '', variables: {} })
+    await dalRequest(dummyRequest)
 
     expect(timeoutSpy).toHaveBeenCalledWith(30000)
   })
@@ -241,9 +276,7 @@ describe('dalRequest', () => {
     async (name, message) => {
       fetch.mockRejectedValueOnce(new DOMException(message, name))
 
-      await expect(() =>
-        dalRequest({ query: '', variables: {} })
-      ).rejects.toMatchObject(
+      await expect(() => dalRequest(sampleRequest)).rejects.toMatchObject(
         new HttpError(
           `Upstream request timed out: ${message}`,
           504,
@@ -259,9 +292,7 @@ describe('dalRequest', () => {
     const httpError = new HttpError('boom', 418, "I'm a teapot")
     fetch.mockRejectedValueOnce(httpError)
 
-    await expect(() => dalRequest({ query: '', variables: {} })).rejects.toBe(
-      httpError
-    )
+    await expect(() => dalRequest(sampleRequest)).rejects.toBe(httpError)
 
     expect(logger.warn).not.toHaveBeenCalled()
   })
