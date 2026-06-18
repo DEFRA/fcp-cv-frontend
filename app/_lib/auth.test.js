@@ -82,6 +82,8 @@ describe('getEmailFromToken', () => {
     vi.unstubAllEnvs()
   })
 
+  // Auth disabled: immediately returns the email from DAL_EMAIL config.
+  // No token is read or verified.
   test('returns DAL_EMAIL when auth disabled', async () => {
     vi.stubEnv('USER_AUTH_DISABLED', 'true')
 
@@ -89,9 +91,28 @@ describe('getEmailFromToken', () => {
 
     const headers = { get: vi.fn(() => null) }
 
-    expect(await getEmailFromToken(headers)).toBe('test@defra.gov.uk')
+    const email = await getEmailFromToken(headers)
+    expect(email).toBe('test@defra.gov.uk')
+    expect(jose.jwtVerify).not.toHaveBeenCalled()
   })
 
+  // Auth enabled + DAL_EMAIL set in config: token is still verified for
+  // security, but the returned email comes from the config value, not the token.
+  test('returns DAL_EMAIL when auth enabled but DAL_EMAIL is set', async () => {
+    const { getEmailFromToken } = await import('./auth')
+
+    const headers = { get: vi.fn(() => 'valid.token.here') }
+
+    jose.jwtVerify.mockResolvedValue({
+      payload: { email: 'different.user@other.org' }
+    })
+
+    const email = await getEmailFromToken(headers)
+    expect(email).toBe('test@defra.gov.uk') // from DAL_EMAIL, not from token
+    expect(jose.jwtVerify).toHaveBeenCalledTimes(1)
+  })
+
+  // No token header provided: verifyToken fails early before any email logic.
   test('throws if no access token header', async () => {
     const { getEmailFromToken } = await import('./auth')
 
@@ -102,7 +123,11 @@ describe('getEmailFromToken', () => {
     )
   })
 
+  // Token verifies successfully, but no email (or fallbacks) in payload and
+  // no DAL_EMAIL override: should throw.
   test('throws if token has no email', async () => {
+    vi.stubEnv('DAL_EMAIL', undefined)
+
     const { getEmailFromToken } = await import('./auth')
 
     const headers = { get: vi.fn(() => 'valid.token.here') }
@@ -110,11 +135,16 @@ describe('getEmailFromToken', () => {
     jose.jwtVerify.mockResolvedValue({ payload: {} })
 
     await expect(getEmailFromToken(headers)).rejects.toThrow(
-      'no email in token'
+      'Authorisation failure: no email in token'
     )
+    expect(jose.jwtVerify).toHaveBeenCalled()
   })
 
+  // Normal path: auth enabled, no DAL_EMAIL override, token verifies and
+  // contains an email claim.
   test('returns email from token', async () => {
+    vi.stubEnv('DAL_EMAIL', undefined)
+
     const { getEmailFromToken } = await import('./auth')
 
     const headers = { get: vi.fn(() => 'valid.token.here') }
@@ -131,7 +161,10 @@ describe('getEmailFromToken', () => {
     })
   })
 
+  // Fallback when email claim is missing: use preferred_username from token.
   test('returns preferred_username if email not present', async () => {
+    vi.stubEnv('DAL_EMAIL', undefined)
+
     const { getEmailFromToken } = await import('./auth')
 
     const headers = { get: vi.fn(() => 'valid.token.here') }
@@ -144,6 +177,8 @@ describe('getEmailFromToken', () => {
     expect(email).toBe('user123')
   })
 
+  // Token verification fails (bad signature etc.). This error takes
+  // precedence even if DAL_EMAIL is configured.
   test('throws if jwtVerify rejects', async () => {
     jose.decodeJwt.mockReturnValue({
       email: 'censored.name@thing.com',
@@ -154,12 +189,17 @@ describe('getEmailFromToken', () => {
 
     const headers = { get: vi.fn(() => 'valid.token.here') }
 
+    jose.jwtVerify.mockRejectedValue(new Error('invalid signature'))
+
     await expect(getEmailFromToken(headers)).rejects.toThrow(
       'Authorisation failure: token verification failed'
     )
+    expect(jose.jwtVerify).toHaveBeenCalled()
   })
 
   test('caches the JWKS remote set', async () => {
+    vi.stubEnv('DAL_EMAIL', undefined)
+
     const { getEmailFromToken } = await import('./auth')
 
     const mockJWKS = vi.fn()
