@@ -66,10 +66,6 @@ const dummyRequest = {
   query: 'query Test($sbi: ID!) { business(sbi: $sbi) { sbi } }',
   variables: { sbi: 'sbi' }
 }
-const sampleRequest = {
-  query: 'query Business($sbi: BigInt!) { business(sbi: $sbi) { sbi } }',
-  variables: { sbi: '123456789' }
-}
 
 describe('dalRequest', () => {
   test('client is only created once', async () => {
@@ -287,9 +283,7 @@ describe('dalRequest', () => {
     async (name, message) => {
       fetch.mockRejectedValueOnce(new DOMException(message, name))
 
-      await expect(() =>
-        dalRequest({ query: '', variables: {} })
-      ).rejects.toMatchObject(
+      await expect(() => dalRequest(dummyRequest)).rejects.toMatchObject(
         new HttpError(
           `Upstream request timed out: ${message}`,
           504,
@@ -305,9 +299,7 @@ describe('dalRequest', () => {
     const httpError = new HttpError('boom', 418, "I'm a teapot")
     fetch.mockRejectedValueOnce(httpError)
 
-    await expect(() => dalRequest({ query: '', variables: {} })).rejects.toBe(
-      httpError
-    )
+    await expect(() => dalRequest(dummyRequest)).rejects.toBe(httpError)
 
     expect(logger.warn).not.toHaveBeenCalled()
   })

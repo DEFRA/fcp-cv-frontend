@@ -6,46 +6,26 @@ import { logger } from '@/lib/logger'
 import { ConfidentialClientApplication } from '@azure/msal-node'
 import {
   buildASTSchema,
-  buildClientSchema,
   getOperationAST,
   getVariableValues,
-  introspectionFromSchema,
   parse
 } from 'graphql'
 import { GraphQLBigInt } from 'graphql-scalars'
 import { headers } from 'next/headers'
+import { readFileSync } from 'node:fs'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
 
-let clientSchema = null
-function getClientSchema() {
-  if (!clientSchema) {
-    const schemaSource = readFileSync(
-      new URL('./dal-schema.graphql', import.meta.url),
-      'utf8'
-    )
-    const schemaDocument = parse(schemaSource)
-    const schema = buildASTSchema(schemaDocument)
+const schemaSource = readFileSync(
+  new URL('./dal-schema.graphql', import.meta.url),
+  'utf8'
+)
+const dalSchema = buildASTSchema(parse(schemaSource))
 
-    const bigIntType = schema.getType('BigInt')
-    if (bigIntType) {
-      bigIntType.serialize = GraphQLBigInt.serialize
-      bigIntType.parseValue = GraphQLBigInt.parseValue
-      bigIntType.parseLiteral = GraphQLBigInt.parseLiteral
-    }
-
-    clientSchema = buildClientSchema(introspectionFromSchema(schema))
-
-    const clientBigIntType = clientSchema.getType('BigInt')
-    if (clientBigIntType) {
-      clientBigIntType.serialize = GraphQLBigInt.serialize
-      clientBigIntType.parseValue = GraphQLBigInt.parseValue
-      clientBigIntType.parseLiteral = GraphQLBigInt.parseLiteral
-    }
-  }
-
-  return clientSchema
-}
+const bigIntType = dalSchema.getType('BigInt')
+bigIntType.serialize = GraphQLBigInt.serialize
+bigIntType.parseValue = GraphQLBigInt.parseValue
+bigIntType.parseLiteral = GraphQLBigInt.parseLiteral
 
 function validateVariables({ query, variables }) {
   let document
@@ -71,7 +51,7 @@ function validateVariables({ query, variables }) {
   }
 
   const { errors, coerced } = getVariableValues(
-    getClientSchema(),
+    dalSchema,
     operation.variableDefinitions,
     variables ?? {}
   )
@@ -125,13 +105,15 @@ async function getAccessToken() {
 }
 
 export async function dalRequest({ query, variables }) {
+  const coercedVariables = validateVariables({ query, variables })
+
   const email = await getEmailFromToken(await headers())
   const authorization = DAL_AUTH_DISABLED ? '' : await getAccessToken()
 
   const req = {
     method: 'POST',
     headers: { 'content-type': 'application/json', email, authorization },
-    body: JSON.stringify({ query, variables })
+    body: JSON.stringify({ query, variables: coercedVariables })
   }
 
   const response = await fetch(config.get('dal.url'), {
