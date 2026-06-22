@@ -45,6 +45,37 @@ async function handleResponse(response, username) {
   return response.json()
 }
 
+// Treat the ID token as expired this long before its actual exp, so it doesn't
+// go stale in the time between this check and the request reaching the server.
+const ID_TOKEN_EXPIRY_BUFFER_MS = 60_000
+
+function isIdTokenExpired(idTokenClaims) {
+  return idTokenClaims.exp * 1000 - ID_TOKEN_EXPIRY_BUFFER_MS <= Date.now()
+}
+
+async function acquireTokens(msalClient, authenticationRequest, account) {
+  let { accessToken, idToken, idTokenClaims } =
+    await msalClient.acquireTokenSilent({
+      ...authenticationRequest,
+      account
+    })
+
+  // acquireTokenSilent only renews when the access token has expired, so it
+  // is possible that an expired id token may be returned from the cache (both
+  // tokens have different expiry times). Force a real refresh when that happens.
+  if (isIdTokenExpired(idTokenClaims)) {
+    const refreshedTokens = await msalClient.acquireTokenSilent({
+      ...authenticationRequest,
+      account,
+      forceRefresh: true
+    })
+    accessToken = refreshedTokens.accessToken
+    idToken = refreshedTokens.idToken
+  }
+
+  return { accessToken, idToken }
+}
+
 async function fetcher(url, username, headers = {}) {
   const requestTimeout =
     Number(process.env.NEXT_PUBLIC_FETCH_TIMEOUT_MS) || 30_000
@@ -69,7 +100,7 @@ async function fetcher(url, username, headers = {}) {
 }
 
 function useData(urlParts, runWhenTruthy) {
-  const { instance, accounts, inProgress } = useMsal()
+  const { instance: msalClient, accounts, inProgress } = useMsal()
   const { isDisabled, authenticationRequest } = useAuth()
 
   const key =
@@ -84,10 +115,11 @@ function useData(urlParts, runWhenTruthy) {
     isDisabled
       ? fetcher
       : async (url) => {
-          const { accessToken, idToken } = await instance.acquireTokenSilent({
-            ...authenticationRequest,
-            account: accounts[0]
-          })
+          const { accessToken, idToken } = await acquireTokens(
+            msalClient,
+            authenticationRequest,
+            accounts[0]
+          )
 
           return fetcher(url, accounts[0].username, {
             'x-msal-access-token': accessToken,
@@ -103,6 +135,7 @@ function useData(urlParts, runWhenTruthy) {
       //   console.debug('Data fetched successfully:', data)
       // },
       revalidateIfStale: false,
+
       revalidateOnFocus: false,
 
       // Disable all retries.  To enabled per-status code retries, remove this (or set to true) and implement
