@@ -1,6 +1,6 @@
 {
   "name": "fcp-cv-frontend",
-  "version": "0.65.0",
+  "version": "0.66.0",
   "description": "CDP Frontend Template",
   "type": "module",
   "engines": {
@@ -12,6 +12,7 @@
     "up": "./scripts/launch-full-docker-environment.sh",
     "build": "next build",
     "dev": "next dev | jq -R '. as $line | try (fromjson) catch $line'",
+    "debug": "next dev -p ${PORT:-3200} --inspect | jq -R '. as $line | try (fromjson) catch $line'",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --log-level warn --write .",
     "start": "next start",
@@ -36,6 +37,7 @@
     "@tanstack/react-table": "^8.21.3",
     "convict": "^6.2.4",
     "date-fns": "^4.1.0",
+    "graphql-scalars": "1.25.0",
     "jose": "^6.1.3",
     "next": "^16.1.6",
     "pino": "^10.1.0",

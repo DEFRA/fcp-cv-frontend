@@ -1,8 +1,8 @@
-import { dalRequest } from '@/lib/dal'
 import { dalApiResponse, handleApiError } from '@/lib/api.js'
+import { dalRequest } from '@/lib/dal'
 
 const query = `#graphql
-  query GetListOfCustomers($sbi: ID!) {
+  query GetListOfCustomers($sbi: BigInt) {
     business(sbi: $sbi) {
       customers {
         crn

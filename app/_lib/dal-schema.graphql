@@ -1,0 +1,2488 @@
+"""
+This schema is a raw copy of the DAL's graphQL schema, captured from the public `ext-test`
+introspection service.
+@see: https://et.fcp-dal.api.defra.gov.uk/graphql
+
+A scalar that represents a large integer (necessary for the 10-20 digit CRNs & SBIs).
+The `BigInt` scalar type comes from the `graphql-scalars` package, which is a
+collection of custom GraphQL scalar types for common use cases.
+@see: https://the-guild.dev/graphql/scalars/docs
+@see: https://the-guild.dev/graphql/scalars/docs/scalars/big-int
+"""
+scalar BigInt
+
+"""
+Exposes a URL that specifies the behavior of this scalar.
+"""
+directive @specifiedBy(
+  """
+  The URL that specifies the behavior of this scalar.
+  """
+  url: String!
+) on SCALAR
+
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+type ActivePermissionGroup {
+  """
+  Permission group for the customer. For example, 'BUSINESS_DETAILS', 'COUNTRYSIDE_STEWARDSHIP_AGREEMENTS'.
+  """
+  id: PermissionGroupId!
+
+  """
+  Permission level customer has for the business. For example, 'VIEW', 'AMEND.
+  """
+  level: PermissionLevel
+
+  """
+  Functions that can be performed with given permission level.
+  """
+  functions: [String]
+}
+
+"""
+Represents data about the address details of a customer or business
+"""
+type Address {
+  """
+  PAF organisation name
+  """
+  pafOrganisationName: String
+
+  """
+  First line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line1: String
+
+  """
+  Second line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line2: String
+
+  """
+  Third line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line3: String
+
+  """
+  Fourth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line4: String
+
+  """
+  Fifth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line5: String
+
+  """
+  Building number range of the address
+  """
+  buildingNumberRange: String
+
+  """
+  Building name of the address
+  """
+  buildingName: String
+
+  """
+  Flat name of the address
+  """
+  flatName: String
+
+  """
+  Street of the address
+  """
+  street: String
+
+  """
+  Locality of the address
+  """
+  city: String
+
+  """
+  County of the address
+  """
+  county: String
+
+  """
+  Postal code of the address
+  """
+  postalCode: String
+
+  """
+  Country of the address
+  """
+  country: String
+
+  """
+  UPRN of the address
+  """
+  uprn: String
+
+  """
+  Dependant locality of the address
+  """
+  dependentLocality: String
+
+  """
+  Double dependant locality of the address
+  """
+  doubleDependentLocality: String
+
+  """
+  Type ID of the address
+  """
+  typeId: String
+}
+
+"""
+Represents data about a customers or business address details, note the Version
+1 api does not require any of these fields so neither do we.
+"""
+input AddressInput {
+  """
+  PAF organisation name
+  """
+  pafOrganisationName: String
+
+  """
+  First line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line1: String
+
+  """
+  Second line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line2: String
+
+  """
+  Third line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line3: String
+
+  """
+  Fourth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line4: String
+
+  """
+  Fifth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line5: String
+
+  """
+  Building number range of the address
+  """
+  buildingNumberRange: String
+
+  """
+  Building name of the address
+  """
+  buildingName: String
+
+  """
+  Flat name of the address
+  """
+  flatName: String
+
+  """
+  Street of the address
+  """
+  street: String
+
+  """
+  Locality of the address
+  """
+  city: String
+
+  """
+  County of the address
+  """
+  county: String
+
+  """
+  Postal code of the address
+  """
+  postalCode: String
+
+  """
+  Country of the address
+  """
+  country: String
+
+  """
+  UPRN of the address
+  """
+  uprn: String
+
+  """
+  Dependant locality of the address
+  """
+  dependentLocality: String
+
+  """
+  Double dependant locality of the address
+  """
+  doubleDependentLocality: String
+}
+
+input AddressInputWithoutUprn {
+  """
+  PAF organisation name
+  """
+  pafOrganisationName: String
+
+  """
+  First line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line1: String!
+
+  """
+  Second line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line2: String
+
+  """
+  Third line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line3: String
+
+  """
+  Fourth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line4: String
+
+  """
+  Fifth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line5: String
+
+  """
+  Building number range of the address
+  """
+  buildingNumberRange: String
+
+  """
+  Building name of the address
+  """
+  buildingName: String
+
+  """
+  Flat name of the address
+  """
+  flatName: String
+
+  """
+  Street of the address
+  """
+  street: String
+
+  """
+  Locality of the address
+  """
+  city: String!
+
+  """
+  County of the address
+  """
+  county: String
+
+  """
+  Postal code of the address
+  """
+  postalCode: String!
+
+  """
+  Country of the address
+  """
+  country: String!
+
+  """
+  UPRN of the address
+  """
+  uprn: String
+
+  """
+  Dependant locality of the address
+  """
+  dependentLocality: String
+
+  """
+  Double dependant locality of the address
+  """
+  doubleDependentLocality: String
+}
+
+input AddressInputWithUprn {
+  """
+  PAF organisation name
+  """
+  pafOrganisationName: String
+
+  """
+  First line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line1: String
+
+  """
+  Second line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line2: String
+
+  """
+  Third line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line3: String
+
+  """
+  Fourth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line4: String
+
+  """
+  Fifth line of a non-PAF address (maybe duplicated in the named fields, but not always)
+  """
+  line5: String
+
+  """
+  Building number range of the address
+  """
+  buildingNumberRange: String
+
+  """
+  Building name of the address
+  """
+  buildingName: String
+
+  """
+  Flat name of the address
+  """
+  flatName: String
+
+  """
+  Street of the address
+  """
+  street: String
+
+  """
+  Locality of the address
+  """
+  city: String
+
+  """
+  County of the address
+  """
+  county: String
+
+  """
+  Postal code of the address
+  """
+  postalCode: String
+
+  """
+  Country of the address
+  """
+  country: String
+
+  """
+  UPRN of the address
+  """
+  uprn: String!
+
+  """
+  Dependant locality of the address
+  """
+  dependentLocality: String
+
+  """
+  Double dependant locality of the address
+  """
+  doubleDependentLocality: String
+}
+
+"""
+Business Agreement.
+"""
+type Agreement {
+  """
+  Internal SitiAgri/Portal unique identifier for the agreement.
+  """
+  contractId: ID
+
+  """
+  Name of the agreement.
+  """
+  name: String
+
+  """
+  Status of the agreement.
+  """
+  status: String
+
+  """
+  Type of the agreement.
+  """
+  contractType: String
+
+  """
+  Year of the agreement.
+  """
+  schemeYear: Int
+
+  """
+  Start date of the agreement.
+  """
+  startDate: Date
+
+  """
+  End date of the agreement.
+  """
+  endDate: Date
+
+  """
+  Payment schedules for the agreement.
+  """
+  paymentSchedules: [PaymentSchedule]
+}
+
+"""
+Business Application.
+"""
+type Application {
+  """
+  Single Business Identifier (SBI) of the business.
+  """
+  sbi: BigInt!
+
+  """
+  The unique identifier for the application.
+  """
+  id: ID!
+
+  """
+  The unique identifier for the subject of this application.
+  """
+  subjectId: ID
+
+  """
+  The year this application is for.
+  """
+  year: Int
+
+  """
+  The title of the application.
+  """
+  name: String
+
+  """
+  The module code for the application.
+  """
+  moduleCode: String
+
+  """
+  The name of the scheme for the application.
+  """
+  scheme: String
+
+  """
+  The "Code P" status of the application.
+  """
+  statusCodeP: String
+
+  """
+  The "Code S" status of the application.
+  """
+  statusCodeS: String
+
+  """
+  The status of the application.
+  """
+  status: String
+
+  """
+  The date the application was submitted.
+  """
+  submissionDate: Date
+
+  """
+  The "P Status" of the application on the Portal.
+  """
+  portalStatusP: String
+
+  """
+  The "S Status" of the application on the Portal.
+  """
+  portalStatusS: String
+
+  """
+  The status of the application on the Portal.
+  """
+  portalStatus: String
+
+  """
+  Whether the application is active.
+  """
+  active: Boolean
+
+  """
+  The unique identifier for the latest transition (from the `transitionHistory`).
+  """
+  transitionId: ID
+
+  """
+  The name of the latest transition (from the `transitionHistory`).
+  """
+  transitionName: String
+
+  """
+  The unique identifiers for the agreements associated with this application.
+  """
+  agreementReferences: [ID]
+
+  """
+  The history of transitions for the application.
+  """
+  transitionHistory: [Transition]
+}
+
+enum BankAccountCurrency {
+  GBP
+  EUR
+}
+
+"""
+Bank account details. The supplied variant identifies the territory and account holder
+type; each variant declares which fields are mandatory.
+"""
+input BankAccountInput {
+  ukBusiness: UkBusinessBankAccountInput
+  ukPersonal: UkPersonalBankAccountInput
+  ukBusinessBuildingSociety: UkBusinessBuildingSocietyBankAccountInput
+  ukPersonalBuildingSociety: UkPersonalBuildingSocietyBankAccountInput
+  euBusiness: EuBusinessBankAccountInput
+  euPersonal: EuPersonalBankAccountInput
+}
+
+type BankDetailsLocked {
+  """
+  Lock message.
+  """
+  message: String!
+}
+
+type BankDetailsSubmitted {
+  """
+  `true` once the bank change submission has been accepted by the upstream service.
+  """
+  success: Boolean!
+}
+
+type BankDetailsValidationFailed {
+  """
+  Detail of the error
+  """
+  message: String!
+
+  """
+  Number of attempts remaining.
+  """
+  attemptsRemaining: Int!
+}
+
+"""
+Details for the business - 'business' and 'organisation' can be used interchangeably.
+"""
+type Business {
+  """
+  Internal SitiAgri/Portal unique identifier for the business.
+  """
+  organisationId: ID
+
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  Information of the business.
+  """
+  info: BusinessInfo
+
+  """
+  Land for the business.
+  """
+  land: BusinessLand
+
+  """
+  County Parish Holdings (CPH) of the business.
+  """
+  countyParishHoldings: [CountyParishHolding]
+
+  """
+  Customers associated with the business.
+  """
+  customers: [BusinessCustomerPartial]
+
+  """
+  Customer associated with the business.
+  """
+  customer(crn: BigInt!): BusinessCustomer
+
+  """
+  Agreements associated with the business.
+  """
+  agreements: [Agreement]
+
+  """
+  Applications associated with the business.
+  """
+  applications: [Application]
+  payments(fromDate: Date, toDate: Date, userIP: String!): BusinessPayments
+}
+
+"""
+Customers/contacts of the business.
+"""
+type BusinessCustomer {
+  """
+  Internal SitiAgri/Portal unique identifier of the customer.
+  """
+  personId: ID
+
+  """
+  First name of the customer.
+  """
+  firstName: String
+
+  """
+  Last name of the customer.
+  """
+  lastName: String
+
+  """
+  Unique Customer Reference Number (CRN) of the customer. 10-digit number that should
+  be known to to the customer, for example, 1234567890. This is the same format as the
+  Firm Reference Number (FRN).
+  """
+  crn: String
+
+  """
+  Role the customer has for the business. For example, 'Owner', 'Agent', 'Employee'.
+  """
+  role: String
+
+  """
+  Permissions the customer has for the business.
+  """
+  permissionGroups: [ActivePermissionGroup]
+}
+
+"""
+Customers/contacts of the business.
+
+Partial of type `BusinessCustomer` with excluded fields: permissionGroups
+"""
+type BusinessCustomerPartial {
+  """
+  Internal SitiAgri/Portal unique identifier of the customer.
+  """
+  personId: ID
+
+  """
+  First name of the customer.
+  """
+  firstName: String
+
+  """
+  Last name of the customer.
+  """
+  lastName: String
+
+  """
+  Unique Customer Reference Number (CRN) of the customer. 10-digit number that should
+  be known to to the customer, for example, 1234567890. This is the same format as the
+  Firm Reference Number (FRN).
+  """
+  crn: String
+
+  """
+  Role the customer has for the business. For example, 'Owner', 'Agent', 'Employee'.
+  """
+  role: String
+}
+
+"""
+Common details for a business.
+"""
+type BusinessInfo {
+  """
+  Name of the business.
+  """
+  name: String
+
+  """
+  Firm Reference Number (FRN) of the business.
+
+  A unique 10-digit number that is known to the customer, for example, 1234567890.
+  However a customer is more likely to be familiar with their Single Business Identified
+  (SBI). FRN is commonly used in RPA's payment systems. The format is the same as the
+  Customer Reference Number (CRN), which is also a 10-digit number.
+  """
+  reference: String
+
+  """
+  VAT number of the business. (a.k.a. `taxRegistrationNumber`)
+  """
+  vat: String
+
+  """
+  Trader number of the business.
+  """
+  traderNumber: String
+
+  """
+  Vendor number of the business.
+  """
+  vendorNumber: String
+
+  """
+  Address of the business.
+  """
+  address: Address
+
+  """
+  Correspondence address of the business.
+  """
+  correspondenceAddress: Address
+
+  """
+  States the correspondence address should be used as the business address.
+  """
+  isCorrespondenceAsBusinessAddress: Boolean
+
+  """
+  Email address of the business.
+  """
+  email: Email
+
+  """
+  Correspondence email of the business.
+  """
+  correspondenceEmail: Email
+
+  """
+  Telephone numbers of the business.
+  """
+  phone: Phone
+
+  """
+  Correspondence telephone numbers of the business.
+  """
+  correspondencePhone: Phone
+
+  """
+  Legal status of the business. For example, Sole Proprietorship.
+  """
+  legalStatus: BusinessType
+
+  """
+  Type of the business.
+  """
+  type: BusinessType
+
+  """
+  Various registration numbers for the business. For example, Companies House number.
+  """
+  registrationNumbers: BusinessRegistrationNumbers
+
+  """
+  Other SBIs by which the business is known.
+  """
+  additionalSbis: [ID]
+
+  """
+  The date the business info was last updated.
+  """
+  lastUpdated: Date
+
+  """
+  States the business address is also the financial address.
+  """
+  isFinancialToBusinessAddress: Boolean
+
+  """
+  States the business has land in Northern Ireland.
+  """
+  hasLandInNorthernIreland: Boolean
+
+  """
+  States the business has land in Scotland.
+  """
+  hasLandInScotland: Boolean
+
+  """
+  States the business has land in Wales.
+  """
+  hasLandInWales: Boolean
+
+  """
+  Whether the land for the business has been confirmed.
+  """
+  landConfirmed: Boolean
+
+  """
+  Whether the business has additional business activities.
+  """
+  hasAdditionalBusinessActivities: Boolean
+
+  """
+  The additional business activities for this business.
+  """
+  additionalBusinessActivities: [BusinessType]
+
+  """
+  Whether the "accountable people declaration" is complete.
+  """
+  isAccountablePeopleDeclarationCompleted: Boolean
+
+  """
+  The date the business started farming.
+  """
+  dateStartedFarming: Date
+
+  """
+  The status of the business.
+  """
+  status: EntityStatus
+}
+
+"""
+Land details for a business.
+
+Data Source: Land Management System (LMS)
+"""
+type BusinessLand {
+  """
+  Parcels of the business land for a particular date for a business.
+  The earliest date is 01/01/2015.
+  """
+  parcels(date: Date): [BusinessLandParcelPartial]
+
+  """
+  A single parcel of the business land based on its SheetId and ParcelId for a
+  particular date for a business.
+  The earliest date is 01/01/2015.
+  """
+  parcel(date: Date, sheetId: ID!, parcelId: ID!): BusinessLandParcel
+
+  """
+  Land covers of a single parcel based on its SheetId and ParcelId for a particular
+  date for a busines.
+  The earliest date is 01/01/2015.
+  """
+  parcelCovers(date: Date, sheetId: ID!, parcelId: ID!): [BusinessLandCover]
+
+  """
+  Land uses of a single parcel based on its SheetId and ParcelId for a particular
+  date for a business.
+  The earliest date is 01/01/2015.
+  """
+  parcelLandUses(
+    date: Date
+    sheetId: ID!
+    parcelId: ID!
+  ): [BusinessLandParcelUses]
+
+  """
+  Summary of the land for a particular date for a business.
+  The earliest date is 01/01/2015.
+  """
+  summary(date: Date): BusinessLandSummary
+}
+
+"""
+Land cover of a parcel for a business.
+"""
+type BusinessLandCover {
+  """
+  Unique internal identifier of the land cover.
+  """
+  id: ID!
+
+  """
+  Description of the land cover. For example, 'Arable Land', 'Permanent Grassland'
+  """
+  name: String
+
+  """
+  Area (in hectares) of the land cover.
+  """
+  area: Float
+
+  """
+  Internal code of the land cover. For example, '110' is the code for 'Arable Land'.
+  """
+  code: String
+
+  """
+  Indicates whether the land cover is Basic Payment Scheme (BPS) eligible.
+  """
+  isBpsEligible: Boolean
+}
+
+"""
+A land parcel for a business.
+When a change happens to a land parcel a new verion is created.
+"""
+type BusinessLandParcel {
+  """
+  Unique internal identifier of the land parcel.
+  """
+  id: ID!
+
+  """
+  Sheet ID of the land parcel, for example 'AB1234'
+  """
+  sheetId: String
+
+  """
+  Parcel ID of the land parcel, for example '1234'.
+  """
+  parcelId: String
+
+  """
+  Area (in hectares) of the land parcel.
+  """
+  area: Float
+
+  """
+  Indicates if a parcel has a pending Customer Notified Change (CNC).
+  CNC could be a boundary change, parcel merge, split etc.
+  """
+  pendingDigitisation: Boolean
+
+  """
+  Date when this version of the land parcel finished.
+  A date of 31/12/9999 indicates that this is the latest version of the parcel.
+  """
+  effectiveToDate: Date
+
+  """
+  Date when this version of the land parcel came into effect.
+  """
+  effectiveFromDate: Date
+}
+
+"""
+A land parcel for a business.
+When a change happens to a land parcel a new verion is created.
+
+Partial of type `BusinessLandParcel` with excluded fields: effectiveToDate, effectiveFromDate
+"""
+type BusinessLandParcelPartial {
+  """
+  Unique internal identifier of the land parcel.
+  """
+  id: ID!
+
+  """
+  Sheet ID of the land parcel, for example 'AB1234'
+  """
+  sheetId: String
+
+  """
+  Parcel ID of the land parcel, for example '1234'.
+  """
+  parcelId: String
+
+  """
+  Area (in hectares) of the land parcel.
+  """
+  area: Float
+
+  """
+  Indicates if a parcel has a pending Customer Notified Change (CNC).
+  CNC could be a boundary change, parcel merge, split etc.
+  """
+  pendingDigitisation: Boolean
+}
+
+"""
+Land use of a parcel for a business.
+"""
+type BusinessLandParcelUses {
+  """
+  Code of the land use.
+  """
+  code: String!
+
+  """
+  Start date of the land use.
+  """
+  startDate: Date
+
+  """
+  End date of the land use.
+  """
+  endDate: Date
+
+  """
+  Date the land use was inserted.
+  """
+  insertDate: Date
+
+  """
+  Date the land use was deleted.
+  """
+  deleteDate: Date
+
+  """
+  Area of the land use.
+  """
+  area: Float
+
+  """
+  Length of the land use.
+  """
+  length: Float
+
+  """
+  Land use type. For example, 'SCRUB - UNGRAZEABLE'.
+  """
+  type: String
+
+  """
+  Campaign of the land use.
+  """
+  campaign: Int
+}
+
+"""
+Summary of the land parcels for a business.
+"""
+type BusinessLandSummary {
+  """
+  Area (in hectares) of arable land.
+  """
+  arableLandArea: Float
+
+  """
+  Area (in hectares) of permanent crops.
+  """
+  permanentCropsArea: Float
+
+  """
+  Area of permanent grassland.
+  """
+  permanentGrasslandArea: Float
+
+  """
+  Total area of land for the business (in hectares).
+  """
+  totalArea: Float
+
+  """
+  Total number of parcels for the business.
+  """
+  totalParcels: Float
+}
+
+type BusinessPayments {
+  onHold: Boolean!
+  payments: [Payment!]!
+}
+
+"""
+Various registration numbers of the business.
+"""
+type BusinessRegistrationNumbers {
+  """
+  Companies House number of the business.
+  """
+  companiesHouse: String
+
+  """
+  Charity Commission number of the business.
+  """
+  charityCommission: String
+}
+
+input BusinessRegistrationNumbersInput {
+  """
+  Charity comission registration number to set.
+  """
+  charityCommission: String
+
+  """
+  Charity comission registration number to set.
+  """
+  companiesHouse: String
+}
+
+"""
+Type of the business represented by a code/description pair. For example, used for business type and legal status.
+"""
+type BusinessType {
+  """
+  Code of the business type.
+  """
+  code: Int
+
+  """
+  Description of the business type.
+  """
+  type: String
+}
+
+"""
+County Parish Holding (CPH).  Customers need a CPH for land or buildings
+used to keep livestock or if the business uses animal by products. Used for
+tracking and managing livestock movements to help prevent and control disease.
+
+A business can have more than one CPH.
+
+Data Source: SitiAgri
+
+Note that Animal Plant and Health Agency (APHA) also have a source of CPH data.
+While RPA issues the CPH number to the customer, APHA is interested in CPH
+for disease control, therefore they may have more up-to-date and granular
+information on species, for example.
+"""
+type CountyParishHolding {
+  """
+  CPH number. A 9-digit number, consisting of the county (2-digits), the parish
+  (3-digits) and the holding (4-digits).  For example '12/345/6789'.
+
+  The last 4-digits (e.g. 12/34/xxxx) indicate the type: 0001-4999 are
+  standard CPHs. 7000-7999 are temporary. 8000-8999 are for non-agricultural
+  holdings (e.g. livestock markets, meat product plants, seaports).
+  """
+  cphNumber: ID
+
+  """
+  Parish associated with the CPH.
+  """
+  parish: String
+
+  """
+  Start date of the CPH.
+  """
+  startDate: Date
+
+  """
+  End date of the CPH. If CPH is active, the date will be open ended. It will also be
+  set for temporary CPHs.
+  """
+  endDate: Date
+
+  """
+  A comma-separated list of species associated with the CPH.
+  For example, 'Cattle, Pigs'.
+
+  Animal Plant and Health Agency (APHA) also have CPH data. APHA tend to hold more
+  up-to-date information regarding species.
+  """
+  species: String
+
+  """
+  X Coordinate (Easting) of the centre of the CPH using the National Grid OSG836 datum.
+  """
+  xCoordinate: Int
+
+  """
+  Y Coordinate (Northing) of the centre of the CPH using the National Grid OSG836 datum.
+  """
+  yCoordinate: Int
+
+  """
+  Address of the land or correspondence address if issuing a temporary CPH. For
+  common land, it should begin with 'CL @' followed by the common name and address.
+  """
+  address: String
+}
+
+input CreateBusinessCustomerBankDetailsInput {
+  """
+  Single Business Identifier (SBI) of the business: a unique 9-digit number that
+  identifies the business.
+  """
+  sbi: BigInt!
+
+  """
+  The Customer Reference Number (CRN) of the person submitting the bank change.
+  """
+  crn: BigInt!
+
+  """
+  Bank account details. Exactly one variant must be supplied.
+  """
+  account: BankAccountInput!
+}
+
+"""
+The outcome of a bank details change request.
+
+- `BankDetailsSubmitted` — The change passed validation and has been submitted.
+- `BankDetailsValidationFailed` — Validation error,
+- `BankDetailsLocked` — The user is locked.
+"""
+union CreateBusinessCustomerBankDetailsResult =
+  | BankDetailsSubmitted
+  | BankDetailsValidationFailed
+  | BankDetailsLocked
+
+input CreateBusinessInput {
+  """
+  The Customer Reference Number (CRN) of the person under which to create the business.
+  """
+  crn: BigInt!
+
+  """
+  Name of the business.
+  """
+  name: String
+
+  """
+  VAT number of the business. (a.k.a. `taxRegistrationNumber`)
+  """
+  vat: String
+
+  """
+  Trader number of the business.
+  """
+  traderNumber: String
+
+  """
+  Vendor number of the business.
+  """
+  vendorNumber: String
+
+  """
+  Address of the business.
+  """
+  address: ValidAddressInput
+
+  """
+  Correspondence address of the business.
+  """
+  correspondenceAddress: ValidAddressInput
+
+  """
+  States the correspondence address should be used as the business address.
+  """
+  isCorrespondenceAsBusinessAddress: Boolean
+
+  """
+  Email address of the business.
+  """
+  email: EmailInput
+
+  """
+  Correspondence email of the business.
+  """
+  correspondenceEmail: EmailInput
+
+  """
+  Telephone numbers of the business.
+  """
+  phone: PhoneInput
+
+  """
+  Correspondence telephone numbers of the business.
+  """
+  correspondencePhone: PhoneInput
+
+  """
+  Legal status of the business. For example, Sole Proprietorship.
+  """
+  legalStatusCode: Int
+
+  """
+  Type of the business.
+  """
+  typeCode: Int!
+
+  """
+  Various registration numbers for the business. For example, Companies House number.
+  """
+  registrationNumbers: BusinessRegistrationNumbersInput
+
+  """
+  Whether the land for the business has been confirmed.
+  """
+  landConfirmed: Boolean
+
+  """
+  Whether the business has additional business activities.
+  """
+  hasAdditionalBusinessActivities: Boolean
+
+  """
+  The date the business started farming.
+  """
+  dateStartedFarming: Date
+}
+
+type CreateBusinessResponse {
+  success: Boolean
+  business: Business
+}
+
+"""
+Customer details.
+
+Data source: Rural Payments Portal
+"""
+type Customer {
+  """
+  Internal SitiAgri/Portal unique identifier of the customer.
+  """
+  personId: ID!
+
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer. The customer should know their CRN, although their
+  Single Business Identifier (SBI) for their business is more commonly quoted.
+  """
+  crn: BigInt!
+
+  """
+  Basic information of the customer.
+  """
+  info: CustomerInfo
+
+  """
+  Security questions (memorable words) of the customer.
+  """
+  authenticationQuestions: CustomerAuthenticationQuestions
+
+  """
+  Businesses associated with the customer.
+  """
+  businesses: [CustomerBusinessPartial]
+
+  """
+  A single business filtered by the businesses using Single Business Identifier (SBI) associated with the customer.
+  """
+  business(sbi: BigInt!): CustomerBusiness
+}
+
+"""
+Authenticate questions of the customer.
+
+Data source: Rural Payments Portal
+
+These are the memorable words (date, place, event) used to verify the
+customer when they call the RPA. Originally, these were held in the
+'Authenticate' system, but the data and functionality transferred to
+the portal.
+"""
+type CustomerAuthenticationQuestions {
+  """
+  Memorable date response for the customer.
+  """
+  memorableDate: String
+
+  """
+  Memorable event response for the customer.
+  """
+  memorableEvent: String
+
+  """
+  Memorable place response for the customer.
+  """
+  memorableLocation: String
+
+  """
+  The date the record was last updated.
+  """
+  updatedAt: Date
+
+  """
+  Indicates whether the authenticate questions record was found for the customer.
+  """
+  isFound: Boolean
+}
+
+"""
+A business associated with the customer.
+"""
+type CustomerBusiness {
+  """
+  Internal SitiAgri/Portal unique identifier of the customer.
+  """
+  organisationId: ID
+
+  """
+  Single Business Identifier (SBI) of the business. A unique 9-digit identifier
+  for the business.
+  """
+  sbi: BigInt!
+
+  """
+  Name of the business.
+  """
+  name: String!
+
+  """
+  Role that the customer has for the business.
+  """
+  role: String
+
+  """
+  Messages for the customer for the business. These message are those shown in the
+  Rural Payments Portal, and not any correspondence the customer may have had with
+  the Rural Payments Agency (RPA).
+
+  Retrieves messages from fromDate to today if provided; otherwise, returns all messages.
+  - fromDate: Optional. Include messages on or after this date up to the current date.
+  """
+  messages(fromDate: Date): [CustomerBusinessMessage]
+
+  """
+  Permission groups for the customer for the business.
+  """
+  permissionGroups: [ActivePermissionGroup]
+}
+
+"""
+Business message sent via the rural payments portal to a customer.
+
+Data Source: Rural Payments Portal (PRR)
+"""
+type CustomerBusinessMessage {
+  """
+  Unique identifier of the message.
+  """
+  id: ID!
+
+  """
+  Subject of the message.
+  """
+  subject: String
+
+  """
+  Date the message was sent.
+  """
+  date: Date
+
+  """
+  Body content of the message.
+  """
+  body: String
+
+  """
+  Indicates whether the customer has read the business message.
+  """
+  read: Boolean
+
+  """
+  Indicates whether the customer has marked the business message as deleted.
+  Messages in the portal are not deleted, they are moved to a deleted section
+  (more akin to archiving a message).
+  """
+  deleted: Boolean
+}
+
+"""
+A business associated with the customer.
+
+Partial of type `CustomerBusiness` with excluded fields: messages, permissionGroups
+"""
+type CustomerBusinessPartial {
+  """
+  Internal SitiAgri/Portal unique identifier of the customer.
+  """
+  organisationId: ID
+
+  """
+  Single Business Identifier (SBI) of the business. A unique 9-digit identifier
+  for the business.
+  """
+  sbi: BigInt!
+
+  """
+  Name of the business.
+  """
+  name: String!
+
+  """
+  Role that the customer has for the business.
+  """
+  role: String
+}
+
+"""
+Basic information of a customer.
+"""
+type CustomerInfo {
+  """
+  Name of the customer.
+  """
+  name: CustomerName
+
+  """
+  Date of birth of the customer.
+  """
+  dateOfBirth: Date
+
+  """
+  Telephone number of the customer.
+  """
+  phone: Phone
+
+  """
+  Email address of the customer.
+  """
+  email: Email
+
+  """
+  Status of the customer record/account.
+  """
+  status: EntityStatus
+
+  """
+  Address of the customer.
+  """
+  address: Address
+
+  """
+  Do not contact status of the customer email address.
+  """
+  doNotContact: Boolean
+
+  """
+  Other IDs for this customer.
+  """
+  personalIdentifiers: [String]
+}
+
+"""
+Full name of a customer.
+"""
+type CustomerName {
+  """
+  The title of the customer (e.g., Mr., Mrs., Dr.).
+  """
+  title: String
+
+  """
+  Any other title of the customer.
+  """
+  otherTitle: String
+
+  """
+  First name of the customer.
+  """
+  first: String
+
+  """
+  Middle names of the customer.
+  """
+  middle: String
+
+  """
+  Last name of the customer.
+  """
+  last: String
+}
+
+scalar Date
+
+"""
+Represents data about the email address of a customer or business
+"""
+type Email {
+  """
+  Email address of the customer or business
+  """
+  address: String
+
+  """
+  Validated status of the email address
+  """
+  validated: Boolean
+}
+
+"""
+Represents data about a customers or business email details
+"""
+input EmailInput {
+  """
+  Email address of the customer or business
+  """
+  address: String!
+}
+
+"""
+Status of a customer or business record/account.
+"""
+type EntityStatus {
+  """
+  Indicates whether the customer or business account is locked.
+  """
+  locked: Boolean
+
+  """
+  Indicates whether the customer or business account has been confirmed.
+  """
+  confirmed: Boolean
+
+  """
+  Indicates whether the customer or business account has been deactivated.
+  """
+  deactivated: Boolean
+}
+
+input EuBusinessBankAccountInput {
+  """
+  Name on the account.
+  """
+  accountHolderName: String!
+
+  """
+  Bank account number. Format depends on the destination bank — no fixed length.
+  """
+  accountNumber: String!
+
+  """
+  International Bank Account Number (IBAN) for the account.
+  """
+  iban: IBAN!
+
+  """
+  Country code of the bank account (e.g. IRL, FRA).
+  """
+  countryCode: String!
+
+  """
+  Name of the bank.
+  """
+  bankName: String!
+
+  """
+  Sort code or routing number. No fixed length.
+  """
+  sortCode: String!
+
+  """
+  SWIFT/BIC code. Optional; when supplied must be 8 or 11 alphanumeric characters.
+  """
+  swiftCode: SwiftCode
+
+  """
+  Currency the account is held in.
+  """
+  currency: BankAccountCurrency!
+}
+
+input EuPersonalBankAccountInput {
+  """
+  Forename(s) of the account holder.
+  """
+  forename: String!
+
+  """
+  Surname of the account holder.
+  """
+  surname: String!
+
+  """
+  Bank account number. Format depends on the destination bank — no fixed length.
+  """
+  accountNumber: String!
+
+  """
+  International Bank Account Number (IBAN) for the account.
+  """
+  iban: IBAN!
+
+  """
+  Country code of the bank account (e.g. IRL, FRA).
+  """
+  countryCode: String!
+
+  """
+  Name of the bank.
+  """
+  bankName: String!
+
+  """
+  Sort code or routing number. No fixed length.
+  """
+  sortCode: String!
+
+  """
+  SWIFT/BIC code. Optional; when supplied must be 8 or 11 alphanumeric characters.
+  """
+  swiftCode: SwiftCode
+
+  """
+  Currency the account is held in.
+  """
+  currency: BankAccountCurrency!
+}
+
+"""
+A field whose value is an International Bank Account Number (IBAN):
+https://en.wikipedia.org/wiki/International_Bank_Account_Number.
+"""
+scalar IBAN
+
+type Mutation {
+  updateCustomerAddress(
+    input: UpdateCustomerAddressInput!
+  ): UpdateCustomerResponse
+  updateCustomerDateOfBirth(
+    input: UpdateCustomerDateOfBirthInput!
+  ): UpdateCustomerResponse
+  updateCustomerEmail(input: UpdateCustomerEmailInput!): UpdateCustomerResponse
+  updateCustomerName(input: UpdateCustomerNameInput!): UpdateCustomerResponse
+  updateCustomerPhone(input: UpdateCustomerPhoneInput!): UpdateCustomerResponse
+  updateCustomerDoNotContact(
+    input: UpdateCustomerDoNotContactInput!
+  ): UpdateCustomerResponse
+  updateCustomerAllFields(
+    input: UpdateCustomerAllFieldsInput!
+  ): UpdateCustomerResponse
+
+  """
+  Used to update the business legal status.
+  """
+  updateBusinessLegalStatus(
+    input: UpdateBusinessLegalStatusInput!
+  ): UpdateBusinessResponse
+
+  """
+  Used to update the date the business started farming.
+  """
+  updateBusinessDateStartedFarming(
+    input: UpdateBusinessDateStartedFarmingInput!
+  ): UpdateBusinessResponse
+
+  """
+  Used to update the date the business type.
+  """
+  updateBusinessType(input: UpdateBusinessTypeInput!): UpdateBusinessResponse
+
+  """
+  Used to update the date the business companies house number and/or charities commission number.
+  """
+  updateBusinessRegistrationNumbers(
+    input: UpdateBusinessRegistrationNumbersInput!
+  ): UpdateBusinessResponse
+
+  """
+  Update the business lock status.
+  """
+  updateBusinessLock(
+    input: UpdateBusinessLockUnlockInput!
+  ): UpdateBusinessResponse
+
+  """
+  Update the business unlock status.
+  """
+  updateBusinessUnlock(
+    input: UpdateBusinessLockUnlockInput!
+  ): UpdateBusinessResponse
+
+  """
+  Submits a change of bank account details for a business.
+  """
+  createBusinessCustomerBankDetails(
+    input: CreateBusinessCustomerBankDetailsInput!
+  ): CreateBusinessCustomerBankDetailsResult
+  createBusiness(input: CreateBusinessInput!): CreateBusinessResponse
+  updateBusinessName(input: UpdateBusinessNameInput!): UpdateBusinessResponse
+  updateBusinessEmail(input: UpdateBusinessEmailInput!): UpdateBusinessResponse
+  updateBusinessPhone(input: UpdateBusinessPhoneInput!): UpdateBusinessResponse
+  updateBusinessAddress(
+    input: UpdateBusinessAddressInput!
+  ): UpdateBusinessResponse
+  updateBusinessVAT(input: UpdateBusinessVATInput!): UpdateBusinessResponse
+}
+
+type Payment {
+  reference: String!
+  date: Date!
+  amount: Float!
+  currency: String!
+  lineItems: [PaymentLineItem!]!
+}
+
+type PaymentLineItem {
+  agreementNumber: String!
+  claimReferenceNumber: String!
+  scheme: String!
+  marketingYear: String!
+  description: String!
+  amount: Float!
+}
+
+"""
+Payment schedule for an agreement.
+"""
+type PaymentSchedule {
+  """
+  Option code for the payment schedule.
+  """
+  optionCode: String
+
+  """
+  Option description for the payment schedule.
+  """
+  optionDescription: String
+
+  """
+  Commitment group start date for the payment schedule.
+  """
+  commitmentGroupStartDate: Date
+
+  """
+  Commitment group end date for the payment schedule.
+  """
+  commitmentGroupEndDate: Date
+
+  """
+  Year of the payment schedule.
+  """
+  year: Int
+
+  """
+  Sheet name for the payment schedule.
+  """
+  sheetName: String
+
+  """
+  Parcel name for the payment schedule.
+  """
+  parcelName: String
+
+  """
+  Action area - Area (in hectares) of the action.
+  """
+  actionArea: Float
+
+  """
+  Action MTL - Length (in metres) of the action.
+  """
+  actionMTL: Int
+
+  """
+  Action units - Number of units of the action.
+  """
+  actionUnits: Float
+
+  """
+  Parcel total area - Total area (in hectares) of the parcel.
+  """
+  parcelTotalArea: Float
+
+  """
+  Payment schedule start date for the payment schedule.
+  """
+  startDate: Date
+
+  """
+  Payment schedule end date for the payment schedule.
+  """
+  endDate: Date
+}
+
+type Permission {
+  """
+  The permission level.
+  """
+  level: PermissionLevel
+
+  """
+  The functions that can be performed with given permission level.
+  """
+  functions: [String]
+
+  """
+  Check if this level is active for given customer and business.
+  """
+  active(crn: BigInt!, sbi: BigInt!): Boolean
+}
+
+type PermissionGroup {
+  """
+  Permission group id.
+  """
+  id: PermissionGroupId!
+
+  """
+  Permission group name.
+  """
+  name: String!
+
+  """
+  Permissions within the group.
+  """
+  permissions: [Permission]
+}
+
+enum PermissionGroupId {
+  BASIC_PAYMENT_SCHEME
+  BUSINESS_DETAILS
+  COUNTRYSIDE_STEWARDSHIP_AGREEMENTS
+  COUNTRYSIDE_STEWARDSHIP_APPLICATIONS
+  ENTITLEMENTS
+  ENVIRONMENTAL_LAND_MANAGEMENT_APPLICATIONS
+  LAND_DETAILS
+}
+
+enum PermissionLevel {
+  NO_ACCESS
+  VIEW
+  AMEND
+  SUBMIT
+  MAKE_LEGAL_CHANGES
+  FULL_PERMISSION
+}
+
+"""
+Represents data about mobile/landline details of a customer or business
+"""
+type Phone {
+  """
+  Mobile number of the customer or business
+  """
+  mobile: String
+
+  """
+  Landline number of the customer or business
+  """
+  landline: String
+}
+
+"""
+Represents data about a customers or business mobile/landline details
+"""
+input PhoneInput {
+  """
+  Mobile number of the customer or business
+  """
+  mobile: String
+
+  """
+  Landline number of the customer or business
+  """
+  landline: String
+}
+
+type Query {
+  business(sbi: BigInt!): Business
+  customer(crn: BigInt!): Customer
+  permissionGroups: [PermissionGroup]
+}
+
+"""
+A SWIFT/BIC code: 8 or 11 alphanumeric characters.
+"""
+scalar SwiftCode
+
+"""
+A single transition from the history of transitions for an application.
+"""
+type Transition {
+  """
+  The unique identifier for the transition.
+  """
+  id: ID
+
+  """
+  The name of the transition.
+  """
+  name: String
+
+  """
+  The date and time of the transition.
+  """
+  timestamp: Date
+
+  """
+  The status of the application after the transition.
+  """
+  checkStatus: String
+}
+
+"""
+A UK bank account number: exactly 8 digits.
+"""
+scalar UkAccountNumber
+
+input UkBusinessBankAccountInput {
+  """
+  Name on the account.
+  """
+  accountHolderName: String!
+
+  """
+  UK account number (8 digits).
+  """
+  accountNumber: UkAccountNumber!
+
+  """
+  Name of the bank.
+  """
+  bankName: String!
+
+  """
+  UK sort code (6 digits).
+  """
+  sortCode: UkSortCode!
+
+  """
+  Currency the account is held in.
+  """
+  currency: BankAccountCurrency!
+}
+
+input UkBusinessBuildingSocietyBankAccountInput {
+  """
+  Name on the account.
+  """
+  accountHolderName: String!
+
+  """
+  UK account number (8 digits).
+  """
+  accountNumber: UkAccountNumber!
+
+  """
+  Building society roll number, if there is one.
+  """
+  rollNumber: String
+
+  """
+  Name of the bank.
+  """
+  bankName: String!
+
+  """
+  UK sort code (6 digits).
+  """
+  sortCode: UkSortCode!
+
+  """
+  Currency the account is held in.
+  """
+  currency: BankAccountCurrency!
+}
+
+input UkPersonalBankAccountInput {
+  """
+  Forename(s) of the account holder.
+  """
+  forename: String!
+
+  """
+  Surname of the account holder.
+  """
+  surname: String!
+
+  """
+  UK account number (8 digits).
+  """
+  accountNumber: UkAccountNumber!
+
+  """
+  Name of the bank.
+  """
+  bankName: String!
+
+  """
+  UK sort code (6 digits).
+  """
+  sortCode: UkSortCode!
+
+  """
+  Currency the account is held in.
+  """
+  currency: BankAccountCurrency!
+}
+
+input UkPersonalBuildingSocietyBankAccountInput {
+  """
+  Forename(s) of the account holder.
+  """
+  forename: String!
+
+  """
+  Surname of the account holder.
+  """
+  surname: String!
+
+  """
+  UK account number (8 digits).
+  """
+  accountNumber: UkAccountNumber!
+
+  """
+  Building society roll number, if there is one.
+  """
+  rollNumber: String
+
+  """
+  Name of the bank.
+  """
+  bankName: String!
+
+  """
+  UK sort code (6 digits).
+  """
+  sortCode: UkSortCode!
+
+  """
+  Currency the account is held in.
+  """
+  currency: BankAccountCurrency!
+}
+
+"""
+A UK bank sort code: exactly 6 digits.
+"""
+scalar UkSortCode
+
+input UpdateBusinessAddressInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  Address of the business.
+  """
+  address: ValidAddressInput
+  correspondenceAddress: ValidAddressInput
+  isCorrespondenceAsBusinessAddress: Boolean
+}
+
+input UpdateBusinessDateStartedFarmingInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  The date the business started farming to update to.
+  """
+  dateStartedFarming: Date!
+}
+
+input UpdateBusinessEmailInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  Email address of the business.
+  """
+  email: EmailInput
+
+  """
+  Correspondence email address of the business.
+  """
+  correspondenceEmail: EmailInput
+}
+
+input UpdateBusinessLegalStatusInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  Legal status object to update business with.
+  """
+  legalStatusCode: Int!
+}
+
+input UpdateBusinessLockUnlockInput {
+  """
+  Single Business Identifier (SBI) of the business.
+  """
+  sbi: BigInt!
+
+  """
+  Reason for locking the business.
+  """
+  reason: String
+
+  """
+  Note for locking the business.
+  """
+  note: String
+}
+
+input UpdateBusinessNameInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  Name of the business.
+  """
+  name: String!
+}
+
+input UpdateBusinessPhoneInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  Telephone number of the business.
+  """
+  phone: PhoneInput
+
+  """
+  Correspondence telephone number of the business.
+  """
+  correspondencePhone: PhoneInput
+}
+
+input UpdateBusinessRegistrationNumbersInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  Registration numbers object to update companies house or charities comission numbers.
+  """
+  registrationNumbers: BusinessRegistrationNumbersInput!
+}
+
+type UpdateBusinessResponse {
+  success: Boolean
+  business: Business
+}
+
+input UpdateBusinessTypeInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  business type code/id to update business with.
+  """
+  typeCode: Int!
+}
+
+input UpdateBusinessVATInput {
+  """
+  Single Business Identifier (SBI) of the business.
+
+  A unique 9-digit number that identifies the business. There is also the Firm Reference
+  Number (FRN), a unique 10-digit number, that is less well known to customers.
+  """
+  sbi: BigInt!
+
+  """
+  VAT number of the business. (a.k.a. `taxRegistrationNumber`)
+  """
+  vat: String!
+}
+
+input UpdateCustomerAddressInput {
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer.
+  """
+  crn: BigInt!
+
+  """
+  Address of the customer.
+  """
+  address: AddressInput!
+}
+
+input UpdateCustomerAllFieldsInput {
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer.
+  """
+  crn: BigInt!
+
+  """
+  First name of the customer.
+  """
+  first: String
+
+  """
+  Last name of the customer.
+  """
+  last: String
+
+  """
+  Middle names of the customer.
+  """
+  middle: String
+
+  """
+  The title of the customer (e.g., Mr., Mrs., Dr.).
+  """
+  otherTitle: String
+
+  """
+  The title of the customer (e.g., Mr., Mrs., Dr.).
+  """
+  title: String
+
+  """
+  Address of the customer.
+  """
+  address: AddressInput
+
+  """
+  Date of birth of the customer (YYYY-MM-DD).
+  """
+  dateOfBirth: Date
+
+  """
+  Email address of the customer.
+  """
+  email: EmailInput
+
+  """
+  Telephone number of the customer.
+  """
+  phone: PhoneInput
+
+  """
+  Do not contact status of the customer email address.
+  """
+  doNotContact: Boolean
+}
+
+input UpdateCustomerDateOfBirthInput {
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer.
+  """
+  crn: BigInt!
+
+  """
+  Date of birth of the customer (YYYY-MM-DD).
+  """
+  dateOfBirth: Date!
+}
+
+input UpdateCustomerDoNotContactInput {
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer.
+  """
+  crn: BigInt!
+
+  """
+  Do not contact status of the customer email address.
+  """
+  doNotContact: Boolean!
+}
+
+input UpdateCustomerEmailInput {
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer.
+  """
+  crn: BigInt!
+
+  """
+  Email address of the customer.
+  """
+  email: EmailInput!
+}
+
+input UpdateCustomerNameInput {
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer.
+  """
+  crn: BigInt!
+
+  """
+  First name of the customer.
+  """
+  first: String
+
+  """
+  Last name of the customer.
+  """
+  last: String
+
+  """
+  Middle names of the customer.
+  """
+  middle: String
+
+  """
+  The title of the customer (e.g., Mr., Mrs., Dr.).
+  """
+  otherTitle: String
+
+  """
+  The title of the customer (e.g., Mr., Mrs., Dr.).
+  """
+  title: String
+}
+
+input UpdateCustomerPhoneInput {
+  """
+  Customer Reference Number (CRN) of the customer. Unique 10-digit number used
+  to identify the customer.
+  """
+  crn: BigInt!
+
+  """
+  Telephone number of the customer.
+  """
+  phone: PhoneInput!
+}
+
+type UpdateCustomerResponse {
+  success: Boolean
+  customer: Customer
+}
+
+input ValidAddressInput {
+  withUprn: AddressInputWithUprn
+  withoutUprn: AddressInputWithoutUprn
+}

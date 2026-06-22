@@ -1,9 +1,9 @@
+import { dalApiResponse, handleApiError } from '@/lib/api.js'
 import { dalRequest } from '@/lib/dal'
 import { formatDate } from '@/lib/formatters'
-import { dalApiResponse, handleApiError } from '@/lib/api.js'
 
 const query = `#graphql
-  query CVAgreements($sbi: ID!) {
+  query CVAgreements($sbi: BigInt) {
     business(sbi: $sbi) {
       agreements {
         contractId
