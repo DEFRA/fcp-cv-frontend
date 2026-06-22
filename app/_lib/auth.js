@@ -45,6 +45,9 @@ async function verifyToken(token, { issuer, audience }) {
       issuer,
       audience
     })
+    logger.info(
+      `Token verified - expires: ${new Date(payload.exp * 1000).toLocaleString()}`
+    )
     return payload
   } catch (error) {
     const jwtInfo = decodeJwt(token)

@@ -84,10 +84,18 @@ function useData(urlParts, runWhenTruthy) {
     isDisabled
       ? fetcher
       : async (url) => {
-          const { accessToken, idToken } = await instance.acquireTokenSilent({
-            ...authenticationRequest,
-            account: accounts[0]
-          })
+          const { accessToken, idToken, idTokenClaims, expiresOn } =
+            await instance.acquireTokenSilent({
+              ...authenticationRequest,
+              account: accounts[0]
+            })
+
+          const idTokenExpiresOn = idTokenClaims?.exp
+            ? new Date(idTokenClaims.exp * 1000).toLocaleString()
+            : 'unknown'
+          console.info(
+            `MSAL token expiry - access token: ${expiresOn?.toLocaleString() ?? 'unknown'}, ID token: ${idTokenExpiresOn}`
+          )
 
           return fetcher(url, accounts[0].username, {
             'x-msal-access-token': accessToken,
@@ -103,6 +111,7 @@ function useData(urlParts, runWhenTruthy) {
       //   console.debug('Data fetched successfully:', data)
       // },
       revalidateIfStale: false,
+
       revalidateOnFocus: false,
 
       // Disable all retries.  To enabled per-status code retries, remove this (or set to true) and implement
