@@ -1,3 +1,14 @@
+"""
+This schema is a raw copy of the DAL's graphQL schema, captured from the public `ext-test`
+introspection service.
+@see: https://et.fcp-dal.api.defra.gov.uk/graphql
+
+A scalar that represents a large integer (necessary for the 10-20 digit CRNs & SBIs).
+The `BigInt` scalar type comes from the `graphql-scalars` package, which is a
+collection of custom GraphQL scalar types for common use cases.
+@see: https://the-guild.dev/graphql/scalars/docs
+@see: https://the-guild.dev/graphql/scalars/docs/scalars/big-int
+"""
 scalar BigInt
 
 """
