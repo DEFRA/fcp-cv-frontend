@@ -9,16 +9,17 @@ import { notification } from '@/components/notification/Notifications'
 
 vi.mock('@/hooks/reload-page', () => ({ reloadPage: vi.fn() }))
 
+const { acquireTokenSilent } = vi.hoisted(() => ({
+  acquireTokenSilent: vi.fn()
+}))
+
 describe('useDal and useDataverse Hooks', () => {
   beforeAll(() => {
     vi.mock('@azure/msal-react', async () => ({
       useMsal: () => ({
         accounts: [{ username: 'test@user.com' }],
         instance: {
-          acquireTokenSilent: () => ({
-            accessToken: 'fake-access-token',
-            idToken: 'fake-id-token'
-          })
+          acquireTokenSilent
         },
         inProgress: 'none'
       })
@@ -32,6 +33,13 @@ describe('useDal and useDataverse Hooks', () => {
   let fetchSpy
 
   beforeEach(() => {
+    acquireTokenSilent.mockReset()
+    acquireTokenSilent.mockImplementation(() => ({
+      accessToken: 'fake-access-token',
+      idToken: 'fake-id-token',
+      idTokenClaims: { exp: Math.floor(Date.now() / 1000) + 3600 }
+    }))
+
     fetchSpy = vi.spyOn(window, 'fetch')
     fetchSpy.mockImplementation(async () => ({
       ok: true,
@@ -100,6 +108,49 @@ describe('useDal and useDataverse Hooks', () => {
         )
       }
     )
+
+    it('does not force a token refresh when the cached ID token is still valid', async () => {
+      await renderHook(() => useDal(['linked-contacts']))
+
+      expect(acquireTokenSilent).toHaveBeenCalledTimes(1)
+      expect(fetchSpy).toHaveBeenCalledWith('/api/dal/linked-contacts', {
+        headers: {
+          'x-msal-access-token': 'fake-access-token',
+          'x-msal-id-token': 'fake-id-token'
+        },
+        signal: expect.any(AbortSignal)
+      })
+    })
+
+    it('forces a token refresh when the cached ID token is expired', async () => {
+      acquireTokenSilent.mockImplementation((request) =>
+        request.forceRefresh
+          ? {
+              accessToken: 'refreshed-access-token',
+              idToken: 'refreshed-id-token',
+              idTokenClaims: { exp: Math.floor(Date.now() / 1000) + 3600 }
+            }
+          : {
+              accessToken: 'fake-access-token',
+              idToken: 'fake-id-token',
+              idTokenClaims: { exp: Math.floor(Date.now() / 1000) - 10 }
+            }
+      )
+
+      await renderHook(() => useDal(['linked-contacts']))
+
+      expect(acquireTokenSilent).toHaveBeenCalledTimes(2)
+      expect(acquireTokenSilent).toHaveBeenLastCalledWith(
+        expect.objectContaining({ forceRefresh: true })
+      )
+      expect(fetchSpy).toHaveBeenCalledWith('/api/dal/linked-contacts', {
+        headers: {
+          'x-msal-access-token': 'refreshed-access-token',
+          'x-msal-id-token': 'refreshed-id-token'
+        },
+        signal: expect.any(AbortSignal)
+      })
+    })
   })
 
   describe('auth disabled', () => {

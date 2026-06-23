@@ -45,6 +45,14 @@ async function handleResponse(response, username) {
   return response.json()
 }
 
+// Treat the ID token as expired this long before its actual exp, so it doesn't
+// go stale in the time between this check and the request reaching the server.
+const ID_TOKEN_EXPIRY_BUFFER_MS = 60_000
+
+function isIdTokenExpired(idTokenClaims) {
+  return idTokenClaims.exp * 1000 - ID_TOKEN_EXPIRY_BUFFER_MS <= Date.now()
+}
+
 async function fetcher(url, username, headers = {}) {
   const requestTimeout =
     Number(process.env.NEXT_PUBLIC_FETCH_TIMEOUT_MS) || 30_000
@@ -84,7 +92,7 @@ function useData(urlParts, runWhenTruthy) {
     isDisabled
       ? fetcher
       : async (url) => {
-          const { accessToken, idToken, idTokenClaims, expiresOn } =
+          let { accessToken, idToken, idTokenClaims, expiresOn } =
             await instance.acquireTokenSilent({
               ...authenticationRequest,
               account: accounts[0]
@@ -96,6 +104,19 @@ function useData(urlParts, runWhenTruthy) {
           console.info(
             `MSAL token expiry - access token: ${expiresOn?.toLocaleString() ?? 'unknown'}, ID token: ${idTokenExpiresOn}`
           )
+
+          // acquireTokenSilent only renews when the access token needs it, so it
+          // can return a still-valid access token alongside an expired cached ID
+          // token. Force a real refresh when that happens.
+          if (isIdTokenExpired(idTokenClaims)) {
+            const refreshedTokens = await instance.acquireTokenSilent({
+              ...authenticationRequest,
+              account: accounts[0],
+              forceRefresh: true
+            })
+            accessToken = refreshedTokens.accessToken
+            idToken = refreshedTokens.idToken
+          }
 
           return fetcher(url, accounts[0].username, {
             'x-msal-access-token': accessToken,
