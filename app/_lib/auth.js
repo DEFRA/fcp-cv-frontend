@@ -98,17 +98,13 @@ const overrideEmail = config.get('dal.email')
 export async function getEmailFromToken(headers) {
   if (clientAuthConfig.disabled) return overrideEmail
 
-  const token = headers.get('x-msal-id-token')
-  const payload = await verifyToken(token, {
-    issuer: ID_TOKEN_ISSUER,
-    audience: ID_TOKEN_AUDIENCE
+  const accessToken = headers.get('x-msal-access-token')
+  const accessTokenPayload = await verifyToken(accessToken, {
+    issuer: ACCESS_TOKEN_ISSUER,
+    audience: ACCESS_TOKEN_AUDIENCE
   })
 
-  const email =
-    overrideEmail ??
-    payload?.email ??
-    payload?.preferred_username ??
-    payload?.verified_primary_email?.[0]
+  const email = overrideEmail ?? accessTokenPayload?.upn
 
   if (!email)
     throw new HttpError(
