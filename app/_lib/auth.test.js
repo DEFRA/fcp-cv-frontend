@@ -112,7 +112,7 @@ describe('getEmailFromToken', () => {
     const headers = { get: vi.fn(() => 'valid.token.here') }
 
     jose.jwtVerify.mockResolvedValue({
-      payload: { email: 'different.user@other.org' }
+      payload: { upn: 'different.user@other.org' }
     })
 
     const email = await getEmailFromToken(headers)
@@ -163,7 +163,7 @@ describe('getEmailFromToken', () => {
     const headers = { get: vi.fn(() => 'valid.token.here') }
 
     jose.jwtVerify.mockResolvedValue({
-      payload: { email: 'test@defra.gov.uk' }
+      payload: { upn: 'test@defra.gov.uk' }
     })
 
     const email = await getEmailFromToken(headers)
@@ -172,22 +172,6 @@ describe('getEmailFromToken', () => {
       issuer: expect.any(String),
       audience: expect.any(String)
     })
-  })
-
-  // Fallback when email claim is missing: use preferred_username from token.
-  test('returns preferred_username if email not present', async () => {
-    vi.stubEnv('DAL_EMAIL', undefined)
-
-    const { getEmailFromToken } = await import('./auth')
-
-    const headers = { get: vi.fn(() => 'valid.token.here') }
-
-    jose.jwtVerify.mockResolvedValue({
-      payload: { preferred_username: 'user123' }
-    })
-
-    const email = await getEmailFromToken(headers)
-    expect(email).toBe('user123')
   })
 
   // Token verification fails (bad signature etc.). This error takes
@@ -222,7 +206,7 @@ describe('getEmailFromToken', () => {
     jose.createRemoteJWKSet.mockReturnValue(mockJWKS)
 
     const headers = { get: vi.fn(() => 'valid.token') }
-    jose.jwtVerify.mockResolvedValue({ payload: { email: 'test@example.com' } })
+    jose.jwtVerify.mockResolvedValue({ payload: { upn: 'test@example.com' } })
 
     await getEmailFromToken(headers)
     expect(jose.createRemoteJWKSet).toHaveBeenCalledTimes(1)
