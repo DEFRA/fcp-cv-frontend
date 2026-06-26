@@ -47,11 +47,29 @@ function validateVariables({ query, variables }) {
     return variables
   }
 
-  const { errors, coerced } = getVariableValues(
+  const { errors = [], coerced } = getVariableValues(
     dalSchema,
     operation.variableDefinitions,
     variables ?? {}
   )
+  if (coerced?.crn && !/^[1-9]\d{9,19}$/.test(`${coerced.crn}`)) {
+    errors.push(
+      new TypeError(
+        `Invalid CRN format: ${
+          coerced.crn
+        }. Must be a 10-20 digit number starting with a non-zero digit.`
+      )
+    )
+  }
+  if (coerced?.sbi && !/^[1-9]\d{9,19}$/.test(`${coerced.sbi}`)) {
+    errors.push(
+      new TypeError(
+        `Invalid SBI format: ${
+          coerced.sbi
+        }. Must be a 10-20 digit number starting with a non-zero digit.`
+      )
+    )
+  }
   if (errors?.length) {
     const errorMessage = errors.map((error) => error.message).join('; ')
     logger.warn(
