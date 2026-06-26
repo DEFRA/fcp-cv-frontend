@@ -12,7 +12,6 @@ import {
   getVariableValues,
   parse
 } from 'graphql'
-import { GraphQLBigInt } from 'graphql-scalars'
 import { headers } from 'next/headers'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
@@ -24,12 +23,6 @@ const schemaSource = readFileSync(
 )
 // build an object model of the DAL schema for variables validation
 const dalSchema = buildASTSchema(parse(schemaSource))
-
-// add the custom scalar handling (e.g. for `BigInt` types used for CRNs & SBIs)
-const bigIntType = dalSchema.getType('BigInt')
-bigIntType.serialize = GraphQLBigInt.serialize
-bigIntType.parseValue = GraphQLBigInt.parseValue
-bigIntType.parseLiteral = GraphQLBigInt.parseLiteral
 
 function validateVariables({ query, variables }) {
   let document

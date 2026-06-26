@@ -3,7 +3,7 @@ import { dalRequest } from '@/lib/dal'
 import { formatDate } from '@/lib/formatters'
 
 const query = `#graphql
-  query CVCountyParishHoldings($sbi: BigInt) {
+  query CVCountyParishHoldings($sbi: ID) {
     business(sbi: $sbi) {
       countyParishHoldings {
         cphNumber

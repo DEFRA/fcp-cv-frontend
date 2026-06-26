@@ -2,7 +2,7 @@ import { handleApiError, partialResponse } from '@/lib/api'
 import { dalRequest } from '@/lib/dal'
 
 const query = `#graphql
-  query CVLinkedBusinessesList($crn: BigInt) {
+  query CVLinkedBusinessesList($crn: ID) {
     customer(crn: $crn) {
       businesses {
         sbi

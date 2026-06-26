@@ -3,7 +3,7 @@ import { dalRequest } from '@/lib/dal'
 import { NextResponse } from 'next/server'
 
 const query = `#graphql
-  query CVLinkedContactsList($sbi: BigInt) {
+  query CVLinkedContactsList($sbi: ID) {
     business(sbi: $sbi) {
       customers {
         role

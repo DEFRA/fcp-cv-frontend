@@ -3,7 +3,7 @@ import { dalRequest } from '@/lib/dal'
 import { formatDateAndTime } from '@/lib/formatters'
 
 const query = `#graphql
-  query CVAuthenticate($crn: BigInt) {
+  query CVAuthenticate($crn: ID) {
     customer(crn: $crn) {
       authenticationQuestions {
         memorableDate

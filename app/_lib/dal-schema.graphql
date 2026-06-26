@@ -3,15 +3,7 @@ This schema is a raw copy of the DAL's graphQL schema, captured from the public 
 introspection service.
 @see: https://et.fcp-dal.api.defra.gov.uk/graphql
 
-A scalar that represents a large integer (necessary for the 10-20 digit CRNs & SBIs).
-The `BigInt` scalar type comes from the `graphql-scalars` package, which is a
-collection of custom GraphQL scalar types for common use cases.
-@see: https://the-guild.dev/graphql/scalars/docs
-@see: https://the-guild.dev/graphql/scalars/docs/scalars/big-int
-"""
-scalar BigInt
 
-"""
 Exposes a URL that specifies the behavior of this scalar.
 """
 directive @specifiedBy(
@@ -455,7 +447,7 @@ type Application {
   """
   Single Business Identifier (SBI) of the business.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   The unique identifier for the application.
@@ -607,7 +599,7 @@ type Business {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Information of the business.
@@ -632,7 +624,7 @@ type Business {
   """
   Customer associated with the business.
   """
-  customer(crn: BigInt!): BusinessCustomer
+  customer(crn: ID!): BusinessCustomer
 
   """
   Agreements associated with the business.
@@ -1212,12 +1204,12 @@ input CreateBusinessCustomerBankDetailsInput {
   Single Business Identifier (SBI) of the business: a unique 9-digit number that
   identifies the business.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   The Customer Reference Number (CRN) of the person submitting the bank change.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Bank account details. Exactly one variant must be supplied.
@@ -1241,7 +1233,7 @@ input CreateBusinessInput {
   """
   The Customer Reference Number (CRN) of the person under which to create the business.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Name of the business.
@@ -1350,7 +1342,7 @@ type Customer {
   to identify the customer. The customer should know their CRN, although their
   Single Business Identifier (SBI) for their business is more commonly quoted.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Basic information of the customer.
@@ -1370,7 +1362,7 @@ type Customer {
   """
   A single business filtered by the businesses using Single Business Identifier (SBI) associated with the customer.
   """
-  business(sbi: BigInt!): CustomerBusiness
+  business(sbi: ID!): CustomerBusiness
 }
 
 """
@@ -1423,7 +1415,7 @@ type CustomerBusiness {
   Single Business Identifier (SBI) of the business. A unique 9-digit identifier
   for the business.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Name of the business.
@@ -1505,7 +1497,7 @@ type CustomerBusinessPartial {
   Single Business Identifier (SBI) of the business. A unique 9-digit identifier
   for the business.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Name of the business.
@@ -1909,7 +1901,7 @@ type Permission {
   """
   Check if this level is active for given customer and business.
   """
-  active(crn: BigInt!, sbi: BigInt!): Boolean
+  active(crn: ID!, sbi: ID!): Boolean
 }
 
 type PermissionGroup {
@@ -1979,8 +1971,8 @@ input PhoneInput {
 }
 
 type Query {
-  business(sbi: BigInt!): Business
-  customer(crn: BigInt!): Customer
+  business(sbi: ID!): Business
+  customer(crn: ID!): Customer
   permissionGroups: [PermissionGroup]
 }
 
@@ -2159,7 +2151,7 @@ input UpdateBusinessAddressInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Address of the business.
@@ -2176,7 +2168,7 @@ input UpdateBusinessDateStartedFarmingInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   The date the business started farming to update to.
@@ -2191,7 +2183,7 @@ input UpdateBusinessEmailInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Email address of the business.
@@ -2211,7 +2203,7 @@ input UpdateBusinessLegalStatusInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Legal status object to update business with.
@@ -2223,7 +2215,7 @@ input UpdateBusinessLockUnlockInput {
   """
   Single Business Identifier (SBI) of the business.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Reason for locking the business.
@@ -2243,7 +2235,7 @@ input UpdateBusinessNameInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Name of the business.
@@ -2258,7 +2250,7 @@ input UpdateBusinessPhoneInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Telephone number of the business.
@@ -2278,7 +2270,7 @@ input UpdateBusinessRegistrationNumbersInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   Registration numbers object to update companies house or charities comission numbers.
@@ -2298,7 +2290,7 @@ input UpdateBusinessTypeInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   business type code/id to update business with.
@@ -2313,7 +2305,7 @@ input UpdateBusinessVATInput {
   A unique 9-digit number that identifies the business. There is also the Firm Reference
   Number (FRN), a unique 10-digit number, that is less well known to customers.
   """
-  sbi: BigInt!
+  sbi: ID!
 
   """
   VAT number of the business. (a.k.a. `taxRegistrationNumber`)
@@ -2326,7 +2318,7 @@ input UpdateCustomerAddressInput {
   Customer Reference Number (CRN) of the customer. Unique 10-digit number used
   to identify the customer.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Address of the customer.
@@ -2339,7 +2331,7 @@ input UpdateCustomerAllFieldsInput {
   Customer Reference Number (CRN) of the customer. Unique 10-digit number used
   to identify the customer.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   First name of the customer.
@@ -2397,7 +2389,7 @@ input UpdateCustomerDateOfBirthInput {
   Customer Reference Number (CRN) of the customer. Unique 10-digit number used
   to identify the customer.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Date of birth of the customer (YYYY-MM-DD).
@@ -2410,7 +2402,7 @@ input UpdateCustomerDoNotContactInput {
   Customer Reference Number (CRN) of the customer. Unique 10-digit number used
   to identify the customer.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Do not contact status of the customer email address.
@@ -2423,7 +2415,7 @@ input UpdateCustomerEmailInput {
   Customer Reference Number (CRN) of the customer. Unique 10-digit number used
   to identify the customer.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Email address of the customer.
@@ -2436,7 +2428,7 @@ input UpdateCustomerNameInput {
   Customer Reference Number (CRN) of the customer. Unique 10-digit number used
   to identify the customer.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   First name of the customer.
@@ -2469,7 +2461,7 @@ input UpdateCustomerPhoneInput {
   Customer Reference Number (CRN) of the customer. Unique 10-digit number used
   to identify the customer.
   """
-  crn: BigInt!
+  crn: ID!
 
   """
   Telephone number of the customer.

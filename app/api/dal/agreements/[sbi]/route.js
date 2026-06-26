@@ -3,7 +3,7 @@ import { dalRequest } from '@/lib/dal'
 import { formatDate } from '@/lib/formatters'
 
 const query = `#graphql
-  query CVAgreements($sbi: BigInt) {
+  query CVAgreements($sbi: ID) {
     business(sbi: $sbi) {
       agreements {
         contractId

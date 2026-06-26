@@ -2,7 +2,7 @@ import { dalApiResponse, handleApiError } from '@/lib/api.js'
 import { dalRequest } from '@/lib/dal'
 
 const query = `#graphql
-  query BusinessLandParcels($sbi: BigInt, $date: Date) {
+  query BusinessLandParcels($sbi: ID, $date: Date) {
     business(sbi: $sbi) {
       land {
         parcels(date: $date) {
