@@ -3,7 +3,7 @@ import { dalRequest } from '@/lib/dal'
 import { formatDate, formatDateAndTime } from '@/lib/formatters'
 
 const query = `#graphql
-  query CVLinkedContactsAuthenticationQuestions($crn: ID) {
+  query CVLinkedContactsAuthenticationQuestions($crn: ID!) {
     customer(crn: $crn) {
       info {
         dateOfBirth
