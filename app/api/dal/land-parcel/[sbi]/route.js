@@ -3,7 +3,7 @@ import { dalRequest } from '@/lib/dal'
 import { formatDate } from '@/lib/formatters'
 
 const query = `#graphql
-  query BusinessLandParcelCovers($sbi: ID, $date: Date, $sheetId: ID!, $parcelId: ID!) {
+  query BusinessLandParcelCovers($sbi: ID!, $date: Date, $sheetId: ID!, $parcelId: ID!) {
     business(sbi: $sbi) {
       land {
         parcel(date: $date, sheetId: $sheetId, parcelId: $parcelId) {
