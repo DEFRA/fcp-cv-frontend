@@ -12,7 +12,6 @@ import {
   getVariableValues,
   parse
 } from 'graphql'
-import { GraphQLBigInt } from 'graphql-scalars'
 import { headers } from 'next/headers'
 
 const DAL_AUTH_DISABLED = config.get('dal.tokenGeneration.disabled')
@@ -24,12 +23,6 @@ const schemaSource = readFileSync(
 )
 // build an object model of the DAL schema for variables validation
 const dalSchema = buildASTSchema(parse(schemaSource))
-
-// add the custom scalar handling (e.g. for `BigInt` types used for CRNs & SBIs)
-const bigIntType = dalSchema.getType('BigInt')
-bigIntType.serialize = GraphQLBigInt.serialize
-bigIntType.parseValue = GraphQLBigInt.parseValue
-bigIntType.parseLiteral = GraphQLBigInt.parseLiteral
 
 function validateVariables({ query, variables }) {
   let document
@@ -54,11 +47,29 @@ function validateVariables({ query, variables }) {
     return variables
   }
 
-  const { errors, coerced } = getVariableValues(
+  const { errors = [], coerced } = getVariableValues(
     dalSchema,
     operation.variableDefinitions,
     variables ?? {}
   )
+  if (coerced?.crn && !/^[1-9]\d{9,19}$/.test(`${coerced.crn}`)) {
+    errors.push(
+      new TypeError(
+        `Invalid CRN format: ${
+          coerced.crn
+        }. Must be a 10-20 digit number starting with a non-zero digit.`
+      )
+    )
+  }
+  if (coerced?.sbi && !/^[1-9]\d{9,19}$/.test(`${coerced.sbi}`)) {
+    errors.push(
+      new TypeError(
+        `Invalid SBI format: ${
+          coerced.sbi
+        }. Must be a 10-20 digit number starting with a non-zero digit.`
+      )
+    )
+  }
   if (errors?.length) {
     const errorMessage = errors.map((error) => error.message).join('; ')
     logger.warn(

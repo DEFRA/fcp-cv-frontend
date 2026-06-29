@@ -64,7 +64,7 @@ beforeEach(() => {
 
 const dummyRequest = {
   query: 'query Business($sbi: ID!) { business(sbi: $sbi) { sbi } }',
-  variables: { sbi: 'sbi' }
+  variables: { sbi: '1234567890' }
 }
 
 describe('dalRequest', () => {
@@ -149,9 +149,9 @@ describe('dalRequest', () => {
     expect(fetch).not.toHaveBeenCalled()
   })
 
-  test('rejects invalid BigInt variables for the DAL schema', async () => {
+  test('rejects invalid string variables for the DAL schema', async () => {
     const request = {
-      query: 'query Test($sbi: BigInt!) { __typename }',
+      query: 'query Test($sbi: ID!) { __typename }',
       variables: { sbi: 'abc' }
     }
 
@@ -161,10 +161,46 @@ describe('dalRequest', () => {
     expect(fetch).not.toHaveBeenCalled()
   })
 
-  test('rejects invalid BigInt variables, e.g. "undefined" for the DAL schema', async () => {
+  test('rejects invalid variables, e.g. "undefined" for the DAL schema', async () => {
     const request = {
-      query: 'query Test($sbi: BigInt!) { __typename }',
+      query: 'query Test($sbi: ID!) { __typename }',
       variables: { sbi: 'undefined' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test('rejects invalid ID variables with too few characters', async () => {
+    const request = {
+      query: 'query Test($sbi: ID!) { __typename }',
+      variables: { sbi: '123456789' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test('rejects invalid ID variables with too many characters', async () => {
+    const request = {
+      query: 'query Test($sbi: ID!) { __typename }',
+      variables: { sbi: '123456789012345678901' }
+    }
+
+    await expect(dalRequest(request)).rejects.toThrow(
+      'DAL request failed: invalid variables'
+    )
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  test('rejects invalid ID variables that are not proper integers', async () => {
+    const request = {
+      query: 'query Test($sbi: ID!) { __typename }',
+      variables: { sbi: '0987654321' }
     }
 
     await expect(dalRequest(request)).rejects.toThrow(
