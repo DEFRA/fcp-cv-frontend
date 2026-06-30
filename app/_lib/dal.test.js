@@ -64,7 +64,7 @@ beforeEach(() => {
 
 const dummyRequest = {
   query: 'query Business($sbi: ID!) { business(sbi: $sbi) { sbi } }',
-  variables: { sbi: '1234567890' }
+  variables: { sbi: '123456789' }
 }
 
 describe('dalRequest', () => {
@@ -161,52 +161,100 @@ describe('dalRequest', () => {
     expect(fetch).not.toHaveBeenCalled()
   })
 
-  test('rejects invalid variables, e.g. "undefined" for the DAL schema', async () => {
-    const request = {
-      query: 'query Test($sbi: ID!) { __typename }',
-      variables: { sbi: 'undefined' }
-    }
+  describe('SBI variable validation', () => {
+    test('rejects invalid variables, e.g. "undefined" for the DAL schema', async () => {
+      const request = {
+        query: 'query Test($sbi: ID!) { __typename }',
+        variables: { sbi: 'undefined' }
+      }
 
-    await expect(dalRequest(request)).rejects.toThrow(
-      'DAL request failed: invalid variables'
-    )
-    expect(fetch).not.toHaveBeenCalled()
+      await expect(dalRequest(request)).rejects.toThrow(
+        'DAL request failed: invalid variables'
+      )
+      expect(fetch).not.toHaveBeenCalled()
+    })
+
+    test('rejects invalid ID variables with too few characters', async () => {
+      const request = {
+        query: 'query Test($sbi: ID!) { __typename }',
+        variables: { sbi: '12345678' }
+      }
+
+      await expect(dalRequest(request)).rejects.toThrow(
+        'DAL request failed: invalid variables'
+      )
+      expect(fetch).not.toHaveBeenCalled()
+    })
+
+    test('rejects invalid ID variables with too many characters', async () => {
+      const request = {
+        query: 'query Test($sbi: ID!) { __typename }',
+        variables: { sbi: '1234567890' }
+      }
+
+      await expect(dalRequest(request)).rejects.toThrow(
+        'DAL request failed: invalid variables'
+      )
+      expect(fetch).not.toHaveBeenCalled()
+    })
+
+    test('accepts ID variables that are not proper integers', async () => {
+      const request = {
+        query: 'query Test($sbi: ID!) { __typename }',
+        variables: { sbi: '098765432' }
+      }
+
+      const result = await dalRequest(request)
+      expect(result).toEqual({ message: 'Test response' })
+    })
   })
 
-  test('rejects invalid ID variables with too few characters', async () => {
-    const request = {
-      query: 'query Test($sbi: ID!) { __typename }',
-      variables: { sbi: '123456789' }
-    }
+  describe('CRN variable validation', () => {
+    test('rejects invalid variables, e.g. "undefined" for the DAL schema', async () => {
+      const request = {
+        query: 'query Test($crn: ID!) { __typename }',
+        variables: { crn: 'undefined' }
+      }
 
-    await expect(dalRequest(request)).rejects.toThrow(
-      'DAL request failed: invalid variables'
-    )
-    expect(fetch).not.toHaveBeenCalled()
-  })
+      await expect(dalRequest(request)).rejects.toThrow(
+        'DAL request failed: invalid variables'
+      )
+      expect(fetch).not.toHaveBeenCalled()
+    })
 
-  test('rejects invalid ID variables with too many characters', async () => {
-    const request = {
-      query: 'query Test($sbi: ID!) { __typename }',
-      variables: { sbi: '123456789012345678901' }
-    }
+    test('rejects invalid ID variables with too few characters', async () => {
+      const request = {
+        query: 'query Test($crn: ID!) { __typename }',
+        variables: { crn: '123456789' }
+      }
 
-    await expect(dalRequest(request)).rejects.toThrow(
-      'DAL request failed: invalid variables'
-    )
-    expect(fetch).not.toHaveBeenCalled()
-  })
+      await expect(dalRequest(request)).rejects.toThrow(
+        'DAL request failed: invalid variables'
+      )
+      expect(fetch).not.toHaveBeenCalled()
+    })
 
-  test('rejects invalid ID variables that are not proper integers', async () => {
-    const request = {
-      query: 'query Test($sbi: ID!) { __typename }',
-      variables: { sbi: '0987654321' }
-    }
+    test('rejects invalid ID variables with too many characters', async () => {
+      const request = {
+        query: 'query Test($crn: ID!) { __typename }',
+        variables: { crn: '12345678901' }
+      }
 
-    await expect(dalRequest(request)).rejects.toThrow(
-      'DAL request failed: invalid variables'
-    )
-    expect(fetch).not.toHaveBeenCalled()
+      await expect(dalRequest(request)).rejects.toThrow(
+        'DAL request failed: invalid variables'
+      )
+      expect(fetch).not.toHaveBeenCalled()
+    })
+
+    test('accepts ID variables that are not proper integers', async () => {
+      const request = {
+        query: 'query Test($crn: ID!) { __typename }',
+        variables: { crn: '0987654321' }
+      }
+
+      const result = await dalRequest(request)
+      expect(result).toEqual({ message: 'Test response' })
+    })
   })
 
   test('returns parsed JSON response', async () => {
