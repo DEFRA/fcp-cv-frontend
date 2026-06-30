@@ -52,21 +52,17 @@ function validateVariables({ query, variables }) {
     operation.variableDefinitions,
     variables ?? {}
   )
-  if (coerced?.crn && !/^[1-9]\d{9,19}$/.test(`${coerced.crn}`)) {
+  if (coerced?.crn && !/^\d{10}$/.test(`${coerced.crn}`)) {
     errors.push(
       new TypeError(
-        `Invalid CRN format: ${
-          coerced.crn
-        }. Must be a 10-20 digit number starting with a non-zero digit.`
+        `Invalid CRN format: ${coerced.crn}. Must be a 10-digit number.`
       )
     )
   }
-  if (coerced?.sbi && !/^[1-9]\d{9,19}$/.test(`${coerced.sbi}`)) {
+  if (coerced?.sbi && !/^\d{9}$/.test(`${coerced.sbi}`)) {
     errors.push(
       new TypeError(
-        `Invalid SBI format: ${
-          coerced.sbi
-        }. Must be a 10-20 digit number starting with a non-zero digit.`
+        `Invalid SBI format: ${coerced.sbi}. Must be a 9-digit number.`
       )
     )
   }
