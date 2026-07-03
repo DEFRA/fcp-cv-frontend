@@ -3,9 +3,9 @@ import { renderHook } from 'vitest-browser-react'
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { ButtonLink } from '@/components/button-link/ButtonLink'
+import { notification } from '@/components/notification/Notifications'
 import { useDal, useDataverse } from '@/hooks/data'
 import { reloadPage } from '@/hooks/reload-page'
-import { notification } from '@/components/notification/Notifications'
 
 vi.mock('@/hooks/reload-page', () => ({ reloadPage: vi.fn() }))
 
@@ -63,8 +63,7 @@ describe('useDal and useDataverse Hooks', () => {
 
       expect(fetchSpy).toHaveBeenCalledWith('/api/dal/linked-contacts', {
         headers: {
-          'x-msal-access-token': 'fake-access-token',
-          'x-msal-id-token': 'fake-id-token'
+          'x-msal-access-token': 'fake-access-token'
         },
         signal: expect.any(AbortSignal)
       })
@@ -75,8 +74,7 @@ describe('useDal and useDataverse Hooks', () => {
 
       expect(fetchSpy).toHaveBeenCalledWith('/api/dataverse/account', {
         headers: {
-          'x-msal-access-token': 'fake-access-token',
-          'x-msal-id-token': 'fake-id-token'
+          'x-msal-access-token': 'fake-access-token'
         },
         signal: expect.any(AbortSignal)
       })

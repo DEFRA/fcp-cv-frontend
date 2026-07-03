@@ -2,8 +2,8 @@ import { useMsal } from '@azure/msal-react'
 import useSWR from 'swr'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { notification } from '@/components/notification/Notifications'
 import { ButtonLink } from '@/components/button-link/ButtonLink'
+import { notification } from '@/components/notification/Notifications'
 import { reloadPage } from '@/hooks/reload-page'
 
 async function handleResponse(response, username) {
@@ -90,8 +90,7 @@ function useData(urlParts, runWhenTruthy) {
           })
 
           return fetcher(url, accounts[0].username, {
-            'x-msal-access-token': accessToken,
-            'x-msal-id-token': idToken
+            'x-msal-access-token': accessToken
           })
         },
     {
