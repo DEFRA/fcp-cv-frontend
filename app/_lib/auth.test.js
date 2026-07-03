@@ -112,7 +112,7 @@ describe('getEmailFromToken', () => {
     const headers = { get: vi.fn(() => 'valid.token.here') }
 
     jose.jwtVerify.mockResolvedValue({
-      payload: { upn: 'different.user@other.org' }
+      payload: { unique_name: 'different.user@other.org' }
     })
 
     const email = await getEmailFromToken(headers)
@@ -163,7 +163,7 @@ describe('getEmailFromToken', () => {
     const headers = { get: vi.fn(() => 'valid.token.here') }
 
     jose.jwtVerify.mockResolvedValue({
-      payload: { upn: 'test@defra.gov.uk' }
+      payload: { unique_name: 'test@defra.gov.uk' }
     })
 
     const email = await getEmailFromToken(headers)
@@ -206,7 +206,9 @@ describe('getEmailFromToken', () => {
     jose.createRemoteJWKSet.mockReturnValue(mockJWKS)
 
     const headers = { get: vi.fn(() => 'valid.token') }
-    jose.jwtVerify.mockResolvedValue({ payload: { upn: 'test@example.com' } })
+    jose.jwtVerify.mockResolvedValue({
+      payload: { unique_name: 'test@example.com' }
+    })
 
     await getEmailFromToken(headers)
     expect(jose.createRemoteJWKSet).toHaveBeenCalledTimes(1)

@@ -104,7 +104,7 @@ export async function getEmailFromToken(headers) {
     audience: ACCESS_TOKEN_AUDIENCE
   })
 
-  const email = overrideEmail ?? accessTokenPayload?.upn
+  const email = overrideEmail ?? accessTokenPayload?.unique_name
 
   if (!email)
     throw new HttpError(
