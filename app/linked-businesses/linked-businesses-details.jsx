@@ -77,7 +77,7 @@ export function LinkedBusinessesDetails() {
             ({ dt, dd, expand = [] }) => (
               <KeyValueListItem
                 loading={isLoading}
-                key={`${sbi}_${dt}`}
+                key={dt}
                 dt={dt}
                 dd={dd}
               >
