@@ -7,10 +7,10 @@ import {
   KeyValueListTitle
 } from '@/components/key-value-list-v2/key-value-list'
 import { LinkToCRMAccount } from '@/components/link-to-crm/link-to-crm'
+import { notification } from '@/components/notification/Notifications.jsx'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
 import { useEffect } from 'react'
-import { notification } from '@/components/notification/Notifications.jsx'
 
 const defaultDetails = [{ dt: 'SBI' }, { dt: 'Role' }]
 
@@ -75,7 +75,7 @@ export function LinkedBusinessesDetails() {
         <KeyValueListContent>
           {(data?.permissions || defaultPermissions).map(
             ({ dt, dd, expand = [] }) => (
-              <KeyValueListItem loading={isLoading} key={dt} dt={dt} dd={dd}>
+              <KeyValueListItem loading={isLoading} key={`${crn}_${dt}_${dd}_${index}`} dt={dt} dd={dd}>
                 <ul className="space-y-1 mb-5 list-disc">
                   {expand.map((item) => (
                     <li key={item} className="text-gray-700">
