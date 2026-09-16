@@ -75,7 +75,12 @@ export function LinkedBusinessesDetails() {
         <KeyValueListContent>
           {(data?.permissions || defaultPermissions).map(
             ({ dt, dd, expand = [] }, index) => (
-              <KeyValueListItem loading={isLoading} key={`${crn}_${dt}_${dd}_${index}`} dt={dt} dd={dd}>
+              <KeyValueListItem
+                loading={isLoading}
+                key={`${crn}_${dt}_${dd}_${index}`}
+                dt={dt}
+                dd={dd}
+              >
                 <ul className="space-y-1 mb-5 list-disc">
                   {expand.map((item) => (
                     <li key={item} className="text-gray-700">
