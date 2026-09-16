@@ -67,7 +67,7 @@ export function LinkedContactsDetails() {
         <KeyValueListTitle>Permissions</KeyValueListTitle>
         <KeyValueListContent>
           {(data?.permissions || defaultPermissions).map(
-            ({ dt, dd, expand = [] }) => (
+            ({ dt, dd, expand = [] }, index) => (
               <KeyValueListItem loading={isLoading} key={`${crn}_${dt}_${dd}_${index}`} dt={dt} dd={dd}>
                 <ul className="space-y-1 mb-5 list-disc">
                   {expand.map((item) => (
