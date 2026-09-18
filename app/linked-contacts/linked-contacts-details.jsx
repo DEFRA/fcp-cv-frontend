@@ -6,9 +6,9 @@ import {
   KeyValueListItem,
   KeyValueListTitle
 } from '@/components/key-value-list-v2/key-value-list'
+import { LinkToCRMContact } from '@/components/link-to-crm/link-to-crm'
 import { useDal } from '@/hooks/data'
 import { useSearchParams } from '@/hooks/search-params'
-import { LinkToCRMContact } from '@/components/link-to-crm/link-to-crm'
 import { LinkedContactsAuthenticateQuestions } from './linked-contacts-authenticate-questions'
 
 const defaultDetails = [{ dt: 'CRN' }, { dt: 'Full Name' }, { dt: 'Role' }]
@@ -67,10 +67,10 @@ export function LinkedContactsDetails() {
         <KeyValueListTitle>Permissions</KeyValueListTitle>
         <KeyValueListContent>
           {(data?.permissions || defaultPermissions).map(
-            ({ dt, dd, expand = [] }) => (
+            ({ dt, dd, expand = [] }, index) => (
               <KeyValueListItem
                 loading={isLoading}
-                key={`${crn}_${dt}`}
+                key={`${dt}_${dd}_${index}`}
                 dt={dt}
                 dd={dd}
               >
