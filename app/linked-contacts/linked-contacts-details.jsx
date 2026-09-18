@@ -70,7 +70,7 @@ export function LinkedContactsDetails() {
             ({ dt, dd, expand = [] }, index) => (
               <KeyValueListItem
                 loading={isLoading}
-                key={`${crn}_${dt}_${dd}_${index}`}
+                key={`${dt}_${dd}_${index}`}
                 dt={dt}
                 dd={dd}
               >
